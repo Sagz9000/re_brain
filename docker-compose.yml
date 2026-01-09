@@ -89,10 +89,10 @@ services:
     container_name: re-memory
     ports:
       - "8001:8000"
-    volumes:
-      - chroma-data-v2:/chroma/chroma
+    environment:
+      - ANONYMIZED_TELEMETRY=False
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat" ]
+      test: [ "CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/heartbeat').read()" ]
       interval: 10s
       timeout: 5s
       retries: 5
