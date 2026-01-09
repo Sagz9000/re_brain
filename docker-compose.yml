@@ -90,7 +90,7 @@ services:
     ports:
       - "8001:8000"
     volumes:
-      - chroma-data:/chroma/chroma
+      - chroma-data-v2:/chroma/chroma
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat" ]
       interval: 10s
@@ -105,4 +105,4 @@ networks:
 
 volumes:
   ollama-data:
-  chroma-data:
+  chroma-data-v2:
