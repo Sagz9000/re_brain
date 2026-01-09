@@ -1,10 +1,25 @@
 import chromadb
 from typing import List, Dict
+import time
+import sys
 
 class SearchEngine:
     def __init__(self):
         host = "re-memory" # In docker
-        self.client = chromadb.HttpClient(host=host, port=8000)
+        max_retries = 10
+        for attempt in range(max_retries):
+            try:
+                self.client = chromadb.HttpClient(host=host, port=8000)
+                self.client.heartbeat() # Verify connection
+                print(f"Successfully connected to ChromaDB at {host}")
+                return
+            except Exception as e:
+                print(f"Connection to ChromaDB failed (Attempt {attempt+1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(2)
+                else:
+                    print("Max retries reached. Could not connect to ChromaDB.")
+                    raise e
     
     def search(self, query: str, top_k: int = 5):
         """
