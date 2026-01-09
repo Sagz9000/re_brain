@@ -68,11 +68,14 @@ services:
       - "8001:8000"
     volumes:
       - chroma-data-v2:/chroma/chroma
+    environment:
+      - ANONYMIZED_TELEMETRY=False
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat" ]
+      test: [ "CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/heartbeat')" ]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     networks:
       - re-net
 
