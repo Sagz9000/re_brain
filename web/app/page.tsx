@@ -9,7 +9,10 @@ export default function Home() {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [apiStatus, setApiStatus] = useState<'online' | 'offline' | 'checking'>('checking');
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const API_URL = 'http://localhost:8005';
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -19,28 +22,73 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  // Health Check
+  useEffect(() => {
+    const checkHealth = async () => {
+      console.log('[UI] Checking API health at', `${API_URL}/health`);
+      try {
+        const res = await fetch(`${API_URL}/health`);
+        if (res.ok) {
+          console.log('[UI] API is ONLINE');
+          setApiStatus('online');
+        } else {
+          console.warn('[UI] API returned non-OK status:', res.status);
+          setApiStatus('offline');
+        }
+      } catch (e) {
+        console.error('[UI] API Health Check Failed:', e);
+        setApiStatus('offline');
+      }
+    };
 
+    checkHealth();
+    const interval = setInterval(checkHealth, 30000); // Poll every 30s
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleSend = async () => {
+    if (!input.trim()) {
+      console.log('[UI] Input empty, ignoring send.');
+      return;
+    }
+
+    console.log('[UI] Sending message:', input);
     const userMessage = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
 
     try {
-      const response = await fetch('http://localhost:8005/chat', {
+      console.log('[UI] POSTing to', `${API_URL}/chat`);
+      const response = await fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: input }),
       });
+
+      console.log('[UI] Response Status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.statusText}`);
+      }
+
       const data = await response.json();
+      console.log('[UI] Received Data:', data);
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Connection to re-api failed. Make sure the container is running.' }]);
+      console.error('[UI] Chat Request Failed:', error);
+      setMessages(prev => [...prev, { role: 'assistant', content: `Connection Failed: ${error}` }]);
+      setApiStatus('offline');
     } finally {
       setIsTyping(false);
     }
+  };
+
+  // Button Debug Handlers
+  const handleFeatureClick = (feature: string) => {
+    console.log(`[UI] Feature clicked: ${feature}`);
+    alert(`Feature '${feature}' accessed. Check console for logs.`);
   };
 
   return (
@@ -56,11 +104,16 @@ export default function Home() {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-[10px] font-medium text-green-400 uppercase tracking-wider">Kernels Online</span>
+          <div className={`flex items-center gap-2 px-3 py-1 border rounded-full transition-colors ${apiStatus === 'online' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+              apiStatus === 'offline' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                'bg-yellow-500/10 border-yellow-500/20 text-yellow-400'
+            }`}>
+            <div className={`w-2 h-2 rounded-full ${apiStatus === 'online' ? 'bg-green-500 animate-pulse' : apiStatus === 'offline' ? 'bg-red-500' : 'bg-yellow-500 animate-bounce'}`} />
+            <span className="text-[10px] font-medium uppercase tracking-wider">
+              {apiStatus === 'online' ? 'System Online' : apiStatus === 'offline' ? 'System Offline' : 'Checking...'}
+            </span>
           </div>
-          <button className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={() => handleFeatureClick('Shield')} className="text-slate-400 hover:text-white transition-colors">
             <Shield size={20} />
           </button>
         </div>
@@ -75,11 +128,23 @@ export default function Home() {
               <Terminal size={14} className="text-purple-400" />
               <span>Ghidra Environment</span>
             </div>
+            <button
+              onClick={() => {
+                const frame = document.getElementById('ghidra-frame') as HTMLIFrameElement;
+                if (frame) frame.src = frame.src; // Reload
+                console.log('[UI] Reloading VNC frame');
+              }}
+              className="px-2 py-1.5 bg-black/60 hover:bg-white/10 backdrop-blur-md border border-white/10 rounded-md text-xs"
+            >
+              Reload VNC
+            </button>
           </div>
           <iframe
+            id="ghidra-frame"
             src="http://localhost:6080/vnc.html?autoconnect=true&resize=scale"
             className="w-full h-full border-none opacity-90 hover:opacity-100 transition-opacity"
             title="Ghidra Workspace"
+            onError={() => console.error('[UI] Iframe load error')}
           />
           {/* Overlay info if VNC fails */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
@@ -97,10 +162,10 @@ export default function Home() {
               Intelligence
             </div>
             <div className="flex gap-1">
-              <div className="p-1 hover:bg-white/5 rounded cursor-help" title="API Reference Active">
+              <div onClick={() => handleFeatureClick('API Ref')} className="p-1 hover:bg-white/5 rounded cursor-pointer" title="API Reference Active">
                 <BookOpen size={14} className="text-blue-400" />
               </div>
-              <div className="p-1 hover:bg-white/5 rounded cursor-help" title="Malware Tactics Active">
+              <div onClick={() => handleFeatureClick('Tactics')} className="p-1 hover:bg-white/5 rounded cursor-pointer" title="Malware Tactics Active">
                 <Shield size={14} className="text-red-400" />
               </div>
             </div>
@@ -144,19 +209,20 @@ export default function Home() {
                     handleSend();
                   }
                 }}
-                placeholder="Analyze behavior or ask about patterns..."
-                className="w-full bg-[#151518] border border-white/10 rounded-xl px-4 py-3 pr-12 text-sm focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all resize-none h-20"
+                placeholder={apiStatus === 'online' ? "Analyze behavior or ask about patterns..." : "Connecting to system..."}
+                disabled={apiStatus !== 'online'}
+                className="w-full bg-[#151518] border border-white/10 rounded-xl px-4 py-3 pr-12 text-sm focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all resize-none h-20 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 onClick={handleSend}
-                disabled={!input.trim()}
+                disabled={!input.trim() || apiStatus !== 'online'}
                 className="absolute bottom-3 right-3 p-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:hover:bg-purple-600 text-white rounded-lg transition-all shadow-lg shadow-purple-900/20"
               >
                 <Send size={18} />
               </button>
             </div>
             <div className="mt-2 flex items-center justify-between px-1">
-              <span className="text-[10px] text-slate-600 font-mono tracking-tighter uppercase">RRF Engine: Active</span>
+              <span className="text-[10px] text-slate-600 font-mono tracking-tighter uppercase">{apiStatus === 'online' ? 'RRF Engine: Active' : 'RRF Engine: Offline'}</span>
               <span className="text-[10px] text-slate-600 font-mono tracking-tighter uppercase">Model: Qwen3:8B</span>
             </div>
           </div>
