@@ -29,7 +29,7 @@ graph TD
 
     User <-->|HTTP: 3000| Web
     Web <-->|VNC: 6080| Ghidra
-    Web <-->|API: 8000| API
+    Web <-->|API: 8005| API
     
     API <-->|RAG Search| Memory
     API <-->|Inference| AI

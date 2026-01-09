@@ -11,7 +11,7 @@ services:
       - ./web:/app
       - /app/node_modules
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8005 # Updated port
     depends_on:
       - re-api
     networks:
@@ -22,7 +22,7 @@ services:
     build: ./backend
     container_name: re-api
     ports:
-      - "8000:8000"
+      - "8005:8000" # Changed host port to 8005
     volumes:
       - ./backend:/app
       - ./data:/data # For raw data ingestion
