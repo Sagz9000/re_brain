@@ -199,6 +199,21 @@ def list_binaries():
         return []
     return [f for f in os.listdir(BINARIES_DIR) if os.path.isfile(os.path.join(BINARIES_DIR, f))]
 
+@app.delete("/binary/{name}")
+def delete_binary(name: str):
+    file_path = os.path.join(BINARIES_DIR, name)
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            # Optional: Remove from ChromaDB (omitted for now to prevent blocking)
+            log_event(f"Deleted file: {name}", source="System")
+            return {"status": "deleted", "file": name}
+        else:
+            return {"error": "File not found"}
+    except Exception as e:
+        logger.error(f"Delete failed: {e}")
+        return {"error": str(e)}
+
 @app.get("/binary/{name}/hex")
 def get_hex_view(name: str, offset: int = 0, limit: int = 512):
     file_path = os.path.join(BINARIES_DIR, name)
