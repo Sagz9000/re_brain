@@ -25,6 +25,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Create a startup script
 COPY entrypoint.sh /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENV DISPLAY=:0

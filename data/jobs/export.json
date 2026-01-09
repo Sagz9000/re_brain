@@ -1,0 +1,3559 @@
+{
+  "project": "hggh",
+  "binary": "ChromeSetup.exe",
+  "functions": [
+    {
+      "name": "FUN_00401020",
+      "address": "00401020",
+      "signature": "undefined * __stdcall FUN_00401020(void)"
+    },
+    {
+      "name": "_AtlRaiseException",
+      "address": "00401026",
+      "signature": "void __cdecl _AtlRaiseException(ulong param_1, ulong param_2)",
+      "comment": "Library Function - Single Match\n void __cdecl ATL::_AtlRaiseException(unsigned long,unsigned long)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "AtlThrowImpl",
+      "address": "0040103b",
+      "signature": "void __stdcall AtlThrowImpl(long param_1)",
+      "comment": "Library Function - Single Match\n void __stdcall ATL::AtlThrowImpl(long)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040105c",
+      "address": "0040105c",
+      "signature": "undefined __cdecl FUN_0040105c(int param_1)"
+    },
+    {
+      "name": "Init",
+      "address": "00401097",
+      "signature": "long __thiscall Init(void)",
+      "comment": "Library Function - Single Match\n public: long __thiscall ATL::CComCriticalSection::Init(void)\n\nLibrary: Visual Studio 2015 Release"
+    },
+    {
+      "name": "FUN_004010bf",
+      "address": "004010bf",
+      "signature": "ushort * __fastcall FUN_004010bf(HMODULE param_1, HRSRC param_2, uint param_3)"
+    },
+    {
+      "name": "~CWin32Heap",
+      "address": "0040111c",
+      "signature": "void __thiscall ~CWin32Heap(void)",
+      "comment": "Library Function - Single Match\n public: virtual __thiscall ATL::CWin32Heap::~CWin32Heap(void)\n\nLibrary: Visual Studio 2015 Release"
+    },
+    {
+      "name": "FUN_00401138",
+      "address": "00401138",
+      "signature": "undefined __thiscall FUN_00401138(SIZE_T param_1)"
+    },
+    {
+      "name": "FUN_0040114d",
+      "address": "0040114d",
+      "signature": "undefined __thiscall FUN_0040114d(LPVOID param_1)"
+    },
+    {
+      "name": "FUN_00401168",
+      "address": "00401168",
+      "signature": "LPVOID __thiscall FUN_00401168(LPVOID param_1, SIZE_T param_2)"
+    },
+    {
+      "name": "FUN_004011a9",
+      "address": "004011a9",
+      "signature": "undefined __thiscall FUN_004011a9(LPCVOID param_1)"
+    },
+    {
+      "name": "`scalar_deleting_destructor\u0027",
+      "address": "004011be",
+      "signature": "void * __thiscall `scalar_deleting_destructor\u0027(uint param_1)",
+      "comment": "Library Function - Single Match\n public: virtual void * __thiscall ATL::CWin32Heap::`scalar deleting destructor\u0027(unsigned int)\n\nLibrary: Visual Studio 2015 Release"
+    },
+    {
+      "name": "FUN_004011e0",
+      "address": "004011e0",
+      "signature": "undefined * __stdcall FUN_004011e0(void)"
+    },
+    {
+      "name": "FUN_00401276",
+      "address": "00401276",
+      "signature": "int * __thiscall FUN_00401276(int param_1, uint param_2)"
+    },
+    {
+      "name": "FUN_004012e3",
+      "address": "004012e3",
+      "signature": "undefined __thiscall FUN_004012e3(LPVOID param_1)"
+    },
+    {
+      "name": "FUN_00401301",
+      "address": "00401301",
+      "signature": "LPVOID __thiscall FUN_00401301(LPVOID param_1, int param_2, uint param_3)"
+    },
+    {
+      "name": "FUN_00401365",
+      "address": "00401365",
+      "signature": "LPVOID __thiscall FUN_00401365(byte param_1)"
+    },
+    {
+      "name": "FUN_00401382",
+      "address": "00401382",
+      "signature": "undefined __stdcall FUN_00401382(void)"
+    },
+    {
+      "name": "guard_check_icall",
+      "address": "00401426",
+      "signature": "undefined __cdecl guard_check_icall(void)",
+      "comment": "guard_check_icall"
+    },
+    {
+      "name": "FUN_00401427",
+      "address": "00401427",
+      "signature": "undefined __fastcall FUN_00401427(LPCWSTR param_1)"
+    },
+    {
+      "name": "FUN_0040154e",
+      "address": "0040154e",
+      "signature": "int * __fastcall FUN_0040154e(int * param_1, LPCWSTR param_2, LPCWSTR param_3)"
+    },
+    {
+      "name": "FUN_004015aa",
+      "address": "004015aa",
+      "signature": "void * __fastcall FUN_004015aa(void * param_1, LPCWSTR param_2)"
+    },
+    {
+      "name": "FUN_004015ff",
+      "address": "004015ff",
+      "signature": "undefined __fastcall FUN_004015ff(uint param_1, int * param_2)"
+    },
+    {
+      "name": "FUN_004016c3",
+      "address": "004016c3",
+      "signature": "int __fastcall FUN_004016c3(uint param_1, undefined4 * param_2, char param_3, void * param_4)"
+    },
+    {
+      "name": "FUN_00401769",
+      "address": "00401769",
+      "signature": "undefined __fastcall FUN_00401769(undefined4 * param_1)"
+    },
+    {
+      "name": "FUN_004018ca",
+      "address": "004018ca",
+      "signature": "undefined __fastcall FUN_004018ca(int param_1)"
+    },
+    {
+      "name": "FUN_004018d2",
+      "address": "004018d2",
+      "signature": "undefined __cdecl FUN_004018d2(void * param_1, int param_2)"
+    },
+    {
+      "name": "FUN_00401960",
+      "address": "00401960",
+      "signature": "uint * __fastcall FUN_00401960(void * param_1)"
+    },
+    {
+      "name": "FUN_004019e6",
+      "address": "004019e6",
+      "signature": "uint * __fastcall FUN_004019e6(LPCWSTR param_1)"
+    },
+    {
+      "name": "FUN_00401a3b",
+      "address": "00401a3b",
+      "signature": "undefined __fastcall FUN_00401a3b(int param_1)"
+    },
+    {
+      "name": "FUN_00401ab0",
+      "address": "00401ab0",
+      "signature": "undefined __fastcall FUN_00401ab0(LPCWSTR param_1)"
+    },
+    {
+      "name": "FUN_00401d79",
+      "address": "00401d79",
+      "signature": "undefined __thiscall FUN_00401d79(void * param_1)"
+    },
+    {
+      "name": "FUN_00401e54",
+      "address": "00401e54",
+      "signature": "bool __stdcall FUN_00401e54(LPCWSTR param_1)"
+    },
+    {
+      "name": "FUN_00401f0e",
+      "address": "00401f0e",
+      "signature": "undefined1 __thiscall FUN_00401f0e(LPCWSTR param_1)"
+    },
+    {
+      "name": "FUN_00401f88",
+      "address": "00401f88",
+      "signature": "undefined1 __fastcall FUN_00401f88(void * param_1)"
+    },
+    {
+      "name": "FUN_00402005",
+      "address": "00402005",
+      "signature": "HANDLE __fastcall FUN_00402005(LPCWSTR param_1)"
+    },
+    {
+      "name": "FUN_004020c7",
+      "address": "004020c7",
+      "signature": "bool __fastcall FUN_004020c7(int param_1)"
+    },
+    {
+      "name": "FUN_00402192",
+      "address": "00402192",
+      "signature": "undefined __thiscall FUN_00402192(uint * param_1)"
+    },
+    {
+      "name": "FUN_00402345",
+      "address": "00402345",
+      "signature": "undefined __cdecl FUN_00402345(void * param_1, uint * param_2)"
+    },
+    {
+      "name": "FUN_00402355",
+      "address": "00402355",
+      "signature": "undefined __cdecl FUN_00402355(undefined4 param_1, size_t param_2)"
+    },
+    {
+      "name": "FUN_00402363",
+      "address": "00402363",
+      "signature": "undefined __cdecl FUN_00402363(undefined4 param_1, LPVOID param_2)"
+    },
+    {
+      "name": "FUN_00402371",
+      "address": "00402371",
+      "signature": "undefined __fastcall FUN_00402371(byte * param_1, uint param_2, HANDLE param_3)"
+    },
+    {
+      "name": "FUN_00402545",
+      "address": "00402545",
+      "signature": "void * __fastcall FUN_00402545(void * param_1)"
+    },
+    {
+      "name": "FUN_00402565",
+      "address": "00402565",
+      "signature": "int __fastcall FUN_00402565(int param_1)"
+    },
+    {
+      "name": "FUN_0040260c",
+      "address": "0040260c",
+      "signature": "int __stdcall FUN_0040260c(undefined4 param_1, undefined4 param_2, LPCSTR param_3)"
+    },
+    {
+      "name": "operator[]",
+      "address": "004026d7",
+      "signature": "HINSTANCE__ * * __thiscall operator[](int param_1)",
+      "comment": "Library Function - Single Match\n public: struct HINSTANCE__ * \u0026 __thiscall ATL::CSimpleArray\u003cstruct HINSTANCE__ *,class ATL::CSimpleArrayEqualHelper\u003cstruct HINSTANCE__ *\u003e \u003e::operator[](int)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004026fc",
+      "address": "004026fc",
+      "signature": "undefined __fastcall FUN_004026fc(int * param_1)"
+    },
+    {
+      "name": "FUN_00402735",
+      "address": "00402735",
+      "signature": "undefined4 __thiscall FUN_00402735(int * param_1)"
+    },
+    {
+      "name": "FUN_004027c2",
+      "address": "004027c2",
+      "signature": "undefined4 __thiscall FUN_004027c2(uint param_1)"
+    },
+    {
+      "name": "FUN_00402841",
+      "address": "00402841",
+      "signature": "int * __thiscall FUN_00402841(int * param_1, int param_2)"
+    },
+    {
+      "name": "FUN_00402886",
+      "address": "00402886",
+      "signature": "int __thiscall FUN_00402886(undefined4 param_1, int param_2)"
+    },
+    {
+      "name": "FUN_004028e6",
+      "address": "004028e6",
+      "signature": "int __fastcall FUN_004028e6(int * param_1)"
+    },
+    {
+      "name": "FUN_00402949",
+      "address": "00402949",
+      "signature": "void * __thiscall FUN_00402949(uint * param_1)"
+    },
+    {
+      "name": "FUN_00402974",
+      "address": "00402974",
+      "signature": "int * __thiscall FUN_00402974(undefined4 * param_1)"
+    },
+    {
+      "name": "FUN_004029d5",
+      "address": "004029d5",
+      "signature": "void * __thiscall FUN_004029d5(LPCSTR param_1)"
+    },
+    {
+      "name": "FUN_00402a07",
+      "address": "00402a07",
+      "signature": "void * __thiscall FUN_00402a07(uint * param_1)"
+    },
+    {
+      "name": "FUN_00402a39",
+      "address": "00402a39",
+      "signature": "undefined __fastcall FUN_00402a39(undefined4 * param_1)"
+    },
+    {
+      "name": "FUN_00402a5f",
+      "address": "00402a5f",
+      "signature": "int __thiscall FUN_00402a5f(uint param_1)"
+    },
+    {
+      "name": "FUN_00402a9b",
+      "address": "00402a9b",
+      "signature": "undefined __fastcall FUN_00402a9b(int * param_1)"
+    },
+    {
+      "name": "CheckImplicitLoad",
+      "address": "00402ae1",
+      "signature": "undefined1 __thiscall CheckImplicitLoad(uint param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n private: bool __thiscall ATL::CStringT\u003cchar,class StrTraitMFC\u003cchar,class ATL::ChTraitsCRT\u003cchar\u003e \u003e \u003e::CheckImplicitLoad(void const *)\n private: bool __thiscall ATL::CStringT\u003cwchar_t,class StrTraitMFC\u003cwchar_t,class ATL::ChTraitsCRT\u003cwchar_t\u003e \u003e \u003e::CheckImplicitLoad(void const *)\n\nLibraries: Visual Studio 2012 Release, Visual Studio 2015 Release"
+    },
+    {
+      "name": "FUN_00402b05",
+      "address": "00402b05",
+      "signature": "undefined4 __thiscall FUN_00402b05(HMODULE param_1, uint param_2)"
+    },
+    {
+      "name": "FUN_00402b74",
+      "address": "00402b74",
+      "signature": "undefined __fastcall FUN_00402b74(int * param_1)"
+    },
+    {
+      "name": "FUN_00402b97",
+      "address": "00402b97",
+      "signature": "int * __thiscall FUN_00402b97(LPCSTR param_1)"
+    },
+    {
+      "name": "FUN_00402bf2",
+      "address": "00402bf2",
+      "signature": "int * __thiscall FUN_00402bf2(uint * param_1, int param_2, undefined4 * param_3)"
+    },
+    {
+      "name": "FUN_00402c53",
+      "address": "00402c53",
+      "signature": "undefined __thiscall FUN_00402c53(int param_1)"
+    },
+    {
+      "name": "FUN_00402c7e",
+      "address": "00402c7e",
+      "signature": "undefined __thiscall FUN_00402c7e(uint * param_1, void * param_2)"
+    },
+    {
+      "name": "FUN_00402d35",
+      "address": "00402d35",
+      "signature": "undefined __thiscall FUN_00402d35(uint * param_1, uint param_2)"
+    },
+    {
+      "name": "FUN_00402dc0",
+      "address": "00402dc0",
+      "signature": "undefined __fastcall FUN_00402dc0(int * param_1)"
+    },
+    {
+      "name": "FUN_00402ddb",
+      "address": "00402ddb",
+      "signature": "int * __thiscall FUN_00402ddb(int * param_1)"
+    },
+    {
+      "name": "FUN_00402e04",
+      "address": "00402e04",
+      "signature": "int * __fastcall FUN_00402e04(int * param_1)"
+    },
+    {
+      "name": "PrepareWrite2",
+      "address": "00402e57",
+      "signature": "undefined __thiscall PrepareWrite2(uint param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n private: void __thiscall ATL::CSimpleStringT\u003cchar,0\u003e::PrepareWrite2(int)\n private: void __thiscall ATL::CSimpleStringT\u003cwchar_t,0\u003e::PrepareWrite2(int)\n\nLibrary: Visual Studio 2015 Release"
+    },
+    {
+      "name": "FUN_00402eae",
+      "address": "00402eae",
+      "signature": "void * __fastcall FUN_00402eae(uint * param_1, int param_2, uint * param_3, void * param_4)"
+    },
+    {
+      "name": "FUN_00402f22",
+      "address": "00402f22",
+      "signature": "undefined __thiscall FUN_00402f22(int param_1)"
+    },
+    {
+      "name": "FUN_00402f5a",
+      "address": "00402f5a",
+      "signature": "undefined __thiscall FUN_00402f5a(uint param_1)"
+    },
+    {
+      "name": "FUN_00402fd4",
+      "address": "00402fd4",
+      "signature": "undefined __stdcall FUN_00402fd4(void)"
+    },
+    {
+      "name": "FUN_00402fdf",
+      "address": "00402fdf",
+      "signature": "undefined __cdecl FUN_00402fdf(int * param_1, uint param_2)"
+    },
+    {
+      "name": "FUN_00403040",
+      "address": "00403040",
+      "signature": "undefined __thiscall FUN_00403040(LPCVOID param_1, va_list * param_2)"
+    },
+    {
+      "name": "FUN_004030ac",
+      "address": "004030ac",
+      "signature": "undefined4 * __thiscall FUN_004030ac(byte param_1)"
+    },
+    {
+      "name": "FUN_004030d4",
+      "address": "004030d4",
+      "signature": "undefined4 __thiscall FUN_004030d4(LPCWSTR param_1)"
+    },
+    {
+      "name": "FUN_0040316c",
+      "address": "0040316c",
+      "signature": "undefined __fastcall FUN_0040316c(int param_1)"
+    },
+    {
+      "name": "FUN_004031aa",
+      "address": "004031aa",
+      "signature": "uint __thiscall FUN_004031aa(short * param_1)"
+    },
+    {
+      "name": "FUN_00403225",
+      "address": "00403225",
+      "signature": "uint __thiscall FUN_00403225(short * param_1, uint * param_2, int * param_3)"
+    },
+    {
+      "name": "FUN_0040326c",
+      "address": "0040326c",
+      "signature": "undefined4 __thiscall FUN_0040326c(void * param_1, uint * param_2, int * param_3)"
+    },
+    {
+      "name": "FUN_004032f3",
+      "address": "004032f3",
+      "signature": "int * __thiscall FUN_004032f3(short * param_1)"
+    },
+    {
+      "name": "FUN_00403359",
+      "address": "00403359",
+      "signature": "undefined __thiscall FUN_00403359(undefined1 * param_1)"
+    },
+    {
+      "name": "FUN_0040357f",
+      "address": "0040357f",
+      "signature": "uint * __thiscall FUN_0040357f(LPCSTR param_1)"
+    },
+    {
+      "name": "FUN_004035d6",
+      "address": "004035d6",
+      "signature": "bool __fastcall FUN_004035d6(int * param_1, DWORD * param_2)"
+    },
+    {
+      "name": "FUN_004036a7",
+      "address": "004036a7",
+      "signature": "undefined4 __fastcall FUN_004036a7(undefined4 * param_1, uint param_2, byte * param_3)"
+    },
+    {
+      "name": "FUN_0040438d",
+      "address": "0040438d",
+      "signature": "undefined __fastcall FUN_0040438d(int param_1, int param_2)"
+    },
+    {
+      "name": "FUN_0040440d",
+      "address": "0040440d",
+      "signature": "int __fastcall FUN_0040440d(undefined4 * param_1, uint param_2, byte * param_3)"
+    },
+    {
+      "name": "FUN_00404482",
+      "address": "00404482",
+      "signature": "undefined4 __fastcall FUN_00404482(char * param_1, byte * param_2, int param_3)"
+    },
+    {
+      "name": "FUN_00404a16",
+      "address": "00404a16",
+      "signature": "bool __fastcall FUN_00404a16(char * param_1, uint param_2, uint * param_3, uint * param_4, int param_5, undefined4 * param_6)"
+    },
+    {
+      "name": "FUN_00404ca0",
+      "address": "00404ca0",
+      "signature": "undefined8 __fastcall FUN_00404ca0(char * param_1, uint * param_2, uint * param_3, uint * param_4, uint * param_5, undefined4 param_6, undefined4 * param_7)"
+    },
+    {
+      "name": "FUN_00404d52",
+      "address": "00404d52",
+      "signature": "undefined4 __fastcall FUN_00404d52(uint * param_1, byte * param_2)"
+    },
+    {
+      "name": "FUN_00404dab",
+      "address": "00404dab",
+      "signature": "undefined4 __fastcall FUN_00404dab(int param_1, undefined4 * param_2, undefined4 * param_3)"
+    },
+    {
+      "name": "FUN_00404dfe",
+      "address": "00404dfe",
+      "signature": "int __fastcall FUN_00404dfe(uint * param_1, byte * param_2, undefined4 param_3, undefined4 * param_4)"
+    },
+    {
+      "name": "FUN_00404e70",
+      "address": "00404e70",
+      "signature": "undefined __fastcall FUN_00404e70(int param_1, int param_2, undefined1 * param_3, uint param_4, undefined1 * param_5, uint param_6, byte * param_7, int param_8, int param_9, int param_10)"
+    },
+    {
+      "name": "FUN_004051f8",
+      "address": "004051f8",
+      "signature": "UINT __stdcall FUN_004051f8(void)"
+    },
+    {
+      "name": "entry",
+      "address": "00405374",
+      "signature": "undefined __stdcall entry(void)"
+    },
+    {
+      "name": "__crt_fast_encode_pointer\u003cvoid*\u003e",
+      "address": "0040537e",
+      "signature": "void * __cdecl __crt_fast_encode_pointer\u003cvoid*\u003e(void * param_1)",
+      "comment": "Library Function - Single Match\n void * __cdecl __crt_fast_encode_pointer\u003cvoid *\u003e(void * const)\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "find_pe_section",
+      "address": "0040539b",
+      "signature": "_IMAGE_SECTION_HEADER * __cdecl find_pe_section(uchar * param_1, uint param_2)",
+      "comment": "Library Function - Single Match\n struct _IMAGE_SECTION_HEADER * __cdecl find_pe_section(unsigned char * const,unsigned int)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___scrt_acquire_startup_lock",
+      "address": "004053df",
+      "signature": "undefined4 __stdcall ___scrt_acquire_startup_lock(void)",
+      "comment": "Library Function - Single Match\n ___scrt_acquire_startup_lock\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___scrt_initialize_crt",
+      "address": "00405411",
+      "signature": "undefined4 __cdecl ___scrt_initialize_crt(int param_1)",
+      "comment": "Library Function - Single Match\n ___scrt_initialize_crt\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "FUN_0040544a",
+      "address": "0040544a",
+      "signature": "undefined4 __cdecl FUN_0040544a(int param_1)"
+    },
+    {
+      "name": "___scrt_is_nonwritable_in_current_image",
+      "address": "004054e6",
+      "signature": "undefined4 __cdecl ___scrt_is_nonwritable_in_current_image(int param_1)",
+      "comment": "Library Function - Single Match\n ___scrt_is_nonwritable_in_current_image\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___scrt_release_startup_lock",
+      "address": "0040557a",
+      "signature": "int __cdecl ___scrt_release_startup_lock(char param_1)",
+      "comment": "Library Function - Single Match\n ___scrt_release_startup_lock\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___scrt_uninitialize_crt",
+      "address": "00405597",
+      "signature": "undefined4 __cdecl ___scrt_uninitialize_crt(char param_1, char param_2)",
+      "comment": "Library Function - Single Match\n ___scrt_uninitialize_crt\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "__onexit",
+      "address": "004055bf",
+      "signature": "_onexit_t __cdecl __onexit(_onexit_t _Func)",
+      "comment": "Library Function - Single Match\n __onexit\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release"
+    },
+    {
+      "name": "_atexit",
+      "address": "004055fa",
+      "signature": "int __cdecl _atexit(_func_4879 * param_1)",
+      "comment": "Library Function - Single Match\n _atexit\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release"
+    },
+    {
+      "name": "___get_entropy",
+      "address": "0040560f",
+      "signature": "uint __stdcall ___get_entropy(void)",
+      "comment": "Library Function - Single Match\n ___get_entropy\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___security_init_cookie",
+      "address": "0040565c",
+      "signature": "void __cdecl ___security_init_cookie(void)",
+      "comment": "Library Function - Single Match\n ___security_init_cookie\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004056a7",
+      "address": "004056a7",
+      "signature": "undefined4 __stdcall FUN_004056a7(void)"
+    },
+    {
+      "name": "FUN_004056aa",
+      "address": "004056aa",
+      "signature": "undefined4 __stdcall FUN_004056aa(void)"
+    },
+    {
+      "name": "FUN_004056ae",
+      "address": "004056ae",
+      "signature": "undefined4 __stdcall FUN_004056ae(void)"
+    },
+    {
+      "name": "FUN_004056b4",
+      "address": "004056b4",
+      "signature": "undefined __stdcall FUN_004056b4(void)"
+    },
+    {
+      "name": "FUN_004056c0",
+      "address": "004056c0",
+      "signature": "undefined1 __stdcall FUN_004056c0(void)"
+    },
+    {
+      "name": "FUN_004056c3",
+      "address": "004056c3",
+      "signature": "undefined __stdcall FUN_004056c3(void)"
+    },
+    {
+      "name": "FUN_004056e4",
+      "address": "004056e4",
+      "signature": "undefined * __stdcall FUN_004056e4(void)"
+    },
+    {
+      "name": "FUN_004056ea",
+      "address": "004056ea",
+      "signature": "undefined __stdcall FUN_004056ea(void)"
+    },
+    {
+      "name": "FUN_00405707",
+      "address": "00405707",
+      "signature": "bool __stdcall FUN_00405707(void)"
+    },
+    {
+      "name": "FUN_00405713",
+      "address": "00405713",
+      "signature": "undefined * __stdcall FUN_00405713(void)"
+    },
+    {
+      "name": "FUN_00405719",
+      "address": "00405719",
+      "signature": "undefined * __stdcall FUN_00405719(void)"
+    },
+    {
+      "name": "___scrt_fastfail",
+      "address": "0040571f",
+      "signature": "undefined __stdcall ___scrt_fastfail(void)",
+      "comment": "Library Function - Single Match\n ___scrt_fastfail\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___scrt_get_show_window_mode",
+      "address": "00405839",
+      "signature": "WORD __stdcall ___scrt_get_show_window_mode(void)",
+      "comment": "Library Function - Single Match\n ___scrt_get_show_window_mode\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "thunk_FUN_004056a7",
+      "address": "0040586a",
+      "signature": "undefined4 __stdcall thunk_FUN_004056a7(void)"
+    },
+    {
+      "name": "FUN_0040586f",
+      "address": "0040586f",
+      "signature": "uint __stdcall FUN_0040586f(void)"
+    },
+    {
+      "name": "FUN_004058be",
+      "address": "004058be",
+      "signature": "undefined4 __stdcall FUN_004058be(int * param_1)"
+    },
+    {
+      "name": "FUN_004058ff",
+      "address": "004058ff",
+      "signature": "undefined __stdcall FUN_004058ff(void)"
+    },
+    {
+      "name": "FUN_00405907",
+      "address": "00405907",
+      "signature": "undefined __stdcall FUN_00405907(void)"
+    },
+    {
+      "name": "FUN_00405933",
+      "address": "00405933",
+      "signature": "undefined __stdcall FUN_00405933(void)"
+    },
+    {
+      "name": "__SEH_prolog4",
+      "address": "00405960",
+      "signature": "undefined __cdecl __SEH_prolog4(undefined4 param_1, int param_2)",
+      "comment": "Library Function - Single Match\n __SEH_prolog4\n\nLibraries: Visual Studio 2015, Visual Studio 2017, Visual Studio 2019"
+    },
+    {
+      "name": "___isa_available_init",
+      "address": "004059bb",
+      "signature": "undefined4 __stdcall ___isa_available_init(void)",
+      "comment": "Library Function - Single Match\n ___isa_available_init\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___scrt_is_ucrt_dll_in_use",
+      "address": "00405b52",
+      "signature": "bool __stdcall ___scrt_is_ucrt_dll_in_use(void)",
+      "comment": "Library Function - Single Match\n ___scrt_is_ucrt_dll_in_use\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__security_check_cookie",
+      "address": "00405b5e",
+      "signature": "undefined __fastcall __security_check_cookie(int param_1)",
+      "comment": "Library Function - Single Match\n @__security_check_cookie@4\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release\n__fastcall __security_check_cookie,4"
+    },
+    {
+      "name": "___raise_securityfailure",
+      "address": "00405b6f",
+      "signature": "undefined __cdecl ___raise_securityfailure(_EXCEPTION_POINTERS * param_1)",
+      "comment": "Library Function - Single Match\n ___raise_securityfailure\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___report_gsfailure",
+      "address": "00405b97",
+      "signature": "void __cdecl ___report_gsfailure(void)",
+      "comment": "Library Function - Single Match\n ___report_gsfailure\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "_ValidateLocalCookies",
+      "address": "00405c90",
+      "signature": "undefined __cdecl _ValidateLocalCookies(int * param_1, int param_2)",
+      "comment": "Library Function - Single Match\n _ValidateLocalCookies\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__except_handler4",
+      "address": "00405cd0",
+      "signature": "undefined4 __cdecl __except_handler4(PEXCEPTION_RECORD param_1, PVOID param_2, int param_3)",
+      "comment": "Library Function - Single Match\n __except_handler4\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___vcrt_initialize",
+      "address": "00405e2e",
+      "signature": "undefined4 __stdcall ___vcrt_initialize(void)",
+      "comment": "Library Function - Single Match\n ___vcrt_initialize\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_uninitialize",
+      "address": "00405e57",
+      "signature": "undefined4 __cdecl ___vcrt_uninitialize(char param_1)",
+      "comment": "Library Function - Single Match\n ___vcrt_uninitialize\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release"
+    },
+    {
+      "name": "___std_type_info_compare",
+      "address": "00405e76",
+      "signature": "uint __cdecl ___std_type_info_compare(int param_1, int param_2)",
+      "comment": "Library Function - Single Match\n ___std_type_info_compare\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "_memset",
+      "address": "00405ec0",
+      "signature": "void * __cdecl _memset(void * _Dst, int _Val, size_t _Size)",
+      "comment": "Library Function - Single Match\n _memset\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__local_unwind4",
+      "address": "00406020",
+      "signature": "undefined __cdecl __local_unwind4(uint * param_1, int param_2, uint param_3)",
+      "comment": "Library Function - Single Match\n __local_unwind4\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "_EH4_CallFilterFunc",
+      "address": "00406120",
+      "signature": "undefined __fastcall _EH4_CallFilterFunc(undefined * param_1)",
+      "comment": "Library Function - Single Match\n @_EH4_CallFilterFunc@8\n\nLibrary: Visual Studio 2019 Release\n__fastcall _EH4_CallFilterFunc,8"
+    },
+    {
+      "name": "_EH4_TransferToHandler",
+      "address": "00406138",
+      "signature": "undefined __fastcall _EH4_TransferToHandler(undefined * UNRECOVERED_JUMPTABLE)",
+      "comment": "Library Function - Single Match\n @_EH4_TransferToHandler@8\n\nLibrary: Visual Studio 2019 Release\n__fastcall _EH4_TransferToHandler,8"
+    },
+    {
+      "name": "_EH4_GlobalUnwind2",
+      "address": "00406154",
+      "signature": "undefined __fastcall _EH4_GlobalUnwind2(PVOID param_1, PEXCEPTION_RECORD param_2)",
+      "comment": "Library Function - Single Match\n @_EH4_GlobalUnwind2@8\n\nLibrary: Visual Studio 2019 Release\n__fastcall _EH4_GlobalUnwind2,8"
+    },
+    {
+      "name": "_EH4_LocalUnwind",
+      "address": "00406170",
+      "signature": "undefined __fastcall _EH4_LocalUnwind(int param_1, uint param_2, undefined4 param_3, uint * param_4)",
+      "comment": "Library Function - Single Match\n @_EH4_LocalUnwind@16\n\nLibrary: Visual Studio 2019 Release\n__fastcall _EH4_LocalUnwind,16"
+    },
+    {
+      "name": "___except_validate_context_record",
+      "address": "00406187",
+      "signature": "undefined __cdecl ___except_validate_context_record(int param_1)",
+      "comment": "Library Function - Single Match\n ___except_validate_context_record\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___except_validate_jump_buffer",
+      "address": "004061b7",
+      "signature": "undefined __cdecl ___except_validate_jump_buffer(int param_1)",
+      "comment": "Library Function - Single Match\n ___except_validate_jump_buffer\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004061e4",
+      "address": "004061e4",
+      "signature": "undefined __stdcall FUN_004061e4(undefined * param_1)"
+    },
+    {
+      "name": "___vcrt_getptd",
+      "address": "00406200",
+      "signature": "undefined __stdcall ___vcrt_getptd(void)",
+      "comment": "Library Function - Single Match\n ___vcrt_getptd\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___vcrt_getptd_noexit",
+      "address": "0040620e",
+      "signature": "LPVOID __stdcall ___vcrt_getptd_noexit(void)",
+      "comment": "Library Function - Single Match\n ___vcrt_getptd_noexit\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___vcrt_initialize_ptd",
+      "address": "004062a0",
+      "signature": "undefined4 __stdcall ___vcrt_initialize_ptd(void)",
+      "comment": "Library Function - Single Match\n ___vcrt_initialize_ptd\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_uninitialize_ptd",
+      "address": "004062d3",
+      "signature": "undefined4 __stdcall ___vcrt_uninitialize_ptd(void)",
+      "comment": "Library Function - Single Match\n ___vcrt_uninitialize_ptd\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_initialize_locks",
+      "address": "004062ee",
+      "signature": "undefined4 __stdcall ___vcrt_initialize_locks(void)",
+      "comment": "Library Function - Single Match\n ___vcrt_initialize_locks\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_uninitialize_locks",
+      "address": "0040632a",
+      "signature": "undefined4 __stdcall ___vcrt_uninitialize_locks(void)",
+      "comment": "Library Function - Single Match\n ___vcrt_uninitialize_locks\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release"
+    },
+    {
+      "name": "try_get_first_available_module",
+      "address": "00406359",
+      "signature": "HINSTANCE__ * __cdecl try_get_first_available_module(module_id * param_1, module_id * param_2)",
+      "comment": "Library Function - Single Match\n struct HINSTANCE__ * __cdecl try_get_first_available_module(enum `anonymous namespace\u0027::module_id const * const,enum `anonymous namespace\u0027::module_id const * const)\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "try_get_function",
+      "address": "0040641d",
+      "signature": "void * __cdecl try_get_function(function_id param_1, char * param_2, module_id * param_3, module_id * param_4)",
+      "comment": "Library Function - Single Match\n void * __cdecl try_get_function(enum `anonymous namespace\u0027::function_id,char const * const,enum A0x5c520fe1::module_id const * const,enum A0x5c520fe1::module_id const * const)\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_FlsAlloc",
+      "address": "0040648c",
+      "signature": "undefined __cdecl ___vcrt_FlsAlloc(undefined4 param_1)",
+      "comment": "Library Function - Single Match\n ___vcrt_FlsAlloc\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_FlsFree",
+      "address": "004064c7",
+      "signature": "undefined __cdecl ___vcrt_FlsFree(DWORD param_1)",
+      "comment": "Library Function - Single Match\n ___vcrt_FlsFree\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_FlsGetValue",
+      "address": "00406502",
+      "signature": "undefined __cdecl ___vcrt_FlsGetValue(DWORD param_1)",
+      "comment": "Library Function - Single Match\n ___vcrt_FlsGetValue\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_FlsSetValue",
+      "address": "0040653d",
+      "signature": "undefined __cdecl ___vcrt_FlsSetValue(DWORD param_1, LPVOID param_2)",
+      "comment": "Library Function - Single Match\n ___vcrt_FlsSetValue\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_InitializeCriticalSectionEx",
+      "address": "0040657b",
+      "signature": "undefined __cdecl ___vcrt_InitializeCriticalSectionEx(LPCRITICAL_SECTION param_1, DWORD param_2, undefined4 param_3)",
+      "comment": "Library Function - Single Match\n ___vcrt_InitializeCriticalSectionEx\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_initialize_winapi_thunks",
+      "address": "004065c2",
+      "signature": "undefined __stdcall ___vcrt_initialize_winapi_thunks(void)",
+      "comment": "Library Function - Single Match\n ___vcrt_initialize_winapi_thunks\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "___vcrt_uninitialize_winapi_thunks",
+      "address": "004065eb",
+      "signature": "undefined __cdecl ___vcrt_uninitialize_winapi_thunks(char param_1)",
+      "comment": "Library Function - Single Match\n ___vcrt_uninitialize_winapi_thunks\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release"
+    },
+    {
+      "name": "FUN_0040661d",
+      "address": "0040661d",
+      "signature": "undefined __stdcall FUN_0040661d(void)"
+    },
+    {
+      "name": "__global_unwind2",
+      "address": "00406630",
+      "signature": "undefined __cdecl __global_unwind2(PVOID param_1)",
+      "comment": "Library Function - Single Match\n __global_unwind2\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__local_unwind2",
+      "address": "00406696",
+      "signature": "undefined __cdecl __local_unwind2(int param_1, uint param_2)",
+      "comment": "Library Function - Single Match\n __local_unwind2\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__NLG_Notify1",
+      "address": "00406740",
+      "signature": "undefined4 __fastcall __NLG_Notify1(undefined4 param_1)",
+      "comment": "Library Function - Single Match\n __NLG_Notify1\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__NLG_Notify",
+      "address": "0040674c",
+      "signature": "void __stdcall __NLG_Notify(ulong param_1)",
+      "comment": "Library Function - Single Match\n __NLG_Notify\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040676b",
+      "address": "0040676b",
+      "signature": "undefined __stdcall FUN_0040676b(void)"
+    },
+    {
+      "name": "FUN_0040676e",
+      "address": "0040676e",
+      "signature": "undefined __cdecl FUN_0040676e(undefined4 * param_1, undefined4 param_2, int param_3, undefined4 param_4, int param_5, int param_6)"
+    },
+    {
+      "name": "_CallCatchBlock2",
+      "address": "004067de",
+      "signature": "void * __cdecl _CallCatchBlock2(EHRegistrationNode * param_1, _s_FuncInfo * param_2, void * param_3, int param_4, ulong param_5)",
+      "comment": "Library Function - Single Match\n void * __cdecl _CallCatchBlock2(struct EHRegistrationNode *,struct _s_FuncInfo const *,void *,int,unsigned long)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "_CallSETranslator",
+      "address": "0040683c",
+      "signature": "int __cdecl _CallSETranslator(EHExceptionRecord * param_1, EHRegistrationNode * param_2, void * param_3, void * param_4, _s_FuncInfo * param_5, int param_6, EHRegistrationNode * param_7)",
+      "comment": "Library Function - Single Match\n int __cdecl _CallSETranslator(struct EHExceptionRecord *,struct EHRegistrationNode *,void *,void *,struct _s_FuncInfo const *,int,struct EHRegistrationNode *)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "_JumpToContinuation",
+      "address": "00406922",
+      "signature": "void __stdcall _JumpToContinuation(void * param_1, EHRegistrationNode * param_2)",
+      "comment": "Library Function - Single Match\n void __stdcall _JumpToContinuation(void *,struct EHRegistrationNode *)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "_UnwindNestedFrames",
+      "address": "00406952",
+      "signature": "void __stdcall _UnwindNestedFrames(EHRegistrationNode * param_1, EHExceptionRecord * param_2)",
+      "comment": "Library Function - Single Match\n void __stdcall _UnwindNestedFrames(struct EHRegistrationNode *,struct EHExceptionRecord *)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__CatchGuardHandler",
+      "address": "004069a5",
+      "signature": "undefined __cdecl __CatchGuardHandler(EHExceptionRecord * param_1, EHRegistrationNode * param_2, _CONTEXT * param_3)",
+      "comment": "Library Function - Single Match\n __CatchGuardHandler\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__CreateFrameInfo",
+      "address": "004069d6",
+      "signature": "undefined4 * __cdecl __CreateFrameInfo(undefined4 * param_1, undefined4 param_2)",
+      "comment": "Library Function - Single Match\n __CreateFrameInfo\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004069fa",
+      "address": "004069fa",
+      "signature": "undefined __cdecl FUN_004069fa(int param_1)"
+    },
+    {
+      "name": "__TranslatorGuardHandler",
+      "address": "00406a42",
+      "signature": "undefined4 __cdecl __TranslatorGuardHandler(EHExceptionRecord * param_1, EHRegistrationNode * param_2, _CONTEXT * param_3)",
+      "comment": "Library Function - Single Match\n __TranslatorGuardHandler\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FID_conflict:___CxxFrameHandler3",
+      "address": "00406adf",
+      "signature": "_EXCEPTION_DISPOSITION __cdecl FID_conflict:___CxxFrameHandler3(EHExceptionRecord * param_1, EHRegistrationNode * param_2, _CONTEXT * param_3, void * param_4)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n ___CxxFrameHandler\n ___CxxFrameHandler2\n ___CxxFrameHandler3\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00406b20",
+      "address": "00406b20",
+      "signature": "ulonglong __cdecl FUN_00406b20(uint * param_1, uint * param_2, uint param_3)"
+    },
+    {
+      "name": "FUN_00407094",
+      "address": "00407094",
+      "signature": "char __cdecl FUN_00407094(int param_1, uint * param_2, uint * param_3, byte * param_4)"
+    },
+    {
+      "name": "BuildCatchObjectInternal\u003cclass___FrameHandler3\u003e",
+      "address": "004071d2",
+      "signature": "void __cdecl BuildCatchObjectInternal\u003cclass___FrameHandler3\u003e(EHExceptionRecord * param_1, void * param_2, _s_HandlerType * param_3, _s_CatchableType * param_4)",
+      "comment": "Library Function - Single Match\n void __cdecl BuildCatchObjectInternal\u003cclass __FrameHandler3\u003e(struct EHExceptionRecord *,void *,struct _s_HandlerType const *,struct _s_CatchableType const *)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "CatchIt\u003cclass___FrameHandler3\u003e",
+      "address": "0040726b",
+      "signature": "void __cdecl CatchIt\u003cclass___FrameHandler3\u003e(EHExceptionRecord * param_1, EHRegistrationNode * param_2, _CONTEXT * param_3, void * param_4, _s_FuncInfo * param_5, _s_HandlerType * param_6, _s_CatchableType * param_7, _s_TryBlockMapEntry * param_8, int param_9, EHRegistrationNode * param_10, uchar param_11, uchar param_12)",
+      "comment": "Library Function - Single Match\n void __cdecl CatchIt\u003cclass __FrameHandler3\u003e(struct EHExceptionRecord *,struct EHRegistrationNode *,struct _CONTEXT *,void *,struct _s_FuncInfo const *,struct _s_HandlerType const *,struct _s_CatchableType const *,struct _s_TryBlockMapEntry const *,int,struct EHRegistrationNode *,unsigned char,unsigned char)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004072eb",
+      "address": "004072eb",
+      "signature": "undefined __cdecl FUN_004072eb(EHExceptionRecord * param_1, EHRegistrationNode * param_2, _CONTEXT * param_3, void * param_4, _s_FuncInfo * param_5, uchar param_6, int param_7, EHRegistrationNode * param_8)"
+    },
+    {
+      "name": "FUN_0040768a",
+      "address": "0040768a",
+      "signature": "undefined __cdecl FUN_0040768a(EHExceptionRecord * param_1, EHRegistrationNode * param_2, _CONTEXT * param_3, void * param_4, _s_FuncInfo * param_5, int param_6, int param_7, EHRegistrationNode * param_8)"
+    },
+    {
+      "name": "FID_conflict:___TypeMatch",
+      "address": "004077c0",
+      "signature": "undefined4 __cdecl FID_conflict:___TypeMatch(byte * param_1, byte * param_2, byte * param_3)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n int __cdecl TypeMatchHelper\u003cstruct _s_HandlerType const \u003e(struct _s_HandlerType const *,struct _s_CatchableType const *,struct _s_ThrowInfo const *)\n int __cdecl TypeMatchHelper\u003cclass __FrameHandler3\u003e(struct _s_HandlerType const *,struct _s_CatchableType const *,struct _s_ThrowInfo const *)\n ___TypeMatch\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__InternalCxxFrameHandler\u003cclass___FrameHandler3\u003e",
+      "address": "0040784e",
+      "signature": "_EXCEPTION_DISPOSITION __cdecl __InternalCxxFrameHandler\u003cclass___FrameHandler3\u003e(EHExceptionRecord * param_1, EHRegistrationNode * param_2, _CONTEXT * param_3, void * param_4, _s_FuncInfo * param_5, int param_6, EHRegistrationNode * param_7, uchar param_8)",
+      "comment": "Library Function - Single Match\n enum _EXCEPTION_DISPOSITION __cdecl __InternalCxxFrameHandler\u003cclass __FrameHandler3\u003e(struct EHExceptionRecord *,struct EHRegistrationNode *,struct _CONTEXT *,void *,struct _s_FuncInfo const *,int,struct EHRegistrationNode *,unsigned char)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00407950",
+      "address": "00407950",
+      "signature": "exception * __thiscall FUN_00407950(exception * param_1)"
+    },
+    {
+      "name": "FUN_0040796b",
+      "address": "0040796b",
+      "signature": "undefined4 * __fastcall FUN_0040796b(undefined4 * param_1)"
+    },
+    {
+      "name": "exception",
+      "address": "00407983",
+      "signature": "undefined __thiscall exception(exception * param_1)",
+      "comment": "Library Function - Single Match\n public: __thiscall std::exception::exception(class std::exception const \u0026)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "operator\u003d\u003d",
+      "address": "004079c0",
+      "signature": "bool __thiscall operator\u003d\u003d(type_info * param_1)",
+      "comment": "Library Function - Single Match\n public: bool __thiscall type_info::operator\u003d\u003d(class type_info const \u0026)const \n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004079df",
+      "address": "004079df",
+      "signature": "undefined4 * __thiscall FUN_004079df(byte param_1)"
+    },
+    {
+      "name": "CallCatchBlock",
+      "address": "00407a0c",
+      "signature": "void * __cdecl CallCatchBlock(EHExceptionRecord * param_1, EHRegistrationNode * param_2, _CONTEXT * param_3, _s_FuncInfo * param_4, void * param_5, int param_6, ulong param_7)",
+      "comment": "Library Function - Single Match\n void * __cdecl CallCatchBlock(struct EHExceptionRecord *,struct EHRegistrationNode *,struct _CONTEXT *,struct _s_FuncInfo const *,void *,int,unsigned long)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00407b54",
+      "address": "00407b54",
+      "signature": "undefined __stdcall FUN_00407b54(void)"
+    },
+    {
+      "name": "FUN_00407bd0",
+      "address": "00407bd0",
+      "signature": "undefined __stdcall FUN_00407bd0(undefined4 param_1)"
+    },
+    {
+      "name": "Catch_All@00407bf0",
+      "address": "00407bf0",
+      "signature": "undefined __stdcall Catch_All@00407bf0(void)"
+    },
+    {
+      "name": "ExFilterRethrow",
+      "address": "00407c0a",
+      "signature": "int __cdecl ExFilterRethrow(_EXCEPTION_POINTERS * param_1)",
+      "comment": "Library Function - Single Match\n int __cdecl ExFilterRethrow(struct _EXCEPTION_POINTERS *)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FrameUnwindToEmptyState",
+      "address": "00407c54",
+      "signature": "void __cdecl FrameUnwindToEmptyState(EHRegistrationNode * param_1, void * param_2, _s_FuncInfo * param_3)",
+      "comment": "Library Function - Single Match\n public: static void __cdecl __FrameHandler3::FrameUnwindToEmptyState(struct EHRegistrationNode *,void *,struct _s_FuncInfo const *)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00407c6c",
+      "address": "00407c6c",
+      "signature": "undefined __cdecl FUN_00407c6c(EHRegistrationNode * param_1, void * param_2, _s_FuncInfo * param_3, int param_4)"
+    },
+    {
+      "name": "FUN_00407d3a",
+      "address": "00407d3a",
+      "signature": "undefined __stdcall FUN_00407d3a(void)"
+    },
+    {
+      "name": "FUN_00407d54",
+      "address": "00407d54",
+      "signature": "undefined4 __cdecl FUN_00407d54(int param_1, int * param_2)"
+    },
+    {
+      "name": "_CallMemberFunction1",
+      "address": "00407dee",
+      "signature": "void __stdcall _CallMemberFunction1(void * param_1, void * param_2, void * param_3)",
+      "comment": "Library Function - Single Match\n void __stdcall _CallMemberFunction1(void * const,void * const,void * const)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "_CallMemberFunction2",
+      "address": "00407dfe",
+      "signature": "void __stdcall _CallMemberFunction2(void * param_1, void * param_2, void * param_3, int param_4)",
+      "comment": "Library Function - Single Match\n void __stdcall _CallMemberFunction2(void * const,void * const,void * const,int)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00407e11",
+      "address": "00407e11",
+      "signature": "undefined4 __cdecl FUN_00407e11(int param_1)"
+    },
+    {
+      "name": "FUN_00407e1c",
+      "address": "00407e1c",
+      "signature": "char * __fastcall FUN_00407e1c(int param_1)"
+    },
+    {
+      "name": "__CallSettingFrame@12",
+      "address": "00407e30",
+      "signature": "undefined __stdcall __CallSettingFrame@12(undefined4 param_1, undefined4 param_2, int param_3)",
+      "comment": "Library Function - Single Match\n __CallSettingFrame@12\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00407e7c",
+      "address": "00407e7c",
+      "signature": "undefined __stdcall FUN_00407e7c(void)"
+    },
+    {
+      "name": "GetCurrentState",
+      "address": "00407e99",
+      "signature": "int __cdecl GetCurrentState(EHRegistrationNode * param_1, void * param_2, _s_FuncInfo * param_3)",
+      "comment": "Library Function - Single Match\n public: static int __cdecl __FrameHandler3::GetCurrentState(struct EHRegistrationNode *,void *,struct _s_FuncInfo const *)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "SetState",
+      "address": "00407eb6",
+      "signature": "void __cdecl SetState(EHRegistrationNode * param_1, _s_FuncInfo * param_2, int param_3)",
+      "comment": "Library Function - Single Match\n public: static void __cdecl __FrameHandler3::SetState(struct EHRegistrationNode *,struct _s_FuncInfo const *,int)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___DestructExceptionObject",
+      "address": "00407ec4",
+      "signature": "undefined __cdecl ___DestructExceptionObject(int * param_1)",
+      "comment": "Library Function - Single Match\n ___DestructExceptionObject\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "_CallMemberFunction0",
+      "address": "00407f64",
+      "signature": "void __stdcall _CallMemberFunction0(void * param_1, void * param_2)",
+      "comment": "Library Function - Single Match\n void __stdcall _CallMemberFunction0(void * const,void * const)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__IsExceptionObjectToBeDestroyed",
+      "address": "00407f71",
+      "signature": "undefined4 __cdecl __IsExceptionObjectToBeDestroyed(int param_1)",
+      "comment": "Library Function - Single Match\n __IsExceptionObjectToBeDestroyed\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___AdjustPointer",
+      "address": "00407f97",
+      "signature": "int __cdecl ___AdjustPointer(int param_1, int * param_2)",
+      "comment": "Library Function - Single Match\n ___AdjustPointer\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___FrameUnwindFilter",
+      "address": "00407fbc",
+      "signature": "undefined4 __cdecl ___FrameUnwindFilter(undefined4 * param_1)",
+      "comment": "Library Function - Single Match\n ___FrameUnwindFilter\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release"
+    },
+    {
+      "name": "Unwind@00408001",
+      "address": "00408001",
+      "signature": "undefined __stdcall Unwind@00408001(void)"
+    },
+    {
+      "name": "___std_exception_copy",
+      "address": "00408006",
+      "signature": "undefined __cdecl ___std_exception_copy(int * param_1, int * param_2)",
+      "comment": "Library Function - Single Match\n ___std_exception_copy\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___std_exception_destroy",
+      "address": "00408069",
+      "signature": "undefined __cdecl ___std_exception_destroy(undefined4 * param_1)",
+      "comment": "Library Function - Single Match\n ___std_exception_destroy\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__CxxThrowException@8",
+      "address": "00408088",
+      "signature": "undefined __stdcall __CxxThrowException@8(int * param_1, byte * param_2)",
+      "comment": "Library Function - Single Match\n __CxxThrowException@8\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "FUN_00408100",
+      "address": "00408100",
+      "signature": "ulonglong __cdecl FUN_00408100(uint * param_1, uint * param_2, uint param_3)"
+    },
+    {
+      "name": "FUN_00408674",
+      "address": "00408674",
+      "signature": "undefined4 __cdecl FUN_00408674(uint param_1, undefined4 param_2)"
+    },
+    {
+      "name": "FUN_004087ba",
+      "address": "004087ba",
+      "signature": "undefined4 __stdcall FUN_004087ba(void)"
+    },
+    {
+      "name": "FUN_004087c0",
+      "address": "004087c0",
+      "signature": "undefined __cdecl FUN_004087c0(undefined4 param_1)"
+    },
+    {
+      "name": "__crt_fast_encode_pointer\u003cvoid_(__stdcall*)(void*,unsigned_long,void*)\u003e",
+      "address": "004087cf",
+      "signature": "_func_void_void_ptr_ulong_void_ptr * __cdecl __crt_fast_encode_pointer\u003cvoid_(__stdcall*)(void*,unsigned_long,void*)\u003e(_func_void_void_ptr_ulong_void_ptr * param_1)",
+      "comment": "Library Function - Single Match\n void (__stdcall*__cdecl __crt_fast_encode_pointer\u003cvoid (__stdcall*)(void *,unsigned long,void *)\u003e(void (__stdcall*const)(void *,unsigned long,void *)))(void *,unsigned long,void *)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_has_user_matherr",
+      "address": "004087ee",
+      "signature": "undefined4 __stdcall ___acrt_has_user_matherr(void)",
+      "comment": "Library Function - Single Match\n ___acrt_has_user_matherr\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00408806",
+      "address": "00408806",
+      "signature": "undefined __cdecl FUN_00408806(undefined4 param_1)"
+    },
+    {
+      "name": "___acrt_invoke_user_matherr",
+      "address": "00408815",
+      "signature": "undefined4 __cdecl ___acrt_invoke_user_matherr(undefined4 param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_invoke_user_matherr\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___setusermatherr",
+      "address": "00408847",
+      "signature": "undefined __cdecl ___setusermatherr(_func_void_void_ptr_ulong_void_ptr * param_1)",
+      "comment": "Library Function - Single Match\n ___setusermatherr\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040885c",
+      "address": "0040885c",
+      "signature": "int __cdecl FUN_0040885c(int param_1)"
+    },
+    {
+      "name": "parse_command_line\u003cchar\u003e",
+      "address": "00408999",
+      "signature": "void __cdecl parse_command_line\u003cchar\u003e(char * param_1, char * * param_2, char * param_3, uint * param_4, uint * param_5)",
+      "comment": "Library Function - Single Match\n void __cdecl parse_command_line\u003cchar\u003e(char *,char * *,char *,unsigned int *,unsigned int *)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_allocate_buffer_for_argv",
+      "address": "00408b0d",
+      "signature": "LPVOID __cdecl ___acrt_allocate_buffer_for_argv(uint param_1, uint param_2, uint param_3)",
+      "comment": "Library Function - Single Match\n ___acrt_allocate_buffer_for_argv\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00408b5c",
+      "address": "00408b5c",
+      "signature": "undefined __cdecl FUN_00408b5c(int param_1)"
+    },
+    {
+      "name": "FUN_00408b67",
+      "address": "00408b67",
+      "signature": "undefined4 __stdcall FUN_00408b67(void)"
+    },
+    {
+      "name": "FUN_00408bc1",
+      "address": "00408bc1",
+      "signature": "undefined4 * __cdecl FUN_00408bc1(char * param_1)"
+    },
+    {
+      "name": "free_environment\u003c\u003e",
+      "address": "00408ca3",
+      "signature": "undefined __cdecl free_environment\u003c\u003e(undefined4 * param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n void __cdecl free_environment\u003cchar\u003e(char * * const)\n void __cdecl free_environment\u003cwchar_t\u003e(wchar_t * * const)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "uninitialize_environment_internal\u003c\u003e",
+      "address": "00408cd2",
+      "signature": "undefined __cdecl uninitialize_environment_internal\u003c\u003e(undefined4 * param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n void __cdecl uninitialize_environment_internal\u003cchar\u003e(char * * \u0026)\n void __cdecl uninitialize_environment_internal\u003cwchar_t\u003e(wchar_t * * \u0026)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "uninitialize_environment_internal\u003c\u003e",
+      "address": "00408ced",
+      "signature": "undefined __cdecl uninitialize_environment_internal\u003c\u003e(undefined4 * param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n void __cdecl uninitialize_environment_internal\u003cchar\u003e(char * * \u0026)\n void __cdecl uninitialize_environment_internal\u003cwchar_t\u003e(wchar_t * * \u0026)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00408d08",
+      "address": "00408d08",
+      "signature": "undefined __stdcall FUN_00408d08(void)"
+    },
+    {
+      "name": "thunk_FUN_00408b67",
+      "address": "00408d59",
+      "signature": "undefined4 __stdcall thunk_FUN_00408b67(void)"
+    },
+    {
+      "name": "__get_narrow_winmain_command_line",
+      "address": "00408d5e",
+      "signature": "byte * __stdcall __get_narrow_winmain_command_line(void)",
+      "comment": "Library Function - Single Match\n __get_narrow_winmain_command_line\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00408db1",
+      "address": "00408db1",
+      "signature": "undefined __cdecl FUN_00408db1(undefined4 * param_1, undefined4 * param_2)"
+    },
+    {
+      "name": "__initterm_e",
+      "address": "00408ddc",
+      "signature": "int __cdecl __initterm_e(undefined4 * param_1, undefined4 * param_2)",
+      "comment": "Library Function - Single Match\n __initterm_e\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "operator()\u003c\u003e",
+      "address": "00408e0a",
+      "signature": "undefined __stdcall operator()\u003c\u003e(int * param_1, undefined4 * param_2)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_03b1d95aef87969028cfba75ccab2455\u003e,class \u003clambda_6e4b09c48022b2350581041d5f6b0c4c\u003e \u0026,class \u003clambda_22bdf7517842c4b3e53723af5aa32b9e\u003e \u003e(class \u003clambda_03b1d95aef87969028cfba75ccab2455\u003e \u0026\u0026,class \u003clambda_6e4b09c48022b2350581041d5f6b0c4c\u003e \u0026,class \u003clambda_22bdf7517842c4b3e53723af5aa32b9e\u003e \u0026\u0026)\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_4fdada1b837b2abbf20876fac97688ad\u003e,class \u003clambda_b57350f2640456a0859d250846f69caf\u003e \u0026,class \u003clambda_eed5e4f92b5b7d55fa22c48c484aaa54\u003e \u003e(class \u003clambda_4fdada1b837b2abbf20876fac97688ad\u003e \u0026\u0026,class \u003clambda_b57350f2640456a0859d250846f69caf\u003e \u0026,class \u003clambda_eed5e4f92b5b7d55fa22c48c484aaa54\u003e \u0026\u0026)\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_ceb1ee4838e85a9d631eb091e2fbe199\u003e,class \u003clambda_ae742caa10f662c28703da3d2ea5e57e\u003e \u0026,class \u003clambda_cd08b5d6af4937fe54fc07d0c9bf6b37\u003e \u003e(class \u003clambda_ceb1ee4838e85a9d631eb091e2fbe199\u003e \u0026\u0026,class \u003clambda_ae742caa10f662c28703da3d2ea5e57e\u003e \u0026,class \u003clambda_cd08b5d6af4937fe54fc07d0c9bf6b37\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00408e4b",
+      "address": "00408e4b",
+      "signature": "undefined __stdcall FUN_00408e4b(void)"
+    },
+    {
+      "name": "FUN_00408e57",
+      "address": "00408e57",
+      "signature": "undefined __fastcall FUN_00408e57(undefined4 * param_1)"
+    },
+    {
+      "name": "FUN_00408f42",
+      "address": "00408f42",
+      "signature": "undefined __cdecl FUN_00408f42(UINT param_1, undefined4 param_2, int param_3)"
+    },
+    {
+      "name": "FUN_00408fd9",
+      "address": "00408fd9",
+      "signature": "undefined __stdcall FUN_00408fd9(UINT param_1)"
+    },
+    {
+      "name": "FUN_0040900a",
+      "address": "0040900a",
+      "signature": "undefined4 __stdcall FUN_0040900a(void)"
+    },
+    {
+      "name": "FUN_0040902c",
+      "address": "0040902c",
+      "signature": "undefined __cdecl FUN_0040902c(undefined4 param_1)"
+    },
+    {
+      "name": "FUN_004090ae",
+      "address": "004090ae",
+      "signature": "undefined __cdecl FUN_004090ae(undefined4 param_1)"
+    },
+    {
+      "name": "FUN_004090cc",
+      "address": "004090cc",
+      "signature": "undefined __stdcall FUN_004090cc(void)"
+    },
+    {
+      "name": "FUN_004090db",
+      "address": "004090db",
+      "signature": "undefined __cdecl FUN_004090db(UINT param_1)"
+    },
+    {
+      "name": "__register_thread_local_exe_atexit_callback",
+      "address": "004090f1",
+      "signature": "undefined __cdecl __register_thread_local_exe_atexit_callback(_func_void_void_ptr_ulong_void_ptr * param_1)",
+      "comment": "Library Function - Single Match\n __register_thread_local_exe_atexit_callback\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00409117",
+      "address": "00409117",
+      "signature": "undefined __cdecl FUN_00409117(UINT param_1)"
+    },
+    {
+      "name": "__set_fmode",
+      "address": "0040912d",
+      "signature": "errno_t __cdecl __set_fmode(int _Mode)",
+      "comment": "Library Function - Single Match\n __set_fmode\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_e5124f882df8998aaf41531e079ba474\u003e,class_\u003clambda_3e16ef9562a7dcce91392c22ab16ea36\u003e\u0026,class_\u003clambda_e25ca0880e6ef98be67edffd8c599615\u003e_\u003e",
+      "address": "0040916a",
+      "signature": "void __thiscall operator()\u003cclass_\u003clambda_e5124f882df8998aaf41531e079ba474\u003e,class_\u003clambda_3e16ef9562a7dcce91392c22ab16ea36\u003e\u0026,class_\u003clambda_e25ca0880e6ef98be67edffd8c599615\u003e_\u003e(\u003clambda_e5124f882df8998aaf41531e079ba474\u003e * param_1, \u003clambda_3e16ef9562a7dcce91392c22ab16ea36\u003e * param_2, \u003clambda_e25ca0880e6ef98be67edffd8c599615\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_e5124f882df8998aaf41531e079ba474\u003e,class \u003clambda_3e16ef9562a7dcce91392c22ab16ea36\u003e \u0026,class \u003clambda_e25ca0880e6ef98be67edffd8c599615\u003e \u003e(class \u003clambda_e5124f882df8998aaf41531e079ba474\u003e \u0026\u0026,class \u003clambda_3e16ef9562a7dcce91392c22ab16ea36\u003e \u0026,class \u003clambda_e25ca0880e6ef98be67edffd8c599615\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004091cc",
+      "address": "004091cc",
+      "signature": "undefined __stdcall FUN_004091cc(void)"
+    },
+    {
+      "name": "___acrt_locale_get_ctype_array_value",
+      "address": "004091d8",
+      "signature": "ushort __cdecl ___acrt_locale_get_ctype_array_value(int param_1, int param_2, ushort param_3)",
+      "comment": "Library Function - Single Match\n ___acrt_locale_get_ctype_array_value\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004091fa",
+      "address": "004091fa",
+      "signature": "undefined4 __stdcall FUN_004091fa(void)"
+    },
+    {
+      "name": "___acrt_uninitialize_locale",
+      "address": "00409205",
+      "signature": "undefined __stdcall ___acrt_uninitialize_locale(void)",
+      "comment": "Library Function - Single Match\n ___acrt_uninitialize_locale\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__configthreadlocale",
+      "address": "0040922c",
+      "signature": "int __cdecl __configthreadlocale(int _Flag)",
+      "comment": "Library Function - Single Match\n __configthreadlocale\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040928e",
+      "address": "0040928e",
+      "signature": "undefined4 __stdcall FUN_0040928e(void)"
+    },
+    {
+      "name": "__set_new_mode",
+      "address": "00409295",
+      "signature": "undefined4 __cdecl __set_new_mode(int param_1)",
+      "comment": "Library Function - Single Match\n __set_new_mode\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004092c4",
+      "address": "004092c4",
+      "signature": "undefined * __stdcall FUN_004092c4(void)"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_69a2805e680e0e292e8ba93315fe43a8\u003e,class_\u003clambda_f03950bc5685219e0bcd2087efbe011e\u003e\u0026,class_\u003clambda_03fcd07e894ec930e3f35da366ca99d6\u003e_\u003e",
+      "address": "004092ca",
+      "signature": "int __thiscall operator()\u003cclass_\u003clambda_69a2805e680e0e292e8ba93315fe43a8\u003e,class_\u003clambda_f03950bc5685219e0bcd2087efbe011e\u003e\u0026,class_\u003clambda_03fcd07e894ec930e3f35da366ca99d6\u003e_\u003e(\u003clambda_69a2805e680e0e292e8ba93315fe43a8\u003e * param_1, \u003clambda_f03950bc5685219e0bcd2087efbe011e\u003e * param_2, \u003clambda_03fcd07e894ec930e3f35da366ca99d6\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: int __thiscall __crt_seh_guarded_call\u003cint\u003e::operator()\u003cclass \u003clambda_69a2805e680e0e292e8ba93315fe43a8\u003e,class \u003clambda_f03950bc5685219e0bcd2087efbe011e\u003e \u0026,class \u003clambda_03fcd07e894ec930e3f35da366ca99d6\u003e \u003e(class \u003clambda_69a2805e680e0e292e8ba93315fe43a8\u003e \u0026\u0026,class \u003clambda_f03950bc5685219e0bcd2087efbe011e\u003e \u0026,class \u003clambda_03fcd07e894ec930e3f35da366ca99d6\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00409319",
+      "address": "00409319",
+      "signature": "undefined __stdcall FUN_00409319(void)"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_8e746cf0007f6ed984d6f78af1fec997\u003e,class_\u003clambda_22ebabd17bc4fa466a2aca6d8deb888d\u003e\u0026,class_\u003clambda_18ed0c0b38a6dc0daf1e7ac6d6adf05e\u003e_\u003e",
+      "address": "00409325",
+      "signature": "int __thiscall operator()\u003cclass_\u003clambda_8e746cf0007f6ed984d6f78af1fec997\u003e,class_\u003clambda_22ebabd17bc4fa466a2aca6d8deb888d\u003e\u0026,class_\u003clambda_18ed0c0b38a6dc0daf1e7ac6d6adf05e\u003e_\u003e(\u003clambda_8e746cf0007f6ed984d6f78af1fec997\u003e * param_1, \u003clambda_22ebabd17bc4fa466a2aca6d8deb888d\u003e * param_2, \u003clambda_18ed0c0b38a6dc0daf1e7ac6d6adf05e\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: int __thiscall __crt_seh_guarded_call\u003cint\u003e::operator()\u003cclass \u003clambda_8e746cf0007f6ed984d6f78af1fec997\u003e,class \u003clambda_22ebabd17bc4fa466a2aca6d8deb888d\u003e \u0026,class \u003clambda_18ed0c0b38a6dc0daf1e7ac6d6adf05e\u003e \u003e(class \u003clambda_8e746cf0007f6ed984d6f78af1fec997\u003e \u0026\u0026,class \u003clambda_22ebabd17bc4fa466a2aca6d8deb888d\u003e \u0026,class \u003clambda_18ed0c0b38a6dc0daf1e7ac6d6adf05e\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00409374",
+      "address": "00409374",
+      "signature": "undefined __stdcall FUN_00409374(void)"
+    },
+    {
+      "name": "FUN_00409380",
+      "address": "00409380",
+      "signature": "undefined4 __fastcall FUN_00409380(undefined4 * param_1)"
+    },
+    {
+      "name": "operator()",
+      "address": "00409482",
+      "signature": "int __thiscall operator()(void)",
+      "comment": "Library Function - Single Match\n public: int __thiscall \u003clambda_f03950bc5685219e0bcd2087efbe011e\u003e::operator()(void)const \n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040955c",
+      "address": "0040955c",
+      "signature": "undefined __stdcall FUN_0040955c(void)"
+    },
+    {
+      "name": "FUN_00409572",
+      "address": "00409572",
+      "signature": "undefined __stdcall FUN_00409572(void)"
+    },
+    {
+      "name": "__initialize_onexit_table",
+      "address": "004095b0",
+      "signature": "undefined4 __cdecl __initialize_onexit_table(int * param_1)",
+      "comment": "Library Function - Single Match\n __initialize_onexit_table\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__register_onexit_function",
+      "address": "004095d9",
+      "signature": "undefined __stdcall __register_onexit_function(void)",
+      "comment": "Library Function - Single Match\n __register_onexit_function\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "uninitialize_allocated_memory",
+      "address": "004096c2",
+      "signature": "undefined1 __cdecl uninitialize_allocated_memory(void)",
+      "comment": "Library Function - Single Match\n _uninitialize_allocated_memory\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "operator()",
+      "address": "004096d9",
+      "signature": "void __thiscall operator()(__crt_multibyte_data * * param_1)",
+      "comment": "Library Function - Single Match\n public: void __thiscall \u003clambda_af42a3ee9806e9a7305d451646e05244\u003e::operator()(struct __crt_multibyte_data * \u0026)const \n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_initialize",
+      "address": "00409707",
+      "signature": "undefined __stdcall ___acrt_initialize(void)",
+      "comment": "Library Function - Single Match\n ___acrt_initialize\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_uninitialize",
+      "address": "00409719",
+      "signature": "undefined1 __cdecl ___acrt_uninitialize(char param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_uninitialize\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__controlfp_s",
+      "address": "00409749",
+      "signature": "errno_t __cdecl __controlfp_s(uint * _CurrentState, uint _NewValue, uint _Mask)",
+      "comment": "Library Function - Single Match\n __controlfp_s\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004097a8",
+      "address": "004097a8",
+      "signature": "undefined __stdcall FUN_004097a8(void)"
+    },
+    {
+      "name": "FUN_004097e4",
+      "address": "004097e4",
+      "signature": "undefined __cdecl FUN_004097e4(LPVOID param_1)"
+    },
+    {
+      "name": "FUN_004097ff",
+      "address": "004097ff",
+      "signature": "undefined __stdcall FUN_004097ff(size_t param_1)"
+    },
+    {
+      "name": "FUN_0040980a",
+      "address": "0040980a",
+      "signature": "undefined4 __cdecl FUN_0040980a(char * param_1, int param_2, int param_3)"
+    },
+    {
+      "name": "FUN_00409864",
+      "address": "00409864",
+      "signature": "undefined __stdcall FUN_00409864(void)"
+    },
+    {
+      "name": "FUN_004098a8",
+      "address": "004098a8",
+      "signature": "undefined __stdcall FUN_004098a8(uint param_1, uint param_2)"
+    },
+    {
+      "name": "_wcsncmp",
+      "address": "004098b3",
+      "signature": "int __cdecl _wcsncmp(wchar_t * _Str1, wchar_t * _Str2, size_t _MaxCount)",
+      "comment": "Library Function - Single Match\n _wcsncmp\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004098ed",
+      "address": "004098ed",
+      "signature": "undefined __cdecl FUN_004098ed(uint param_1, undefined4 param_2, undefined2 * * * * param_3, int param_4, int param_5, int * param_6, undefined4 param_7)"
+    },
+    {
+      "name": "count\u003cchar\u003e",
+      "address": "00409a70",
+      "signature": "uint __thiscall count\u003cchar\u003e(void)",
+      "comment": "Library Function - Single Match\n public: unsigned int __thiscall __crt_stdio_output::formatting_buffer::count\u003cchar\u003e(void)const \n\nLibraries: Visual Studio 2015, Visual Studio 2017, Visual Studio 2019"
+    },
+    {
+      "name": "FUN_00409a88",
+      "address": "00409a88",
+      "signature": "uint __fastcall FUN_00409a88(int param_1)"
+    },
+    {
+      "name": "FUN_00409aa1",
+      "address": "00409aa1",
+      "signature": "undefined4 __thiscall FUN_00409aa1(uint param_1, int param_2)"
+    },
+    {
+      "name": "FUN_00409b22",
+      "address": "00409b22",
+      "signature": "undefined4 __thiscall FUN_00409b22(uint param_1, int param_2)"
+    },
+    {
+      "name": "is_overflow_condition\u003cunsigned_long\u003e",
+      "address": "00409ba4",
+      "signature": "bool __cdecl is_overflow_condition\u003cunsigned_long\u003e(uint param_1, ulong param_2)",
+      "comment": "Library Function - Single Match\n bool __cdecl __crt_strtox::is_overflow_condition\u003cunsigned long\u003e(unsigned int,unsigned long)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "is_wide_character_specifier\u003cwchar_t\u003e",
+      "address": "00409bd5",
+      "signature": "bool __cdecl is_wide_character_specifier\u003cwchar_t\u003e(__uint64 param_1, wchar_t param_2, length_modifier param_3)",
+      "comment": "Library Function - Single Match\n bool __cdecl __crt_stdio_output::is_wide_character_specifier\u003cwchar_t\u003e(unsigned __int64,wchar_t,enum __crt_stdio_output::length_modifier)\n\nLibraries: Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "make_c_string_character_source\u003c\u003e",
+      "address": "00409c23",
+      "signature": "undefined __cdecl make_c_string_character_source\u003c\u003e(undefined4 * param_1, undefined4 param_2, undefined4 * param_3)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n class __crt_strtox::c_string_character_source\u003cchar\u003e __cdecl __crt_strtox::make_c_string_character_source\u003cchar,std::nullptr_t\u003e(char const * const,std::nullptr_t)\n class __crt_strtox::c_string_character_source\u003cchar\u003e __cdecl __crt_strtox::make_c_string_character_source\u003cchar,char * *\u003e(char const * const,char * * const)\n class __crt_strtox::c_string_character_source\u003cwchar_t\u003e __cdecl __crt_strtox::make_c_string_character_source\u003cwchar_t,std::nullptr_t\u003e(wchar_t const * const,std::nullptr_t)\n class __crt_strtox::c_string_character_source\u003cwchar_t\u003e __cdecl __crt_strtox::make_c_string_character_source\u003cwchar_t,wchar_t * *\u003e(wchar_t const * const,wchar_t * * const)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00409c3e",
+      "address": "00409c3e",
+      "signature": "uint __cdecl FUN_00409c3e(int * param_1, wchar_t * param_2, undefined4 * param_3, uint param_4, byte param_5)"
+    },
+    {
+      "name": "scratch_data\u003cchar\u003e",
+      "address": "0040a20d",
+      "signature": "char * __thiscall scratch_data\u003cchar\u003e(void)",
+      "comment": "Library Function - Single Match\n public: char * __thiscall __crt_stdio_output::formatting_buffer::scratch_data\u003cchar\u003e(void)\n\nLibraries: Visual Studio 2015, Visual Studio 2017, Visual Studio 2019"
+    },
+    {
+      "name": "FUN_0040a22b",
+      "address": "0040a22b",
+      "signature": "uint __fastcall FUN_0040a22b(void * param_1)"
+    },
+    {
+      "name": "FUN_0040a3ad",
+      "address": "0040a3ad",
+      "signature": "uint __thiscall FUN_0040a3ad(byte param_1)"
+    },
+    {
+      "name": "FUN_0040a52f",
+      "address": "0040a52f",
+      "signature": "uint __thiscall FUN_0040a52f(byte param_1)"
+    },
+    {
+      "name": "FUN_0040a6b1",
+      "address": "0040a6b1",
+      "signature": "undefined __thiscall FUN_0040a6b1(uint param_1)"
+    },
+    {
+      "name": "FUN_0040a71e",
+      "address": "0040a71e",
+      "signature": "undefined __thiscall FUN_0040a71e(uint param_1, byte param_2)"
+    },
+    {
+      "name": "FUN_0040a7ad",
+      "address": "0040a7ad",
+      "signature": "undefined __thiscall FUN_0040a7ad(uint param_1, byte param_2)"
+    },
+    {
+      "name": "FUN_0040a83a",
+      "address": "0040a83a",
+      "signature": "undefined __thiscall FUN_0040a83a(uint param_1, uint param_2)"
+    },
+    {
+      "name": "FUN_0040a8c3",
+      "address": "0040a8c3",
+      "signature": "undefined __thiscall FUN_0040a8c3(uint param_1, uint param_2, byte param_3)"
+    },
+    {
+      "name": "FUN_0040a972",
+      "address": "0040a972",
+      "signature": "undefined __thiscall FUN_0040a972(uint param_1, uint param_2, byte param_3)"
+    },
+    {
+      "name": "FUN_0040aa0d",
+      "address": "0040aa0d",
+      "signature": "undefined4 * __thiscall FUN_0040aa0d(undefined4 * param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4 param_5, undefined4 param_6)"
+    },
+    {
+      "name": "FUN_0040aa80",
+      "address": "0040aa80",
+      "signature": "undefined4 * __thiscall FUN_0040aa80(undefined4 * param_1)"
+    },
+    {
+      "name": "FUN_0040aae0",
+      "address": "0040aae0",
+      "signature": "undefined __fastcall FUN_0040aae0(int * param_1)"
+    },
+    {
+      "name": "FUN_0040ab1c",
+      "address": "0040ab1c",
+      "signature": "undefined __fastcall FUN_0040ab1c(int param_1)"
+    },
+    {
+      "name": "FUN_0040ab36",
+      "address": "0040ab36",
+      "signature": "undefined4 * __thiscall FUN_0040ab36(undefined4 * param_1)"
+    },
+    {
+      "name": "FUN_0040ab5a",
+      "address": "0040ab5a",
+      "signature": "undefined __cdecl FUN_0040ab5a(char * param_1, int * param_2)"
+    },
+    {
+      "name": "FUN_0040abba",
+      "address": "0040abba",
+      "signature": "undefined1 __stdcall FUN_0040abba(int param_1, byte param_2)"
+    },
+    {
+      "name": "force_decimal_point",
+      "address": "0040abf4",
+      "signature": "void __cdecl force_decimal_point(char * param_1, __crt_locale_pointers * param_2)",
+      "comment": "Library Function - Single Match\n void __cdecl __crt_stdio_output::force_decimal_point(char *,struct __crt_locale_pointers * const)\n\nLibraries: Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040ac50",
+      "address": "0040ac50",
+      "signature": "__acrt_ptd * __fastcall FUN_0040ac50(undefined4 * param_1)"
+    },
+    {
+      "name": "FUN_0040aca0",
+      "address": "0040aca0",
+      "signature": "int __fastcall FUN_0040aca0(int * param_1)"
+    },
+    {
+      "name": "FUN_0040acfc",
+      "address": "0040acfc",
+      "signature": "undefined4 __thiscall FUN_0040acfc(uint * param_1)"
+    },
+    {
+      "name": "FUN_0040ad76",
+      "address": "0040ad76",
+      "signature": "undefined4 __fastcall FUN_0040ad76(__uint64 * param_1)"
+    },
+    {
+      "name": "FUN_0040afb6",
+      "address": "0040afb6",
+      "signature": "uint __fastcall FUN_0040afb6(__uint64 * param_1)"
+    },
+    {
+      "name": "FUN_0040b144",
+      "address": "0040b144",
+      "signature": "undefined __fastcall FUN_0040b144(__uint64 * param_1)"
+    },
+    {
+      "name": "to_integer_size",
+      "address": "0040b565",
+      "signature": "uint __cdecl to_integer_size(length_modifier param_1)",
+      "comment": "Library Function - Single Match\n unsigned int __cdecl __crt_stdio_output::to_integer_size(enum __crt_stdio_output::length_modifier)\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "type_case_Z",
+      "address": "0040b5b9",
+      "signature": "undefined4 __fastcall type_case_Z(__uint64 * param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n private: bool __thiscall __crt_stdio_output::output_processor\u003cwchar_t,class __crt_stdio_output::console_output_adapter\u003cwchar_t\u003e,class __crt_stdio_output::format_validation_base\u003cwchar_t,class __crt_stdio_output::console_output_adapter\u003cwchar_t\u003e \u003e \u003e::type_case_Z(void)\n private: bool __thiscall __crt_stdio_output::output_processor\u003cwchar_t,class __crt_stdio_output::console_output_adapter\u003cwchar_t\u003e,class __crt_stdio_output::standard_base\u003cwchar_t,class __crt_stdio_output::console_output_adapter\u003cwchar_t\u003e \u003e \u003e::type_case_Z(void)\n private: bool __thiscall __crt_stdio_output::output_processor\u003cwchar_t,class __crt_stdio_output::stream_output_adapter\u003cwchar_t\u003e,class __crt_stdio_output::format_validation_base\u003cwchar_t,class __crt_stdio_output::stream_output_adapter\u003cwchar_t\u003e \u003e \u003e::type_case_Z(void)\n private: bool __thiscall __crt_stdio_output::output_processor\u003cwchar_t,class __crt_stdio_output::stream_output_adapter\u003cwchar_t\u003e,class __crt_stdio_output::standard_base\u003cwchar_t,class __crt_stdio_output::stream_output_adapter\u003cwchar_t\u003e \u003e \u003e::type_case_Z(void)\n  6 names - too many to list\n\nLibraries: Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040b613",
+      "address": "0040b613",
+      "signature": "undefined4 __fastcall FUN_0040b613(uint * param_1)"
+    },
+    {
+      "name": "FUN_0040b7b3",
+      "address": "0040b7b3",
+      "signature": "undefined4 __fastcall FUN_0040b7b3(__uint64 * param_1)"
+    },
+    {
+      "name": "FUN_0040b85a",
+      "address": "0040b85a",
+      "signature": "uint __fastcall FUN_0040b85a(int param_1)"
+    },
+    {
+      "name": "FUN_0040b8de",
+      "address": "0040b8de",
+      "signature": "undefined __fastcall FUN_0040b8de(void * param_1)"
+    },
+    {
+      "name": "FUN_0040b8fb",
+      "address": "0040b8fb",
+      "signature": "undefined __fastcall FUN_0040b8fb(void * param_1)"
+    },
+    {
+      "name": "type_case_s",
+      "address": "0040b911",
+      "signature": "undefined4 __fastcall type_case_s(__uint64 * param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n private: bool __thiscall __crt_stdio_output::output_processor\u003cwchar_t,class __crt_stdio_output::console_output_adapter\u003cwchar_t\u003e,class __crt_stdio_output::format_validation_base\u003cwchar_t,class __crt_stdio_output::console_output_adapter\u003cwchar_t\u003e \u003e \u003e::type_case_s(void)\n private: bool __thiscall __crt_stdio_output::output_processor\u003cwchar_t,class __crt_stdio_output::console_output_adapter\u003cwchar_t\u003e,class __crt_stdio_output::standard_base\u003cwchar_t,class __crt_stdio_output::console_output_adapter\u003cwchar_t\u003e \u003e \u003e::type_case_s(void)\n private: bool __thiscall __crt_stdio_output::output_processor\u003cwchar_t,class __crt_stdio_output::stream_output_adapter\u003cwchar_t\u003e,class __crt_stdio_output::format_validation_base\u003cwchar_t,class __crt_stdio_output::stream_output_adapter\u003cwchar_t\u003e \u003e \u003e::type_case_s(void)\n private: bool __thiscall __crt_stdio_output::output_processor\u003cwchar_t,class __crt_stdio_output::stream_output_adapter\u003cwchar_t\u003e,class __crt_stdio_output::standard_base\u003cwchar_t,class __crt_stdio_output::stream_output_adapter\u003cwchar_t\u003e \u003e \u003e::type_case_s(void)\n  6 names - too many to list\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040b984",
+      "address": "0040b984",
+      "signature": "int __thiscall FUN_0040b984(int param_1)"
+    },
+    {
+      "name": "unget",
+      "address": "0040b9d9",
+      "signature": "void __thiscall unget(char param_1)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_strtox::c_string_character_source\u003cchar\u003e::unget(char)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "unget",
+      "address": "0040ba02",
+      "signature": "void __thiscall unget(wchar_t param_1)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_strtox::c_string_character_source\u003cwchar_t\u003e::unget(wchar_t)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040ba30",
+      "address": "0040ba30",
+      "signature": "undefined __fastcall FUN_0040ba30(int * param_1)"
+    },
+    {
+      "name": "FUN_0040ba8b",
+      "address": "0040ba8b",
+      "signature": "undefined4 __fastcall FUN_0040ba8b(int * param_1)"
+    },
+    {
+      "name": "FUN_0040baa6",
+      "address": "0040baa6",
+      "signature": "bool __thiscall FUN_0040baa6(int * param_1)"
+    },
+    {
+      "name": "write_string",
+      "address": "0040bad7",
+      "signature": "void __thiscall write_string(wchar_t * param_1, int param_2, int * param_3, __crt_deferred_errno_cache * param_4)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_stdio_output::string_output_adapter\u003cwchar_t\u003e::write_string(wchar_t const * const,int,int * const,class __crt_deferred_errno_cache \u0026)const \n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040bb48",
+      "address": "0040bb48",
+      "signature": "undefined4 __cdecl FUN_0040bb48(uint param_1, undefined4 param_2, undefined2 * * * * param_3, int param_4, int param_5, undefined4 * param_6, undefined4 param_7)"
+    },
+    {
+      "name": "FUN_0040bb89",
+      "address": "0040bb89",
+      "signature": "uint __cdecl FUN_0040bb89(int * param_1, byte * param_2, undefined4 * param_3, uint param_4, byte param_5)"
+    },
+    {
+      "name": "FUN_0040bdd0",
+      "address": "0040bdd0",
+      "signature": "uint __cdecl FUN_0040bdd0(int param_1, uint param_2, _locale_t param_3)"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_15ade71b0218206bbe3333a0c9b79046\u003e,class_\u003clambda_da44e0f8b0f19ba52fefafb335991732\u003e\u0026,class_\u003clambda_207f2d024fc103971653565357d6cd41\u003e_\u003e",
+      "address": "0040bea8",
+      "signature": "void __thiscall operator()\u003cclass_\u003clambda_15ade71b0218206bbe3333a0c9b79046\u003e,class_\u003clambda_da44e0f8b0f19ba52fefafb335991732\u003e\u0026,class_\u003clambda_207f2d024fc103971653565357d6cd41\u003e_\u003e(\u003clambda_15ade71b0218206bbe3333a0c9b79046\u003e * param_1, \u003clambda_da44e0f8b0f19ba52fefafb335991732\u003e * param_2, \u003clambda_207f2d024fc103971653565357d6cd41\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_15ade71b0218206bbe3333a0c9b79046\u003e,class \u003clambda_da44e0f8b0f19ba52fefafb335991732\u003e \u0026,class \u003clambda_207f2d024fc103971653565357d6cd41\u003e \u003e(class \u003clambda_15ade71b0218206bbe3333a0c9b79046\u003e \u0026\u0026,class \u003clambda_da44e0f8b0f19ba52fefafb335991732\u003e \u0026,class \u003clambda_207f2d024fc103971653565357d6cd41\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040beee",
+      "address": "0040beee",
+      "signature": "undefined __stdcall FUN_0040beee(void)"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_38edbb1296d33220d7e4dd0ed76b244a\u003e,class_\u003clambda_5ce1d447e08cb34b2473517608e21441\u003e\u0026,class_\u003clambda_fb385d3da700c9147fc39e65dd577a8c\u003e_\u003e",
+      "address": "0040befa",
+      "signature": "void __thiscall operator()\u003cclass_\u003clambda_38edbb1296d33220d7e4dd0ed76b244a\u003e,class_\u003clambda_5ce1d447e08cb34b2473517608e21441\u003e\u0026,class_\u003clambda_fb385d3da700c9147fc39e65dd577a8c\u003e_\u003e(\u003clambda_38edbb1296d33220d7e4dd0ed76b244a\u003e * param_1, \u003clambda_5ce1d447e08cb34b2473517608e21441\u003e * param_2, \u003clambda_fb385d3da700c9147fc39e65dd577a8c\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_38edbb1296d33220d7e4dd0ed76b244a\u003e,class \u003clambda_5ce1d447e08cb34b2473517608e21441\u003e \u0026,class \u003clambda_fb385d3da700c9147fc39e65dd577a8c\u003e \u003e(class \u003clambda_38edbb1296d33220d7e4dd0ed76b244a\u003e \u0026\u0026,class \u003clambda_5ce1d447e08cb34b2473517608e21441\u003e \u0026,class \u003clambda_fb385d3da700c9147fc39e65dd577a8c\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040bf59",
+      "address": "0040bf59",
+      "signature": "undefined __stdcall FUN_0040bf59(void)"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_6affb1475c98b40b75cdec977db92e3c\u003e,class_\u003clambda_b8d4b9c228a6ecc3f80208dbb4b4a104\u003e\u0026,class_\u003clambda_608742c3c92a14382c1684fc64f96c88\u003e_\u003e",
+      "address": "0040bf65",
+      "signature": "void __thiscall operator()\u003cclass_\u003clambda_6affb1475c98b40b75cdec977db92e3c\u003e,class_\u003clambda_b8d4b9c228a6ecc3f80208dbb4b4a104\u003e\u0026,class_\u003clambda_608742c3c92a14382c1684fc64f96c88\u003e_\u003e(\u003clambda_6affb1475c98b40b75cdec977db92e3c\u003e * param_1, \u003clambda_b8d4b9c228a6ecc3f80208dbb4b4a104\u003e * param_2, \u003clambda_608742c3c92a14382c1684fc64f96c88\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_6affb1475c98b40b75cdec977db92e3c\u003e,class \u003clambda_b8d4b9c228a6ecc3f80208dbb4b4a104\u003e \u0026,class \u003clambda_608742c3c92a14382c1684fc64f96c88\u003e \u003e(class \u003clambda_6affb1475c98b40b75cdec977db92e3c\u003e \u0026\u0026,class \u003clambda_b8d4b9c228a6ecc3f80208dbb4b4a104\u003e \u0026,class \u003clambda_608742c3c92a14382c1684fc64f96c88\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040bfae",
+      "address": "0040bfae",
+      "signature": "undefined __stdcall FUN_0040bfae(void)"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_a7e850c220f1c8d1e6efeecdedd162c6\u003e,class_\u003clambda_46720907175c18b6c9d2717bc0d2d362\u003e\u0026,class_\u003clambda_9048902d66e8d99359bc9897bbb930a8\u003e_\u003e",
+      "address": "0040bfba",
+      "signature": "void __thiscall operator()\u003cclass_\u003clambda_a7e850c220f1c8d1e6efeecdedd162c6\u003e,class_\u003clambda_46720907175c18b6c9d2717bc0d2d362\u003e\u0026,class_\u003clambda_9048902d66e8d99359bc9897bbb930a8\u003e_\u003e(\u003clambda_a7e850c220f1c8d1e6efeecdedd162c6\u003e * param_1, \u003clambda_46720907175c18b6c9d2717bc0d2d362\u003e * param_2, \u003clambda_9048902d66e8d99359bc9897bbb930a8\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_a7e850c220f1c8d1e6efeecdedd162c6\u003e,class \u003clambda_46720907175c18b6c9d2717bc0d2d362\u003e \u0026,class \u003clambda_9048902d66e8d99359bc9897bbb930a8\u003e \u003e(class \u003clambda_a7e850c220f1c8d1e6efeecdedd162c6\u003e \u0026\u0026,class \u003clambda_46720907175c18b6c9d2717bc0d2d362\u003e \u0026,class \u003clambda_9048902d66e8d99359bc9897bbb930a8\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040c008",
+      "address": "0040c008",
+      "signature": "undefined __stdcall FUN_0040c008(void)"
+    },
+    {
+      "name": "construct_ptd",
+      "address": "0040c014",
+      "signature": "void __cdecl construct_ptd(__acrt_ptd * param_1, __crt_locale_data * * param_2)",
+      "comment": "Library Function - Single Match\n void __cdecl construct_ptd(struct __acrt_ptd * const,struct __crt_locale_data * * const)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "destroy_fls",
+      "address": "0040c0ad",
+      "signature": "void __stdcall destroy_fls(void * param_1)",
+      "comment": "Library Function - Single Match\n void __stdcall destroy_fls(void *)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "destroy_ptd",
+      "address": "0040c0ce",
+      "signature": "void __cdecl destroy_ptd(__acrt_ptd * param_1)",
+      "comment": "Library Function - Single Match\n void __cdecl destroy_ptd(struct __acrt_ptd * const)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "replace_current_thread_locale_nolock",
+      "address": "0040c19b",
+      "signature": "void __cdecl replace_current_thread_locale_nolock(__acrt_ptd * param_1, __crt_locale_data * param_2)",
+      "comment": "Library Function - Single Match\n void __cdecl replace_current_thread_locale_nolock(struct __acrt_ptd * const,struct __crt_locale_data * const)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040c1e6",
+      "address": "0040c1e6",
+      "signature": "__acrt_ptd * __stdcall FUN_0040c1e6(void)"
+    },
+    {
+      "name": "FUN_0040c2a1",
+      "address": "0040c2a1",
+      "signature": "__acrt_ptd * __stdcall FUN_0040c2a1(void)"
+    },
+    {
+      "name": "FUN_0040c337",
+      "address": "0040c337",
+      "signature": "__acrt_ptd * __stdcall FUN_0040c337(void)"
+    },
+    {
+      "name": "FUN_0040c3e8",
+      "address": "0040c3e8",
+      "signature": "__acrt_ptd * __cdecl FUN_0040c3e8(undefined4 param_1, int param_2)"
+    },
+    {
+      "name": "FUN_0040c4b7",
+      "address": "0040c4b7",
+      "signature": "undefined4 __stdcall FUN_0040c4b7(void)"
+    },
+    {
+      "name": "FUN_0040c4d1",
+      "address": "0040c4d1",
+      "signature": "undefined4 __fastcall FUN_0040c4d1(int param_1)"
+    },
+    {
+      "name": "___acrt_call_reportfault",
+      "address": "0040c4fa",
+      "signature": "undefined __cdecl ___acrt_call_reportfault(int param_1, DWORD param_2, DWORD param_3)",
+      "comment": "Library Function - Single Match\n ___acrt_call_reportfault\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040c633",
+      "address": "0040c633",
+      "signature": "undefined __cdecl FUN_0040c633(undefined4 param_1)"
+    },
+    {
+      "name": "FUN_0040c642",
+      "address": "0040c642",
+      "signature": "undefined __cdecl FUN_0040c642(wchar_t * param_1, wchar_t * param_2, wchar_t * param_3, uint param_4, uintptr_t param_5)"
+    },
+    {
+      "name": "FUN_0040c679",
+      "address": "0040c679",
+      "signature": "undefined __cdecl FUN_0040c679(wchar_t * param_1, wchar_t * param_2, wchar_t * param_3, uint param_4, uintptr_t param_5, int * param_6)"
+    },
+    {
+      "name": "FUN_0040c6f6",
+      "address": "0040c6f6",
+      "signature": "undefined __stdcall FUN_0040c6f6(void)"
+    },
+    {
+      "name": "__invoke_watson",
+      "address": "0040c706",
+      "signature": "void __cdecl __invoke_watson(wchar_t * param_1, wchar_t * param_2, wchar_t * param_3, uint param_4, uintptr_t param_5)",
+      "comment": "Library Function - Single Match\n __invoke_watson\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FID_conflict:___acrt_errno_from_os_error",
+      "address": "0040c73a",
+      "signature": "int __cdecl FID_conflict:___acrt_errno_from_os_error(ulong param_1)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n ___acrt_errno_from_os_error\n __get_errno_from_oserr\n\nLibraries: Visual Studio 2012 Release, Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_errno_map_os_error",
+      "address": "0040c77d",
+      "signature": "undefined __cdecl ___acrt_errno_map_os_error(ulong param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_errno_map_os_error\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040c7a0",
+      "address": "0040c7a0",
+      "signature": "undefined __cdecl FUN_0040c7a0(ulong param_1, int param_2)"
+    },
+    {
+      "name": "FUN_0040c7c4",
+      "address": "0040c7c4",
+      "signature": "__acrt_ptd * __stdcall FUN_0040c7c4(void)"
+    },
+    {
+      "name": "FUN_0040c7d7",
+      "address": "0040c7d7",
+      "signature": "__acrt_ptd * __stdcall FUN_0040c7d7(void)"
+    },
+    {
+      "name": "__calloc_base",
+      "address": "0040c7ea",
+      "signature": "LPVOID __cdecl __calloc_base(uint param_1, uint param_2)",
+      "comment": "Library Function - Single Match\n __calloc_base\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040c847",
+      "address": "0040c847",
+      "signature": "undefined __cdecl FUN_0040c847(LPVOID param_1)"
+    },
+    {
+      "name": "FUN_0040c881",
+      "address": "0040c881",
+      "signature": "uint __cdecl FUN_0040c881(uint param_1, uint param_2)"
+    },
+    {
+      "name": "__acrt_convert_wcs_mbs_cp\u003cchar,wchar_t,class_\u003clambda_62f6974d9771e494a5ea317cc32e971c\u003e,struct___crt_win32_buffer_internal_dynamic_resizing\u003e",
+      "address": "0040c899",
+      "signature": "int __cdecl __acrt_convert_wcs_mbs_cp\u003cchar,wchar_t,class_\u003clambda_62f6974d9771e494a5ea317cc32e971c\u003e,struct___crt_win32_buffer_internal_dynamic_resizing\u003e(char * param_1, __crt_win32_buffer\u003cwchar_t,struct___crt_win32_buffer_internal_dynamic_resizing\u003e * param_2, \u003clambda_62f6974d9771e494a5ea317cc32e971c\u003e * param_3, uint param_4)",
+      "comment": "Library Function - Single Match\n int __cdecl __acrt_convert_wcs_mbs_cp\u003cchar,wchar_t,class \u003clambda_62f6974d9771e494a5ea317cc32e971c\u003e,struct __crt_win32_buffer_internal_dynamic_resizing\u003e(char const * const,class __crt_win32_buffer\u003cwchar_t,struct __crt_win32_buffer_internal_dynamic_resizing\u003e \u0026,class \u003clambda_62f6974d9771e494a5ea317cc32e971c\u003e const \u0026,unsigned int)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040c94b",
+      "address": "0040c94b",
+      "signature": "int __cdecl FUN_0040c94b(LPCWSTR param_1, __crt_win32_buffer\u003cwchar_t,struct___crt_win32_buffer_internal_dynamic_resizing\u003e * param_2, undefined4 param_3, uint param_4)"
+    },
+    {
+      "name": "__acrt_mbs_to_wcs_cp\u003cstruct___crt_win32_buffer_internal_dynamic_resizing\u003e",
+      "address": "0040ca11",
+      "signature": "int __cdecl __acrt_mbs_to_wcs_cp\u003cstruct___crt_win32_buffer_internal_dynamic_resizing\u003e(char * param_1, __crt_win32_buffer\u003cwchar_t,struct___crt_win32_buffer_internal_dynamic_resizing\u003e * param_2, uint param_3)",
+      "comment": "Library Function - Single Match\n int __cdecl __acrt_mbs_to_wcs_cp\u003cstruct __crt_win32_buffer_internal_dynamic_resizing\u003e(char const * const,class __crt_win32_buffer\u003cwchar_t,struct __crt_win32_buffer_internal_dynamic_resizing\u003e \u0026,unsigned int)\n\nLibraries: Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040ca2e",
+      "address": "0040ca2e",
+      "signature": "int __cdecl FUN_0040ca2e(undefined4 * param_1, undefined4 * param_2)"
+    },
+    {
+      "name": "FUN_0040cbab",
+      "address": "0040cbab",
+      "signature": "int __cdecl FUN_0040cbab(char * param_1, int param_2, uint param_3, int * param_4)"
+    },
+    {
+      "name": "FUN_0040cc5c",
+      "address": "0040cc5c",
+      "signature": "undefined __cdecl FUN_0040cc5c(uchar * param_1, uchar * param_2, int * param_3)"
+    },
+    {
+      "name": "FUN_0040cee1",
+      "address": "0040cee1",
+      "signature": "int * __thiscall FUN_0040cee1(int * param_1)"
+    },
+    {
+      "name": "FUN_0040cf63",
+      "address": "0040cf63",
+      "signature": "undefined __fastcall FUN_0040cf63(int * param_1)"
+    },
+    {
+      "name": "FID_conflict:operator()",
+      "address": "0040cf8c",
+      "signature": "undefined __stdcall FID_conflict:operator()(uint param_1, LPCWSTR param_2, LPSTR param_3, int param_4)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n public: int __thiscall \u003clambda_0fec1a7b3f42a53036604e18c2d5e07e\u003e::operator()(unsigned int,wchar_t const * const,char * const,unsigned int)const \n public: int __thiscall \u003clambda_28bda7af82a03b66c1cb3803a755f95d\u003e::operator()(unsigned int,wchar_t const * const,char * const,unsigned int)const \n public: int __thiscall \u003clambda_fecc33a432ccb74a901dff60d61ca385\u003e::operator()(unsigned int,wchar_t const * const,char * const,unsigned int)const \n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__acrt_get_utf8_acp_compatibility_codepage",
+      "address": "0040cfb0",
+      "signature": "uint __cdecl __acrt_get_utf8_acp_compatibility_codepage(void)",
+      "comment": "Library Function - Single Match\n unsigned int __cdecl __acrt_get_utf8_acp_compatibility_codepage(void)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "_deallocate",
+      "address": "0040cfef",
+      "signature": "void __thiscall _deallocate(void)",
+      "comment": "Library Function - Single Match\n private: void __thiscall __crt_win32_buffer\u003cwchar_t,struct __crt_win32_buffer_internal_dynamic_resizing\u003e::_deallocate(void)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "allocate",
+      "address": "0040d009",
+      "signature": "int __thiscall allocate(uint param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n public: int __thiscall __crt_win32_buffer\u003cchar,struct __crt_win32_buffer_internal_dynamic_resizing\u003e::allocate(unsigned int)\n public: int __thiscall __crt_win32_buffer\u003cchar,struct __crt_win32_buffer_public_dynamic_resizing\u003e::allocate(unsigned int)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "allocate",
+      "address": "0040d045",
+      "signature": "int __thiscall allocate(uint param_1)",
+      "comment": "Library Function - Single Match\n public: int __thiscall __crt_win32_buffer\u003cwchar_t,struct __crt_win32_buffer_internal_dynamic_resizing\u003e::allocate(unsigned int)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "allocate",
+      "address": "0040d084",
+      "signature": "int __cdecl allocate(void * * param_1, uint param_2, __crt_win32_buffer_empty_debug_info * param_3)",
+      "comment": "Library Function - Single Match\n public: static int __cdecl __crt_win32_buffer_internal_dynamic_resizing::allocate(void * * const,unsigned int,class __crt_win32_buffer_empty_debug_info const \u0026)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "expand_if_necessary",
+      "address": "0040d0a3",
+      "signature": "undefined4 __fastcall expand_if_necessary(int * param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n private: int __thiscall `anonymous namespace\u0027::argument_list\u003cchar\u003e::expand_if_necessary(void)\n private: int __thiscall `anonymous namespace\u0027::argument_list\u003cwchar_t\u003e::expand_if_necessary(void)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040d12a",
+      "address": "0040d12a",
+      "signature": "undefined __cdecl FUN_0040d12a(undefined4 * param_1, undefined4 * param_2)"
+    },
+    {
+      "name": "FUN_0040d135",
+      "address": "0040d135",
+      "signature": "int __cdecl FUN_0040d135(LPCWSTR param_1, int param_2, undefined4 param_3, uint param_4)"
+    },
+    {
+      "name": "allocate",
+      "address": "0040d1f7",
+      "signature": "undefined4 __fastcall allocate(int param_1)",
+      "comment": "Library Function - Multiple Matches With Same Base Name\n public: int __thiscall __crt_win32_buffer\u003cchar,struct __crt_win32_buffer_no_resizing\u003e::allocate(unsigned int)\n public: int __thiscall __crt_win32_buffer\u003cwchar_t,struct __crt_win32_buffer_no_resizing\u003e::allocate(unsigned int)\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040d21e",
+      "address": "0040d21e",
+      "signature": "undefined __fastcall FUN_0040d21e(int param_1)"
+    },
+    {
+      "name": "___acrt_GetModuleFileNameA",
+      "address": "0040d232",
+      "signature": "undefined __cdecl ___acrt_GetModuleFileNameA(HMODULE param_1, undefined4 param_2, undefined4 param_3)",
+      "comment": "Library Function - Single Match\n ___acrt_GetModuleFileNameA\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_ceb1ee4838e85a9d631eb091e2fbe199\u003e,class_\u003clambda_ae742caa10f662c28703da3d2ea5e57e\u003e\u0026,class_\u003clambda_cd08b5d6af4937fe54fc07d0c9bf6b37\u003e_\u003e",
+      "address": "0040d2d3",
+      "signature": "void __thiscall operator()\u003cclass_\u003clambda_ceb1ee4838e85a9d631eb091e2fbe199\u003e,class_\u003clambda_ae742caa10f662c28703da3d2ea5e57e\u003e\u0026,class_\u003clambda_cd08b5d6af4937fe54fc07d0c9bf6b37\u003e_\u003e(\u003clambda_ceb1ee4838e85a9d631eb091e2fbe199\u003e * param_1, \u003clambda_ae742caa10f662c28703da3d2ea5e57e\u003e * param_2, \u003clambda_cd08b5d6af4937fe54fc07d0c9bf6b37\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_ceb1ee4838e85a9d631eb091e2fbe199\u003e,class \u003clambda_ae742caa10f662c28703da3d2ea5e57e\u003e \u0026,class \u003clambda_cd08b5d6af4937fe54fc07d0c9bf6b37\u003e \u003e(class \u003clambda_ceb1ee4838e85a9d631eb091e2fbe199\u003e \u0026\u0026,class \u003clambda_ae742caa10f662c28703da3d2ea5e57e\u003e \u0026,class \u003clambda_cd08b5d6af4937fe54fc07d0c9bf6b37\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040d314",
+      "address": "0040d314",
+      "signature": "undefined __stdcall FUN_0040d314(void)"
+    },
+    {
+      "name": "operator()",
+      "address": "0040d320",
+      "signature": "void __thiscall operator()(void)",
+      "comment": "Library Function - Single Match\n public: void __thiscall \u003clambda_ae742caa10f662c28703da3d2ea5e57e\u003e::operator()(void)const \n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "CPtoLocaleName",
+      "address": "0040d3a3",
+      "signature": "wchar_t * __cdecl CPtoLocaleName(int param_1)",
+      "comment": "Library Function - Single Match\n wchar_t const * __cdecl CPtoLocaleName(int)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "getSystemCP",
+      "address": "0040d3e1",
+      "signature": "int __cdecl getSystemCP(int param_1)",
+      "comment": "Library Function - Single Match\n int __cdecl getSystemCP(int)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040d452",
+      "address": "0040d452",
+      "signature": "undefined __cdecl FUN_0040d452(int param_1)"
+    },
+    {
+      "name": "FUN_0040d4b5",
+      "address": "0040d4b5",
+      "signature": "undefined __cdecl FUN_0040d4b5(int param_1)"
+    },
+    {
+      "name": "FUN_0040d661",
+      "address": "0040d661",
+      "signature": "int __cdecl FUN_0040d661(int param_1, char param_2, int param_3, undefined4 * param_4)"
+    },
+    {
+      "name": "FUN_0040d7b6",
+      "address": "0040d7b6",
+      "signature": "undefined __stdcall FUN_0040d7b6(int param_1, undefined4 * param_2)"
+    },
+    {
+      "name": "FUN_0040d835",
+      "address": "0040d835",
+      "signature": "undefined __stdcall FUN_0040d835(void)"
+    },
+    {
+      "name": "FUN_0040d83e",
+      "address": "0040d83e",
+      "signature": "undefined __stdcall FUN_0040d83e(void)"
+    },
+    {
+      "name": "___acrt_initialize_multibyte",
+      "address": "0040d856",
+      "signature": "undefined4 __stdcall ___acrt_initialize_multibyte(void)",
+      "comment": "Library Function - Single Match\n ___acrt_initialize_multibyte\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040d89e",
+      "address": "0040d89e",
+      "signature": "undefined __stdcall FUN_0040d89e(void)"
+    },
+    {
+      "name": "FUN_0040d8b1",
+      "address": "0040d8b1",
+      "signature": "undefined __cdecl FUN_0040d8b1(int param_1, int param_2)"
+    },
+    {
+      "name": "_memcpy_s",
+      "address": "0040dab9",
+      "signature": "errno_t __cdecl _memcpy_s(void * _Dst, rsize_t _DstSize, void * _Src, rsize_t _MaxCount)",
+      "comment": "Library Function - Single Match\n _memcpy_s\n\nLibraries: Visual Studio 2012, Visual Studio 2015, Visual Studio 2017, Visual Studio 2019"
+    },
+    {
+      "name": "FUN_0040db3a",
+      "address": "0040db3a",
+      "signature": "undefined4 __cdecl FUN_0040db3a(int * param_1, byte param_2, uint param_3, byte param_4)"
+    },
+    {
+      "name": "__ismbblead",
+      "address": "0040db8a",
+      "signature": "int __cdecl __ismbblead(uint _C)",
+      "comment": "Library Function - Single Match\n __ismbblead\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_MultiByteToWideChar",
+      "address": "0040dbbb",
+      "signature": "undefined __cdecl ___acrt_MultiByteToWideChar(uint param_1, DWORD param_2, LPCSTR param_3, int param_4, LPWSTR param_5, int param_6)",
+      "comment": "Library Function - Single Match\n ___acrt_MultiByteToWideChar\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_WideCharToMultiByte",
+      "address": "0040dc37",
+      "signature": "undefined __cdecl ___acrt_WideCharToMultiByte(uint param_1, uint param_2, LPCWSTR param_3, int param_4, LPSTR param_5, int param_6, uint param_7, undefined4 * param_8)",
+      "comment": "Library Function - Single Match\n ___acrt_WideCharToMultiByte\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "find_end_of_double_null_terminated_sequence",
+      "address": "0040dcee",
+      "signature": "wchar_t * __cdecl find_end_of_double_null_terminated_sequence(wchar_t * param_1)",
+      "comment": "Library Function - Single Match\n wchar_t const * __cdecl find_end_of_double_null_terminated_sequence(wchar_t const * const)\n\nLibraries: Visual Studio 2015, Visual Studio 2017, Visual Studio 2019"
+    },
+    {
+      "name": "FUN_0040dd25",
+      "address": "0040dd25",
+      "signature": "LPSTR __stdcall FUN_0040dd25(void)"
+    },
+    {
+      "name": "___acrt_lock",
+      "address": "0040de06",
+      "signature": "undefined __cdecl ___acrt_lock(int param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_lock\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040de1d",
+      "address": "0040de1d",
+      "signature": "undefined4 __stdcall FUN_0040de1d(void)"
+    },
+    {
+      "name": "___acrt_unlock",
+      "address": "0040de4e",
+      "signature": "undefined __cdecl ___acrt_unlock(int param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_unlock\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_get_process_end_policy",
+      "address": "0040de65",
+      "signature": "undefined4 __stdcall ___acrt_get_process_end_policy(void)",
+      "comment": "Library Function - Single Match\n ___acrt_get_process_end_policy\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_lowio_create_handle_array",
+      "address": "0040de96",
+      "signature": "undefined4 * __stdcall ___acrt_lowio_create_handle_array(void)",
+      "comment": "Library Function - Single Match\n ___acrt_lowio_create_handle_array\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_lowio_destroy_handle_array",
+      "address": "0040df11",
+      "signature": "undefined __cdecl ___acrt_lowio_destroy_handle_array(LPCRITICAL_SECTION param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_lowio_destroy_handle_array\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_lowio_ensure_fh_exists",
+      "address": "0040df46",
+      "signature": "undefined4 __cdecl ___acrt_lowio_ensure_fh_exists(uint param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_lowio_ensure_fh_exists\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040dfdb",
+      "address": "0040dfdb",
+      "signature": "undefined __stdcall FUN_0040dfdb(void)"
+    },
+    {
+      "name": "FUN_0040dfe4",
+      "address": "0040dfe4",
+      "signature": "undefined __cdecl FUN_0040dfe4(uint param_1)"
+    },
+    {
+      "name": "___acrt_lowio_unlock_fh",
+      "address": "0040e007",
+      "signature": "undefined __cdecl ___acrt_lowio_unlock_fh(uint param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_lowio_unlock_fh\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040e02a",
+      "address": "0040e02a",
+      "signature": "undefined4 __cdecl FUN_0040e02a(uint param_1)"
+    },
+    {
+      "name": "FUN_0040e0bb",
+      "address": "0040e0bb",
+      "signature": "undefined4 __cdecl FUN_0040e0bb(uint param_1)"
+    },
+    {
+      "name": "initialize_inherited_file_handles_nolock",
+      "address": "0040e13b",
+      "signature": "void __cdecl initialize_inherited_file_handles_nolock(void)",
+      "comment": "Library Function - Single Match\n void __cdecl initialize_inherited_file_handles_nolock(void)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040e1f1",
+      "address": "0040e1f1",
+      "signature": "undefined __stdcall FUN_0040e1f1(void)"
+    },
+    {
+      "name": "FUN_0040e2f8",
+      "address": "0040e2f8",
+      "signature": "undefined __stdcall FUN_0040e2f8(void)"
+    },
+    {
+      "name": "___acrt_locale_free_monetary",
+      "address": "0040e32d",
+      "signature": "undefined __cdecl ___acrt_locale_free_monetary(int param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_locale_free_monetary\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_locale_free_numeric",
+      "address": "0040e42b",
+      "signature": "undefined __cdecl ___acrt_locale_free_numeric(undefined4 * param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_locale_free_numeric\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040e494",
+      "address": "0040e494",
+      "signature": "undefined __cdecl FUN_0040e494(undefined4 * param_1, int param_2)"
+    },
+    {
+      "name": "___acrt_locale_free_time",
+      "address": "0040e4b9",
+      "signature": "undefined __cdecl ___acrt_locale_free_time(undefined4 * param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_locale_free_time\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___pctype_func",
+      "address": "0040e59d",
+      "signature": "ushort * __cdecl ___pctype_func(void)",
+      "comment": "Library Function - Single Match\n ___pctype_func\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__malloc_base",
+      "address": "0040e5c1",
+      "signature": "LPVOID __cdecl __malloc_base(size_t param_1)",
+      "comment": "Library Function - Single Match\n __malloc_base\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040e60f",
+      "address": "0040e60f",
+      "signature": "uint __cdecl FUN_0040e60f(short * param_1)"
+    },
+    {
+      "name": "FUN_0040e737",
+      "address": "0040e737",
+      "signature": "uint __cdecl FUN_0040e737(short * param_1, uint param_2)"
+    },
+    {
+      "name": "FUN_0040e8e7",
+      "address": "0040e8e7",
+      "signature": "undefined __cdecl FUN_0040e8e7(int * param_1, DWORD param_2, LPCSTR param_3, int param_4, LPWORD param_5, uint param_6, int param_7)"
+    },
+    {
+      "name": "FUN_0040e9f0",
+      "address": "0040e9f0",
+      "signature": "undefined __cdecl FUN_0040e9f0(int param_1)"
+    },
+    {
+      "name": "___acrt_add_locale_ref",
+      "address": "0040ea10",
+      "signature": "undefined __cdecl ___acrt_add_locale_ref(int param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_add_locale_ref\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_free_locale",
+      "address": "0040ea8d",
+      "signature": "undefined __cdecl ___acrt_free_locale(LPVOID param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_free_locale\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_locale_add_lc_time_reference",
+      "address": "0040ebd5",
+      "signature": "undefined * __cdecl ___acrt_locale_add_lc_time_reference(undefined * * param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_locale_add_lc_time_reference\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_locale_free_lc_time_if_unreferenced",
+      "address": "0040ebfe",
+      "signature": "undefined __cdecl ___acrt_locale_free_lc_time_if_unreferenced(undefined * * param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_locale_free_lc_time_if_unreferenced\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_locale_release_lc_time_reference",
+      "address": "0040ec2f",
+      "signature": "undefined * __cdecl ___acrt_locale_release_lc_time_reference(undefined * * param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_locale_release_lc_time_reference\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_release_locale_ref",
+      "address": "0040ec58",
+      "signature": "undefined __cdecl ___acrt_release_locale_ref(int param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_release_locale_ref\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040ecd9",
+      "address": "0040ecd9",
+      "signature": "int __stdcall FUN_0040ecd9(void)"
+    },
+    {
+      "name": "FUN_0040ed39",
+      "address": "0040ed39",
+      "signature": "undefined __stdcall FUN_0040ed39(void)"
+    },
+    {
+      "name": "FUN_0040ed42",
+      "address": "0040ed42",
+      "signature": "undefined __stdcall FUN_0040ed42(void)"
+    },
+    {
+      "name": "__updatetlocinfoEx_nolock",
+      "address": "0040ed5a",
+      "signature": "undefined * * __cdecl __updatetlocinfoEx_nolock(undefined4 * param_1, undefined * * param_2)",
+      "comment": "Library Function - Single Match\n __updatetlocinfoEx_nolock\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "try_get_AreFileApisANSI",
+      "address": "0040edaa",
+      "signature": "_func_int * __cdecl try_get_AreFileApisANSI(void)",
+      "comment": "Library Function - Single Match\n int (__stdcall*__cdecl try_get_AreFileApisANSI(void))(void)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FID_conflict:try_get_LCMapStringEx",
+      "address": "0040edc4",
+      "signature": "undefined __stdcall FID_conflict:try_get_LCMapStringEx(void)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n int (__stdcall*__cdecl try_get_CompareStringEx(void))(wchar_t const *,unsigned long,wchar_t const *,int,wchar_t const *,int,struct _nlsversioninfo *,void *,long)\n int (__stdcall*__cdecl try_get_LCMapStringEx(void))(wchar_t const *,unsigned long,wchar_t const *,int,wchar_t *,int,struct _nlsversioninfo *,void *,long)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "try_get_LocaleNameToLCID",
+      "address": "0040edde",
+      "signature": "_func_ulong_wchar_t_ptr_ulong * __cdecl try_get_LocaleNameToLCID(void)",
+      "comment": "Library Function - Single Match\n unsigned long (__stdcall*__cdecl try_get_LocaleNameToLCID(void))(wchar_t const *,unsigned long)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040edf8",
+      "address": "0040edf8",
+      "signature": "HMODULE __cdecl FUN_0040edf8(int * param_1, int * param_2)"
+    },
+    {
+      "name": "try_get_function",
+      "address": "0040eec3",
+      "signature": "void * __cdecl try_get_function(function_id param_1, char * param_2, module_id * param_3, module_id * param_4)",
+      "comment": "Library Function - Single Match\n void * __cdecl try_get_function(enum `anonymous namespace\u0027::function_id,char const * const,enum A0x391cf84c::module_id const * const,enum A0x391cf84c::module_id const * const)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_AppPolicyGetProcessTerminationMethodInternal@4",
+      "address": "0040ef46",
+      "signature": "undefined4 __stdcall ___acrt_AppPolicyGetProcessTerminationMethodInternal@4(undefined4 param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_AppPolicyGetProcessTerminationMethodInternal@4\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_AreFileApisANSI@0",
+      "address": "0040ef86",
+      "signature": "int __stdcall ___acrt_AreFileApisANSI@0(void)",
+      "comment": "Library Function - Single Match\n ___acrt_AreFileApisANSI@0\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_FlsAlloc@4",
+      "address": "0040efa5",
+      "signature": "undefined __stdcall ___acrt_FlsAlloc@4(undefined4 param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_FlsAlloc@4\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FID_conflict:___acrt_FlsGetValue@4",
+      "address": "0040efe4",
+      "signature": "undefined __stdcall FID_conflict:___acrt_FlsGetValue@4(DWORD param_1)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n ___acrt_FlsFree@4\n ___acrt_FlsGetValue@4\n ___acrt_GetSystemTimePreciseAsFileTime@4\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FID_conflict:___acrt_FlsGetValue@4",
+      "address": "0040f023",
+      "signature": "undefined __stdcall FID_conflict:___acrt_FlsGetValue@4(DWORD param_1)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n ___acrt_FlsFree@4\n ___acrt_FlsGetValue@4\n ___acrt_GetSystemTimePreciseAsFileTime@4\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_FlsSetValue@8",
+      "address": "0040f062",
+      "signature": "undefined __stdcall ___acrt_FlsSetValue@8(DWORD param_1, LPVOID param_2)",
+      "comment": "Library Function - Single Match\n ___acrt_FlsSetValue@8\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_InitializeCriticalSectionEx@12",
+      "address": "0040f0a4",
+      "signature": "undefined __stdcall ___acrt_InitializeCriticalSectionEx@12(LPCRITICAL_SECTION param_1, DWORD param_2, undefined4 param_3)",
+      "comment": "Library Function - Single Match\n ___acrt_InitializeCriticalSectionEx@12\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FID_conflict:___acrt_CompareStringEx@36",
+      "address": "0040f0ef",
+      "signature": "undefined __stdcall FID_conflict:___acrt_CompareStringEx@36(wchar_t * param_1, DWORD param_2, LPCWSTR param_3, int param_4, LPWSTR param_5, int param_6, undefined4 param_7, undefined4 param_8, undefined4 param_9)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n ___acrt_CompareStringEx@36\n ___acrt_LCMapStringEx@36\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_LocaleNameToLCID@8",
+      "address": "0040f14c",
+      "signature": "undefined __stdcall ___acrt_LocaleNameToLCID@8(wchar_t * param_1, ulong param_2)",
+      "comment": "Library Function - Single Match\n ___acrt_LocaleNameToLCID@8\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_uninitialize_winapi_thunks",
+      "address": "0040f191",
+      "signature": "undefined1 __cdecl ___acrt_uninitialize_winapi_thunks(char param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_uninitialize_winapi_thunks\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040f1c7",
+      "address": "0040f1c7",
+      "signature": "undefined __stdcall FUN_0040f1c7(void * param_1, uint param_2, uint param_3)"
+    },
+    {
+      "name": "__recalloc_base",
+      "address": "0040f1d2",
+      "signature": "LPVOID __cdecl __recalloc_base(void * param_1, uint param_2, uint param_3)",
+      "comment": "Library Function - Single Match\n __recalloc_base\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_execute_initializers",
+      "address": "0040f25a",
+      "signature": "undefined4 __cdecl ___acrt_execute_initializers(undefined4 * param_1, undefined4 * param_2)",
+      "comment": "Library Function - Single Match\n ___acrt_execute_initializers\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_execute_uninitializers",
+      "address": "0040f2c2",
+      "signature": "undefined1 __cdecl ___acrt_execute_uninitializers(int param_1, int param_2)",
+      "comment": "Library Function - Single Match\n ___acrt_execute_uninitializers\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040f2f3",
+      "address": "0040f2f3",
+      "signature": "undefined __cdecl FUN_0040f2f3(undefined4 param_1)"
+    },
+    {
+      "name": "__callnewh",
+      "address": "0040f302",
+      "signature": "int __cdecl __callnewh(size_t _Size)",
+      "comment": "Library Function - Single Match\n __callnewh\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__query_new_handler",
+      "address": "0040f32f",
+      "signature": "uint __stdcall __query_new_handler(void)",
+      "comment": "Library Function - Single Match\n __query_new_handler\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040f382",
+      "address": "0040f382",
+      "signature": "undefined __stdcall FUN_0040f382(void)"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_cbab9ec6f41b0180b23cc171c22676b0\u003e,class_\u003clambda_44731a7d0e6d81c3e6aa82d741081786\u003e\u0026,class_\u003clambda_4b292cb8dd18144e164572427af410ab\u003e_\u003e",
+      "address": "0040f38b",
+      "signature": "_func_void_int * __thiscall operator()\u003cclass_\u003clambda_cbab9ec6f41b0180b23cc171c22676b0\u003e,class_\u003clambda_44731a7d0e6d81c3e6aa82d741081786\u003e\u0026,class_\u003clambda_4b292cb8dd18144e164572427af410ab\u003e_\u003e(\u003clambda_cbab9ec6f41b0180b23cc171c22676b0\u003e * param_1, \u003clambda_44731a7d0e6d81c3e6aa82d741081786\u003e * param_2, \u003clambda_4b292cb8dd18144e164572427af410ab\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: void (__cdecl*__thiscall __crt_seh_guarded_call\u003cvoid (__cdecl*)(int)\u003e::operator()\u003cclass \u003clambda_cbab9ec6f41b0180b23cc171c22676b0\u003e,class \u003clambda_44731a7d0e6d81c3e6aa82d741081786\u003e \u0026,class \u003clambda_4b292cb8dd18144e164572427af410ab\u003e \u003e(class \u003clambda_cbab9ec6f41b0180b23cc171c22676b0\u003e \u0026\u0026,class \u003clambda_44731a7d0e6d81c3e6aa82d741081786\u003e \u0026,class \u003clambda_4b292cb8dd18144e164572427af410ab\u003e \u0026\u0026))(int)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040f3e3",
+      "address": "0040f3e3",
+      "signature": "undefined __stdcall FUN_0040f3e3(void)"
+    },
+    {
+      "name": "get_global_action_nolock",
+      "address": "0040f3ef",
+      "signature": "_func_void_int * * __cdecl get_global_action_nolock(int param_1)",
+      "comment": "Library Function - Single Match\n void (__cdecl** __cdecl get_global_action_nolock(int))(int)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "siglookup",
+      "address": "0040f431",
+      "signature": "__crt_signal_action_t * __cdecl siglookup(int param_1, __crt_signal_action_t * param_2)",
+      "comment": "Library Function - Single Match\n struct __crt_signal_action_t * __cdecl siglookup(int,struct __crt_signal_action_t * const)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_get_sigabrt_handler",
+      "address": "0040f459",
+      "signature": "undefined __stdcall ___acrt_get_sigabrt_handler(void)",
+      "comment": "Library Function - Single Match\n ___acrt_get_sigabrt_handler\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040f480",
+      "address": "0040f480",
+      "signature": "undefined __cdecl FUN_0040f480(undefined4 param_1)"
+    },
+    {
+      "name": "FUN_0040f49e",
+      "address": "0040f49e",
+      "signature": "undefined4 __cdecl FUN_0040f49e(int param_1)"
+    },
+    {
+      "name": "FUN_0040f62a",
+      "address": "0040f62a",
+      "signature": "undefined __stdcall FUN_0040f62a(void)"
+    },
+    {
+      "name": "FUN_0040f691",
+      "address": "0040f691",
+      "signature": "undefined __stdcall FUN_0040f691(int * param_1, undefined4 * param_2)"
+    },
+    {
+      "name": "FUN_0040f711",
+      "address": "0040f711",
+      "signature": "undefined __stdcall FUN_0040f711(void)"
+    },
+    {
+      "name": "operator()\u003cclass_\u003clambda_2cc53f568c5a2bb6f192f930a45d44ea\u003e,class_\u003clambda_ab61a845afdef5b7c387490eaf3616ee\u003e\u0026,class_\u003clambda_c2ffc0b7726aa6be21d5f0026187e748\u003e_\u003e",
+      "address": "0040f71d",
+      "signature": "void __thiscall operator()\u003cclass_\u003clambda_2cc53f568c5a2bb6f192f930a45d44ea\u003e,class_\u003clambda_ab61a845afdef5b7c387490eaf3616ee\u003e\u0026,class_\u003clambda_c2ffc0b7726aa6be21d5f0026187e748\u003e_\u003e(\u003clambda_2cc53f568c5a2bb6f192f930a45d44ea\u003e * param_1, \u003clambda_ab61a845afdef5b7c387490eaf3616ee\u003e * param_2, \u003clambda_c2ffc0b7726aa6be21d5f0026187e748\u003e * param_3)",
+      "comment": "Library Function - Single Match\n public: void __thiscall __crt_seh_guarded_call\u003cvoid\u003e::operator()\u003cclass \u003clambda_2cc53f568c5a2bb6f192f930a45d44ea\u003e,class \u003clambda_ab61a845afdef5b7c387490eaf3616ee\u003e \u0026,class \u003clambda_c2ffc0b7726aa6be21d5f0026187e748\u003e \u003e(class \u003clambda_2cc53f568c5a2bb6f192f930a45d44ea\u003e \u0026\u0026,class \u003clambda_ab61a845afdef5b7c387490eaf3616ee\u003e \u0026,class \u003clambda_c2ffc0b7726aa6be21d5f0026187e748\u003e \u0026\u0026)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040f7bd",
+      "address": "0040f7bd",
+      "signature": "undefined __stdcall FUN_0040f7bd(void)"
+    },
+    {
+      "name": "common_flush_all",
+      "address": "0040f7c9",
+      "signature": "int __cdecl common_flush_all(bool param_1)",
+      "comment": "Library Function - Single Match\n int __cdecl common_flush_all(bool)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "common_flush_all_should_try_to_flush_stream",
+      "address": "0040f816",
+      "signature": "bool __cdecl common_flush_all_should_try_to_flush_stream(__crt_stdio_stream param_1, int * param_2)",
+      "comment": "Library Function - Single Match\n bool __cdecl common_flush_all_should_try_to_flush_stream(class __crt_stdio_stream,int * const)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "is_stream_flushable_or_commitable",
+      "address": "0040f849",
+      "signature": "bool __cdecl is_stream_flushable_or_commitable(long param_1)",
+      "comment": "Library Function - Single Match\n bool __cdecl is_stream_flushable_or_commitable(long)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040f86e",
+      "address": "0040f86e",
+      "signature": "undefined4 __cdecl FUN_0040f86e(FILE * param_1, int * param_2)"
+    },
+    {
+      "name": "FUN_0040f8d7",
+      "address": "0040f8d7",
+      "signature": "int __cdecl FUN_0040f8d7(FILE * param_1)"
+    },
+    {
+      "name": "__flushall",
+      "address": "0040f93c",
+      "signature": "int __cdecl __flushall(void)",
+      "comment": "Library Function - Single Match\n __flushall\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040fa59",
+      "address": "0040fa59",
+      "signature": "undefined __cdecl FUN_0040fa59(int param_1)"
+    },
+    {
+      "name": "__unlock_file",
+      "address": "0040fa6d",
+      "signature": "void __cdecl __unlock_file(FILE * _File)",
+      "comment": "Library Function - Single Match\n __unlock_file\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___hw_cw_sse2",
+      "address": "0040fa81",
+      "signature": "uint __cdecl ___hw_cw_sse2(uint param_1)",
+      "comment": "Library Function - Single Match\n ___hw_cw_sse2\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__clearfp",
+      "address": "0040fb28",
+      "signature": "uint __cdecl __clearfp(void)",
+      "comment": "Library Function - Single Match\n __clearfp\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__control87",
+      "address": "0040fc06",
+      "signature": "uint __cdecl __control87(uint _NewValue, uint _Mask)",
+      "comment": "Library Function - Single Match\n __control87\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__hw_cw",
+      "address": "0040ff07",
+      "signature": "uint __cdecl __hw_cw(uint param_1)",
+      "comment": "Library Function - Single Match\n __hw_cw\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_update_locale_info",
+      "address": "0040ffa5",
+      "signature": "undefined __cdecl ___acrt_update_locale_info(int param_1, int * param_2)",
+      "comment": "Library Function - Single Match\n ___acrt_update_locale_info\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0040ffd2",
+      "address": "0040ffd2",
+      "signature": "undefined __cdecl FUN_0040ffd2(int param_1, int * param_2, int param_3)"
+    },
+    {
+      "name": "FUN_00410003",
+      "address": "00410003",
+      "signature": "undefined __cdecl FUN_00410003(int param_1, int * param_2)"
+    },
+    {
+      "name": "FUN_00410030",
+      "address": "00410030",
+      "signature": "undefined __cdecl FUN_00410030(int param_1, int * param_2, int param_3)"
+    },
+    {
+      "name": "__acrt_fp_classify",
+      "address": "00410061",
+      "signature": "__acrt_fp_class __cdecl __acrt_fp_classify(double * param_1)",
+      "comment": "Library Function - Single Match\n enum __acrt_fp_class __cdecl __acrt_fp_classify(double const \u0026)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "fe_to_nearest",
+      "address": "004100c3",
+      "signature": "bool __cdecl fe_to_nearest(double * param_1, __uint64 param_2, short param_3)",
+      "comment": "Library Function - Single Match\n bool __cdecl fe_to_nearest(double const * const,unsigned __int64,short)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00410166",
+      "address": "00410166",
+      "signature": "int __cdecl FUN_00410166(double * param_1, undefined1[16] * param_2, uint param_3, uint * * * * * * * param_4, int param_5, size_t param_6, byte param_7, int param_8, int param_9, int * param_10)"
+    },
+    {
+      "name": "FUN_00410492",
+      "address": "00410492",
+      "signature": "undefined __cdecl FUN_00410492(int * param_1, char * param_2, uint param_3, uint * * * * * * * param_4, int param_5, int param_6, char param_7, int param_8, int param_9, int * param_10)"
+    },
+    {
+      "name": "FUN_00410536",
+      "address": "00410536",
+      "signature": "undefined4 __cdecl FUN_00410536(char * param_1, uint param_2, int param_3, char param_4, int param_5, int * param_6, byte param_7, int * param_8)"
+    },
+    {
+      "name": "FUN_0041067b",
+      "address": "0041067b",
+      "signature": "undefined __cdecl FUN_0041067b(int * param_1, char * param_2, uint param_3, uint * * * * * * * param_4, int param_5, size_t param_6, int param_7, int * param_8)"
+    },
+    {
+      "name": "FUN_00410711",
+      "address": "00410711",
+      "signature": "undefined4 __cdecl FUN_00410711(char * param_1, uint param_2, size_t param_3, int * param_4, char param_5, int * param_6)"
+    },
+    {
+      "name": "FUN_004107ff",
+      "address": "004107ff",
+      "signature": "undefined __cdecl FUN_004107ff(int * param_1, char * param_2, uint param_3, uint * * * * * * * param_4, int param_5, size_t param_6, char param_7, int param_8, int param_9, int * param_10)"
+    },
+    {
+      "name": "FUN_004108ce",
+      "address": "004108ce",
+      "signature": "undefined4 __cdecl FUN_004108ce(int param_1, byte param_2, char * param_3, uint param_4, byte param_5)"
+    },
+    {
+      "name": "shift_bytes",
+      "address": "00410963",
+      "signature": "void __cdecl shift_bytes(char * param_1, uint param_2, char * param_3, int param_4)",
+      "comment": "Library Function - Single Match\n void __cdecl shift_bytes(char * const,unsigned int,char * const,int)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "should_round_up",
+      "address": "00410997",
+      "signature": "bool __cdecl should_round_up(double * param_1, __uint64 param_2, short param_3, __acrt_rounding_mode param_4)",
+      "comment": "Library Function - Single Match\n bool __cdecl should_round_up(double const * const,unsigned __int64,short,enum __acrt_rounding_mode)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00410a2a",
+      "address": "00410a2a",
+      "signature": "int __cdecl FUN_00410a2a(double * param_1, undefined1[16] * param_2, uint param_3, uint * * * * * * * param_4, int param_5, int param_6, size_t param_7, uint param_8, undefined4 param_9, int param_10, int * param_11)"
+    },
+    {
+      "name": "FUN_00410bab",
+      "address": "00410bab",
+      "signature": "uint __cdecl FUN_00410bab(LPWSTR param_1, byte * param_2, uint param_3, int * param_4)"
+    },
+    {
+      "name": "__fileno",
+      "address": "00410cde",
+      "signature": "int __cdecl __fileno(FILE * _File)",
+      "comment": "Library Function - Single Match\n __fileno\n\nLibrary: Visual Studio"
+    },
+    {
+      "name": "FUN_00410d05",
+      "address": "00410d05",
+      "signature": "bool __stdcall FUN_00410d05(void)"
+    },
+    {
+      "name": "__isctype_l",
+      "address": "00410d1a",
+      "signature": "int __cdecl __isctype_l(int _C, int _Type, _locale_t _Locale)",
+      "comment": "Library Function - Single Match\n __isctype_l\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "_qsort",
+      "address": "00410df0",
+      "signature": "void __cdecl _qsort(void * _Base, size_t _NumOfElements, size_t _SizeOfElements, _PtFuncCompare * _PtFuncCompare)",
+      "comment": "Library Function - Single Match\n _qsort\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004112de",
+      "address": "004112de",
+      "signature": "undefined4 __cdecl FUN_004112de(char * param_1, int param_2, int param_3, int param_4)"
+    },
+    {
+      "name": "FUN_00411395",
+      "address": "00411395",
+      "signature": "undefined __cdecl FUN_00411395(char * param_1, int param_2, int param_3, int param_4)"
+    },
+    {
+      "name": "_strpbrk",
+      "address": "004113a0",
+      "signature": "char * __cdecl _strpbrk(char * _Str, char * _Control)",
+      "comment": "Library Function - Single Match\n _strpbrk\n\nLibrary: Visual Studio"
+    },
+    {
+      "name": "__mbsdec",
+      "address": "004113e0",
+      "signature": "uchar * __cdecl __mbsdec(uchar * _Start, uchar * _Pos)",
+      "comment": "Library Function - Single Match\n __mbsdec\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__mbsdec_l",
+      "address": "004113f7",
+      "signature": "uchar * __cdecl __mbsdec_l(uchar * _Start, uchar * _Pos, _locale_t _Locale)",
+      "comment": "Library Function - Single Match\n __mbsdec_l\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00411484",
+      "address": "00411484",
+      "signature": "undefined __cdecl FUN_00411484(int * param_1, wchar_t * param_2, uint param_3, char * param_4, int param_5, LPWSTR param_6, int param_7, uint param_8, int param_9)"
+    },
+    {
+      "name": "___acrt_LCMapStringA",
+      "address": "00411672",
+      "signature": "undefined __cdecl ___acrt_LCMapStringA(int * param_1, wchar_t * param_2, uint param_3, char * param_4, int param_5, LPWSTR param_6, int param_7, uint param_8, int param_9)",
+      "comment": "Library Function - Single Match\n ___acrt_LCMapStringA\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004116ca",
+      "address": "004116ca",
+      "signature": "int __cdecl FUN_004116ca(ushort * param_1, ushort * param_2, int param_3)"
+    },
+    {
+      "name": "FID_conflict:GetTableIndexFromLocaleName",
+      "address": "00411719",
+      "signature": "undefined4 __cdecl FID_conflict:GetTableIndexFromLocaleName(ushort * param_1)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n int __cdecl GetTableIndexFromLocaleName(wchar_t const *)\n int __cdecl ATL::_AtlGetTableIndexFromLocaleName(wchar_t const *)\n _GetTableIndexFromLocaleName\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_DownlevelLocaleNameToLCID",
+      "address": "00411769",
+      "signature": "undefined4 __cdecl ___acrt_DownlevelLocaleNameToLCID(ushort * param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_DownlevelLocaleNameToLCID\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FID_conflict:__msize_base",
+      "address": "00411795",
+      "signature": "size_t __cdecl FID_conflict:__msize_base(void * _Memory)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n __msize\n __msize_base\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__realloc_base",
+      "address": "004117c8",
+      "signature": "LPVOID __cdecl __realloc_base(LPVOID param_1, uint param_2)",
+      "comment": "Library Function - Single Match\n __realloc_base\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00411831",
+      "address": "00411831",
+      "signature": "undefined4 __stdcall FUN_00411831(uint * param_1, undefined4 * param_2)"
+    },
+    {
+      "name": "FUN_004118c7",
+      "address": "004118c7",
+      "signature": "undefined __stdcall FUN_004118c7(void)"
+    },
+    {
+      "name": "__commit",
+      "address": "004118d3",
+      "signature": "int __cdecl __commit(int _FileHandle)",
+      "comment": "Library Function - Single Match\n __commit\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00411950",
+      "address": "00411950",
+      "signature": "undefined __cdecl FUN_00411950(DWORD * param_1, uint param_2, uint * param_3, int param_4, int * param_5)"
+    },
+    {
+      "name": "write_double_translated_unicode_nolock",
+      "address": "00411d22",
+      "signature": "write_result __cdecl write_double_translated_unicode_nolock(char * param_1, uint param_2)",
+      "comment": "Library Function - Single Match\n struct `anonymous namespace\u0027::write_result __cdecl write_double_translated_unicode_nolock(char const * const,unsigned int)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00411d8a",
+      "address": "00411d8a",
+      "signature": "undefined4 __cdecl FUN_00411d8a(uint param_1, int * param_2)"
+    },
+    {
+      "name": "write_text_ansi_nolock",
+      "address": "00411e08",
+      "signature": "write_result __cdecl write_text_ansi_nolock(int param_1, char * param_2, uint param_3)",
+      "comment": "Library Function - Single Match\n struct `anonymous namespace\u0027::write_result __cdecl write_text_ansi_nolock(int,char const * const,unsigned int)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "write_text_utf16le_nolock",
+      "address": "00411ee3",
+      "signature": "write_result __cdecl write_text_utf16le_nolock(int param_1, char * param_2, uint param_3)",
+      "comment": "Library Function - Single Match\n struct `anonymous namespace\u0027::write_result __cdecl write_text_utf16le_nolock(int,char const * const,unsigned int)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "write_text_utf8_nolock",
+      "address": "00411fcc",
+      "signature": "write_result __cdecl write_text_utf8_nolock(int param_1, char * param_2, uint param_3)",
+      "comment": "Library Function - Single Match\n struct `anonymous namespace\u0027::write_result __cdecl write_text_utf8_nolock(int,char const * const,unsigned int)\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004120fe",
+      "address": "004120fe",
+      "signature": "int __cdecl FUN_004120fe(char * param_1, uint * param_2, uint param_3, int * param_4)"
+    },
+    {
+      "name": "FUN_004121c6",
+      "address": "004121c6",
+      "signature": "undefined __stdcall FUN_004121c6(void)"
+    },
+    {
+      "name": "FUN_00412206",
+      "address": "00412206",
+      "signature": "int __cdecl FUN_00412206(char * param_1, uint * param_2, uint param_3, int * param_4)"
+    },
+    {
+      "name": "FUN_00412406",
+      "address": "00412406",
+      "signature": "int __stdcall FUN_00412406(void)"
+    },
+    {
+      "name": "FUN_004124a8",
+      "address": "004124a8",
+      "signature": "undefined __stdcall FUN_004124a8(void)"
+    },
+    {
+      "name": "___acrt_stdio_free_buffer_nolock",
+      "address": "004124b1",
+      "signature": "undefined __cdecl ___acrt_stdio_free_buffer_nolock(undefined4 * param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_stdio_free_buffer_nolock\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004124f1",
+      "address": "004124f1",
+      "signature": "byte __cdecl FUN_004124f1(uint param_1)"
+    },
+    {
+      "name": "___set_fpsr_sse2",
+      "address": "00412547",
+      "signature": "undefined __cdecl ___set_fpsr_sse2(uint param_1)",
+      "comment": "Library Function - Single Match\n ___set_fpsr_sse2\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__clrfp",
+      "address": "004125c7",
+      "signature": "int __stdcall __clrfp(void)",
+      "comment": "Library Function - Single Match\n __clrfp\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__ctrlfp",
+      "address": "004125d8",
+      "signature": "int __stdcall __ctrlfp(void)",
+      "comment": "Library Function - Single Match\n __ctrlfp\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00412602",
+      "address": "00412602",
+      "signature": "undefined __stdcall FUN_00412602(void)"
+    },
+    {
+      "name": "__statfp",
+      "address": "0041265b",
+      "signature": "int __stdcall __statfp(void)",
+      "comment": "Library Function - Single Match\n __statfp\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_0041266b",
+      "address": "0041266b",
+      "signature": "bool __cdecl FUN_0041266b(char * param_1, char * param_2, int param_3, int param_4, int param_5)"
+    },
+    {
+      "name": "FUN_004126e9",
+      "address": "004126e9",
+      "signature": "int __cdecl FUN_004126e9(uint * param_1, uint param_2, int param_3, int * param_4, int param_5, int param_6, int * param_7)"
+    },
+    {
+      "name": "FUN_004127f0",
+      "address": "004127f0",
+      "signature": "ulonglong __cdecl FUN_004127f0(uint * param_1, uint * param_2)"
+    },
+    {
+      "name": "FUN_00412c78",
+      "address": "00412c78",
+      "signature": "undefined __cdecl FUN_00412c78(int param_1, uint param_2, int param_3, int param_4, undefined4 * param_5, uint * * * * * * * param_6, int param_7)"
+    },
+    {
+      "name": "fegetround",
+      "address": "004141b1",
+      "signature": "undefined __cdecl fegetround(void)",
+      "comment": "Library Function - Single Match\n _fegetround\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004141be",
+      "address": "004141be",
+      "signature": "char __stdcall FUN_004141be(char * param_1)"
+    },
+    {
+      "name": "FUN_004141ea",
+      "address": "004141ea",
+      "signature": "uint __cdecl FUN_004141ea(undefined2 * param_1, byte * param_2, uint param_3, uint * param_4, int param_5)"
+    },
+    {
+      "name": "FUN_0041422d",
+      "address": "0041422d",
+      "signature": "int __thiscall FUN_0041422d(ushort * param_1, undefined4 * param_2, uint param_3, uint * param_4, int param_5)"
+    },
+    {
+      "name": "___strncnt",
+      "address": "00414335",
+      "signature": "undefined __cdecl ___strncnt(char * param_1, int param_2)",
+      "comment": "Library Function - Single Match\n ___strncnt\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00414351",
+      "address": "00414351",
+      "signature": "undefined8 __cdecl FUN_00414351(uint param_1, undefined4 param_2, undefined4 param_3, PLARGE_INTEGER param_4, int param_5)"
+    },
+    {
+      "name": "FUN_004143d4",
+      "address": "004143d4",
+      "signature": "undefined8 __cdecl FUN_004143d4(uint param_1, undefined4 param_2, undefined4 param_3, PLARGE_INTEGER param_4, int param_5)"
+    },
+    {
+      "name": "__putwch_nolock",
+      "address": "004143f2",
+      "signature": "wint_t __cdecl __putwch_nolock(wchar_t _WCh)",
+      "comment": "Library Function - Single Match\n __putwch_nolock\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00414424",
+      "address": "00414424",
+      "signature": "undefined4 __cdecl FUN_00414424(FILE * param_1, int * param_2)"
+    },
+    {
+      "name": "FUN_004144b3",
+      "address": "004144b3",
+      "signature": "undefined __stdcall FUN_004144b3(void)"
+    },
+    {
+      "name": "FUN_004144bb",
+      "address": "004144bb",
+      "signature": "undefined4 __cdecl FUN_004144bb(FILE * param_1, int * param_2)"
+    },
+    {
+      "name": "FUN_00414549",
+      "address": "00414549",
+      "signature": "undefined4 __cdecl FUN_00414549(FILE * param_1)"
+    },
+    {
+      "name": "fegetenv",
+      "address": "00414579",
+      "signature": "undefined4 __cdecl fegetenv(uint * param_1)",
+      "comment": "Library Function - Single Match\n _fegetenv\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "fesetenv",
+      "address": "00414596",
+      "signature": "undefined4 __cdecl fesetenv(uint * param_1)",
+      "comment": "Library Function - Single Match\n _fesetenv\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004145e1",
+      "address": "004145e1",
+      "signature": "undefined4 __cdecl FUN_004145e1(uint * param_1)"
+    },
+    {
+      "name": "FUN_00414630",
+      "address": "00414630",
+      "signature": "undefined __stdcall FUN_00414630(void)"
+    },
+    {
+      "name": "FUN_00414688",
+      "address": "00414688",
+      "signature": "uint __cdecl FUN_00414688(int param_1, uint param_2)"
+    },
+    {
+      "name": "FUN_00414740",
+      "address": "00414740",
+      "signature": "float10 __cdecl FUN_00414740(double param_1)"
+    },
+    {
+      "name": "FUN_0041485d",
+      "address": "0041485d",
+      "signature": "uint __cdecl FUN_0041485d(uint param_1)"
+    },
+    {
+      "name": "FUN_0041490d",
+      "address": "0041490d",
+      "signature": "uint __cdecl FUN_0041490d(uint param_1)"
+    },
+    {
+      "name": "FUN_004149ba",
+      "address": "004149ba",
+      "signature": "uint __cdecl FUN_004149ba(uint param_1)"
+    },
+    {
+      "name": "FUN_00414a70",
+      "address": "00414a70",
+      "signature": "uint __cdecl FUN_00414a70(uint param_1)"
+    },
+    {
+      "name": "___acrt_fenv_get_common_round_control",
+      "address": "00414b26",
+      "signature": "uint __cdecl ___acrt_fenv_get_common_round_control(uint param_1)",
+      "comment": "Library Function - Single Match\n ___acrt_fenv_get_common_round_control\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___acrt_fenv_get_control",
+      "address": "00414b48",
+      "signature": "uint __stdcall ___acrt_fenv_get_control(void)",
+      "comment": "Library Function - Single Match\n ___acrt_fenv_get_control\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00414bc8",
+      "address": "00414bc8",
+      "signature": "uint __stdcall FUN_00414bc8(void)"
+    },
+    {
+      "name": "FUN_00414c72",
+      "address": "00414c72",
+      "signature": "undefined __cdecl FUN_00414c72(uint param_1)"
+    },
+    {
+      "name": "FUN_00414ced",
+      "address": "00414ced",
+      "signature": "undefined __cdecl FUN_00414ced(uint param_1)"
+    },
+    {
+      "name": "FUN_00414de7",
+      "address": "00414de7",
+      "signature": "undefined4 __cdecl FUN_00414de7(undefined4 param_1, undefined4 * param_2)"
+    },
+    {
+      "name": "FUN_00414dfb",
+      "address": "00414dfb",
+      "signature": "undefined4 __cdecl FUN_00414dfb(undefined4 * param_1, int param_2)"
+    },
+    {
+      "name": "FUN_00414e1d",
+      "address": "00414e1d",
+      "signature": "undefined __cdecl FUN_00414e1d(uint param_1, byte * param_2, uint param_3, uint * param_4, int param_5)"
+    },
+    {
+      "name": "___ascii_strnicmp",
+      "address": "00414fe0",
+      "signature": "int __cdecl ___ascii_strnicmp(char * _Str1, char * _Str2, size_t _MaxCount)",
+      "comment": "Library Function - Single Match\n ___ascii_strnicmp\n\nLibrary: Visual Studio"
+    },
+    {
+      "name": "__dcrt_lowio_initialize_console_output",
+      "address": "00415041",
+      "signature": "void __cdecl __dcrt_lowio_initialize_console_output(void)",
+      "comment": "Library Function - Single Match\n void __cdecl __dcrt_lowio_initialize_console_output(void)\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___dcrt_lowio_ensure_console_output_initialized",
+      "address": "00415060",
+      "signature": "bool __stdcall ___dcrt_lowio_ensure_console_output_initialized(void)",
+      "comment": "Library Function - Single Match\n ___dcrt_lowio_ensure_console_output_initialized\n\nLibraries: Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FID_conflict:___dcrt_terminate_console_output",
+      "address": "0041507f",
+      "signature": "undefined __stdcall FID_conflict:___dcrt_terminate_console_output(void)",
+      "comment": "Library Function - Multiple Matches With Different Base Names\n ___dcrt_terminate_console_input\n ___dcrt_terminate_console_output\n\nLibraries: Visual Studio 2017 Debug, Visual Studio 2017 Release, Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___dcrt_write_console",
+      "address": "00415096",
+      "signature": "BOOL __cdecl ___dcrt_write_console(void * param_1, DWORD param_2, LPDWORD param_3)",
+      "comment": "Library Function - Single Match\n ___dcrt_write_console\n\nLibraries: Visual Studio 2019 Debug, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_004150eb",
+      "address": "004150eb",
+      "signature": "undefined4 __stdcall FUN_004150eb(uint * param_1, undefined4 * param_2)"
+    },
+    {
+      "name": "FUN_00415170",
+      "address": "00415170",
+      "signature": "undefined __stdcall FUN_00415170(void)"
+    },
+    {
+      "name": "FUN_0041517c",
+      "address": "0041517c",
+      "signature": "undefined4 __cdecl FUN_0041517c(uint param_1, int * param_2)"
+    },
+    {
+      "name": "FUN_0041521f",
+      "address": "0041521f",
+      "signature": "undefined4 __cdecl FUN_0041521f(uint param_1, int param_2)"
+    },
+    {
+      "name": "__acrt_stdio_free_stream",
+      "address": "004152bf",
+      "signature": "void __cdecl __acrt_stdio_free_stream(__crt_stdio_stream param_1)",
+      "comment": "Library Function - Single Match\n void __cdecl __acrt_stdio_free_stream(class __crt_stdio_stream)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00415310",
+      "address": "00415310",
+      "signature": "undefined __stdcall FUN_00415310(void)"
+    },
+    {
+      "name": "FUN_0041532e",
+      "address": "0041532e",
+      "signature": "float10 __cdecl FUN_0041532e(double param_1)"
+    },
+    {
+      "name": "FUN_00415a3c",
+      "address": "00415a3c",
+      "signature": "undefined4 __stdcall FUN_00415a3c(void)"
+    },
+    {
+      "name": "FUN_00415a98",
+      "address": "00415a98",
+      "signature": "uint __cdecl FUN_00415a98(undefined4 param_1, uint param_2)"
+    },
+    {
+      "name": "__math_exit",
+      "address": "00415abb",
+      "signature": "undefined __fastcall __math_exit(undefined4 param_1, int param_2, undefined4 param_3, undefined4 param_4, undefined4 param_5)",
+      "comment": "Library Function - Single Match\n __math_exit\n\nLibrary: Visual Studio"
+    },
+    {
+      "name": "FUN_00415ba0",
+      "address": "00415ba0",
+      "signature": "float10 __fastcall FUN_00415ba0(undefined4 param_1, undefined4 param_2, undefined2 param_3, undefined4 param_4, undefined4 param_5, undefined4 param_6, undefined4 param_7, undefined4 param_8)"
+    },
+    {
+      "name": "__startOneArgErrorHandling",
+      "address": "00415bb7",
+      "signature": "float10 __fastcall __startOneArgErrorHandling(undefined4 param_1, int param_2, ushort param_3, undefined4 param_4, undefined4 param_5, undefined4 param_6)",
+      "comment": "Library Function - Single Match\n __startOneArgErrorHandling\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "___libm_error_support",
+      "address": "00415bf3",
+      "signature": "undefined __cdecl ___libm_error_support(undefined8 * param_1, undefined8 * param_2, undefined8 * param_3, int param_4)",
+      "comment": "Library Function - Single Match\n ___libm_error_support\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00415e9c",
+      "address": "00415e9c",
+      "signature": "undefined4 __cdecl FUN_00415e9c(double param_1)"
+    },
+    {
+      "name": "FUN_00415f07",
+      "address": "00415f07",
+      "signature": "undefined4 __cdecl FUN_00415f07(int param_1, int param_2, int param_3, int param_4, undefined8 * param_5)"
+    },
+    {
+      "name": "__87except",
+      "address": "00416032",
+      "signature": "undefined __cdecl __87except(int param_1, int * param_2, ushort * param_3)",
+      "comment": "Library Function - Single Match\n __87except\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__frnd",
+      "address": "0041613c",
+      "signature": "float10 __cdecl __frnd(double param_1)",
+      "comment": "Library Function - Single Match\n __frnd\n\nLibraries: Visual Studio 2008 Release, Visual Studio 2010 Release, Visual Studio 2012 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__errcode",
+      "address": "00416150",
+      "signature": "int __cdecl __errcode(uint param_1)",
+      "comment": "Library Function - Single Match\n __errcode\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__except1",
+      "address": "00416184",
+      "signature": "undefined __cdecl __except1(uint param_1, int param_2, undefined8 param_3, double param_4, uint param_5)",
+      "comment": "Library Function - Single Match\n __except1\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00416252",
+      "address": "00416252",
+      "signature": "bool __cdecl FUN_00416252(uint param_1, double * param_2, uint param_3)"
+    },
+    {
+      "name": "__raise_exc",
+      "address": "004164cb",
+      "signature": "undefined __cdecl __raise_exc(uint * param_1, uint * param_2, uint param_3, int param_4, uint * param_5, uint * param_6)",
+      "comment": "Library Function - Single Match\n __raise_exc\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__raise_exc_ex",
+      "address": "004164ee",
+      "signature": "undefined __cdecl __raise_exc_ex(uint * param_1, uint * param_2, uint param_3, int param_4, uint * param_5, uint * param_6, int param_7)",
+      "comment": "Library Function - Single Match\n __raise_exc_ex\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__set_errno_from_matherr",
+      "address": "004167e4",
+      "signature": "undefined __cdecl __set_errno_from_matherr(int param_1)",
+      "comment": "Library Function - Single Match\n __set_errno_from_matherr\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00416813",
+      "address": "00416813",
+      "signature": "float10 __cdecl FUN_00416813(int param_1, int param_2, undefined4 param_3, undefined4 param_4, undefined4 param_5, undefined4 param_6, undefined4 param_7, undefined4 param_8)"
+    },
+    {
+      "name": "FUN_004168b3",
+      "address": "004168b3",
+      "signature": "undefined __cdecl FUN_004168b3(int param_1, uint param_2, int * param_3)"
+    },
+    {
+      "name": "__set_exp",
+      "address": "00416985",
+      "signature": "float10 __cdecl __set_exp(undefined8 param_1, short param_2)",
+      "comment": "Library Function - Single Match\n __set_exp\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__sptype",
+      "address": "004169b2",
+      "signature": "undefined4 __cdecl __sptype(int param_1, uint param_2)",
+      "comment": "Library Function - Single Match\n __sptype\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__fpclass",
+      "address": "00416a10",
+      "signature": "int __cdecl __fpclass(double _X)",
+      "comment": "Library Function - Single Match\n __fpclass\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "IsProcessorFeaturePresent",
+      "address": "00416ab4",
+      "signature": "BOOL __stdcall IsProcessorFeaturePresent(DWORD ProcessorFeature)"
+    },
+    {
+      "name": "CAtlBaseModule",
+      "address": "00416aba",
+      "signature": "undefined __thiscall CAtlBaseModule(void)",
+      "comment": "Library Function - Single Match\n public: __thiscall ATL::CAtlBaseModule::CAtlBaseModule(void)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "_ATL_BASE_MODULE70",
+      "address": "00416b0d",
+      "signature": "undefined __thiscall _ATL_BASE_MODULE70(void)",
+      "comment": "Library Function - Single Match\n public: __thiscall ATL::_ATL_BASE_MODULE70::_ATL_BASE_MODULE70(void)\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "~CAtlBaseModule",
+      "address": "00416b30",
+      "signature": "void __thiscall ~CAtlBaseModule(void)",
+      "comment": "Library Function - Single Match\n public: __thiscall ATL::CAtlBaseModule::~CAtlBaseModule(void)\n\nLibraries: Visual Studio 2012 Release, Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "GetHInstanceAt",
+      "address": "00416b46",
+      "signature": "HINSTANCE__ * __thiscall GetHInstanceAt(int param_1)",
+      "comment": "Library Function - Single Match\n public: struct HINSTANCE__ * __thiscall ATL::CAtlBaseModule::GetHInstanceAt(int)\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "RemoveAll",
+      "address": "00416b8b",
+      "signature": "void __thiscall RemoveAll(void)",
+      "comment": "Library Function - Single Match\n public: void __thiscall ATL::CSimpleArray\u003cstruct HINSTANCE__ *,class ATL::CSimpleArrayEqualHelper\u003cstruct HINSTANCE__ *\u003e \u003e::RemoveAll(void)\n\nLibraries: Visual Studio 2012 Release, Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__FindPESection",
+      "address": "00416bb0",
+      "signature": "PIMAGE_SECTION_HEADER __cdecl __FindPESection(PBYTE pImageBase, DWORD_PTR rva)",
+      "comment": "Library Function - Single Match\n __FindPESection\n\nLibraries: Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__IsNonwritableInCurrentImage",
+      "address": "00416c00",
+      "signature": "BOOL __cdecl __IsNonwritableInCurrentImage(PBYTE pTarget)",
+      "comment": "Library Function - Single Match\n __IsNonwritableInCurrentImage\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__ValidateImageBase",
+      "address": "00416cc0",
+      "signature": "BOOL __cdecl __ValidateImageBase(PBYTE pImageBase)",
+      "comment": "Library Function - Single Match\n __ValidateImageBase\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "__EH_epilog3",
+      "address": "00416cf3",
+      "signature": "undefined __stdcall __EH_epilog3(void)",
+      "comment": "Library Function - Single Match\n __EH_epilog3\n\nLibraries: Visual Studio 2015, Visual Studio 2017, Visual Studio 2019"
+    },
+    {
+      "name": "__EH_prolog3",
+      "address": "00416d08",
+      "signature": "undefined __cdecl __EH_prolog3(int param_1)",
+      "comment": "Library Function - Single Match\n __EH_prolog3\n\nLibraries: Visual Studio 2015, Visual Studio 2017, Visual Studio 2019"
+    },
+    {
+      "name": "__EH_prolog3_catch",
+      "address": "00416d3c",
+      "signature": "undefined __cdecl __EH_prolog3_catch(int param_1)",
+      "comment": "Library Function - Single Match\n __EH_prolog3_catch\n\nLibraries: Visual Studio 2015, Visual Studio 2017, Visual Studio 2019"
+    },
+    {
+      "name": "__aulldvrm",
+      "address": "00416d80",
+      "signature": "undefined8 __stdcall __aulldvrm(uint param_1, uint param_2, uint param_3, uint param_4)",
+      "comment": "Library Function - Single Match\n __aulldvrm\n\nLibrary: Visual Studio"
+    },
+    {
+      "name": "FUN_00416e15",
+      "address": "00416e15",
+      "signature": "undefined4 * __thiscall FUN_00416e15(byte param_1)"
+    },
+    {
+      "name": "FUN_00416e38",
+      "address": "00416e38",
+      "signature": "undefined __cdecl FUN_00416e38(LPVOID param_1)"
+    },
+    {
+      "name": "__allmul",
+      "address": "00416e50",
+      "signature": "longlong __stdcall __allmul(uint param_1, int param_2, uint param_3, int param_4)",
+      "comment": "Library Function - Single Match\n __allmul\n\nLibrary: Visual Studio"
+    },
+    {
+      "name": "__alloca_probe_16",
+      "address": "00416f00",
+      "signature": "uint __stdcall __alloca_probe_16(void)"
+    },
+    {
+      "name": "__alloca_probe_8",
+      "address": "00416f16",
+      "signature": "uint __stdcall __alloca_probe_8(void)"
+    },
+    {
+      "name": "__alldvrm",
+      "address": "00416f30",
+      "signature": "undefined8 __stdcall __alldvrm(uint param_1, uint param_2, uint param_3, uint param_4)",
+      "comment": "Library Function - Single Match\n __alldvrm\n\nLibrary: Visual Studio"
+    },
+    {
+      "name": "__allshl",
+      "address": "00417010",
+      "signature": "longlong __fastcall __allshl(byte param_1, int param_2)",
+      "comment": "Library Function - Single Match\n __allshl\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__aullshr",
+      "address": "00417030",
+      "signature": "ulonglong __fastcall __aullshr(byte param_1, uint param_2)",
+      "comment": "Library Function - Single Match\n __aullshr\n\nLibrary: Visual Studio 2019 Release"
+    },
+    {
+      "name": "__alloca_probe",
+      "address": "00417050",
+      "signature": "undefined __stdcall __alloca_probe(void)",
+      "comment": "Library Function - Single Match\n __alloca_probe\n\nLibraries: Visual Studio 2015, Visual Studio 2017, Visual Studio 2019"
+    },
+    {
+      "name": "FUN_00417080",
+      "address": "00417080",
+      "signature": "ulonglong __fastcall FUN_00417080(undefined4 param_1, undefined4 param_2)"
+    },
+    {
+      "name": "thunk_FUN_004097e4",
+      "address": "00417135",
+      "signature": "undefined __cdecl thunk_FUN_004097e4(LPVOID param_1)"
+    },
+    {
+      "name": "thunk_FUN_004097e4",
+      "address": "0041713a",
+      "signature": "undefined __cdecl thunk_FUN_004097e4(LPVOID param_1)"
+    },
+    {
+      "name": "FUN_0041713f",
+      "address": "0041713f",
+      "signature": "undefined __cdecl FUN_0041713f(size_t param_1)"
+    },
+    {
+      "name": "FUN_00417178",
+      "address": "00417178",
+      "signature": "exception * __thiscall FUN_00417178(exception * param_1)"
+    },
+    {
+      "name": "FUN_00417193",
+      "address": "00417193",
+      "signature": "undefined4 * __fastcall FUN_00417193(undefined4 * param_1)"
+    },
+    {
+      "name": "FUN_004171ab",
+      "address": "004171ab",
+      "signature": "exception * __thiscall FUN_004171ab(exception * param_1)"
+    },
+    {
+      "name": "FUN_004171c6",
+      "address": "004171c6",
+      "signature": "undefined4 * __fastcall FUN_004171c6(undefined4 * param_1)"
+    },
+    {
+      "name": "FUN_004171de",
+      "address": "004171de",
+      "signature": "undefined __stdcall FUN_004171de(void)"
+    },
+    {
+      "name": "_memcmp",
+      "address": "00417218",
+      "signature": "int __cdecl _memcmp(void * _Buf1, void * _Buf2, size_t _Size)",
+      "comment": "Library Function - Single Match\n _memcmp\n\nLibrary: Visual Studio 2017 Release"
+    },
+    {
+      "name": "FUN_004182f0",
+      "address": "004182f0",
+      "signature": "undefined1[16] * __cdecl FUN_004182f0(undefined1[16] * param_1, byte param_2)"
+    },
+    {
+      "name": "_wmemcpy_s",
+      "address": "00418427",
+      "signature": "errno_t __cdecl _wmemcpy_s(wchar_t * _S1, rsize_t _N1, wchar_t * _S2, rsize_t _N)",
+      "comment": "Library Function - Single Match\n _wmemcpy_s\n\nLibraries: Visual Studio 2012 Release, Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "_wmemset",
+      "address": "004184ab",
+      "signature": "wchar_t * __cdecl _wmemset(wchar_t * _S, wchar_t _C, size_t _N)",
+      "comment": "Library Function - Single Match\n _wmemset\n\nLibraries: Visual Studio 2012 Release, Visual Studio 2015 Release, Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "_wcscmp",
+      "address": "004184d7",
+      "signature": "int __cdecl _wcscmp(wchar_t * _Str1, wchar_t * _Str2)",
+      "comment": "Library Function - Single Match\n _wcscmp\n\nLibraries: Visual Studio 2017 Release, Visual Studio 2019 Release"
+    },
+    {
+      "name": "FUN_00418517",
+      "address": "00418517",
+      "signature": "uint __cdecl FUN_00418517(undefined4 param_1, undefined4 * param_2, uint param_3)"
+    },
+    {
+      "name": "__filter_x86_sse2_floating_point_exception_default",
+      "address": "0041855d",
+      "signature": "int __cdecl __filter_x86_sse2_floating_point_exception_default(int param_1)",
+      "comment": "Library Function - Single Match\n __filter_x86_sse2_floating_point_exception_default\n\nLibrary: Visual Studio 2019 Release"
+    }
+  ]
+}

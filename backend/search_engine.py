@@ -31,7 +31,7 @@ class SearchEngine:
             "malware_tactics": self.client.get_or_create_collection("malware_tactics"),
             "compiler_patterns": self.client.get_or_create_collection("compiler_patterns"),
             "expert_knowledge": self.client.get_or_create_collection("expert_knowledge"),
-            # "binary_functions": ... # Add when active analysis is ready
+            "binary_functions": self.client.get_or_create_collection("binary_functions")
         }
         
         results_map = {}

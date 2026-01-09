@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import logging
 import sys
+import time
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -43,39 +44,144 @@ except Exception as e:
 def read_root():
     return {"status": "online", "service": "reAIghidra Backend"}
 
-@app.post("/chat")
-def chat_endpoint(request: ChatRequest):
-    if not search_engine:
-        return {"error": "Search engine not initialized. Check logs."}
-    
-    # 1. Retrieve Context via RRF
-    context_hits = search_engine.search(request.query)
-    context_str = search_engine.format_context(context_hits)
-    
-    # 2. Construct Prompt
-    system_prompt = "You are a specialized Reverse Engineering Assistant. Use the provided context to answer the user's question about the binary."
-    user_prompt = f"Context:\n{context_str}\n\nQuestion: {request.query}"
-    
-    # 3. Call LLM (Ollama)
-    # Placeholder: In prod, use requests.post to re-ai:11434/api/generate
-    
-    return {
-        "response": f"[Simulated LLM Answer] Based on the context...", 
-        "context_used": context_hits,
-        "model": request.model
-    }
+# Activity Log
+activity_logs = []
+
+def log_event(message, source="System"):
+    timestamp = time.strftime("%H:%M:%S")
+    event = {"time": timestamp, "message": message, "source": source}
+    activity_logs.append(event)
+    logger.info(f"[{source}] {message}")
+    # Keep only last 100
+    if len(activity_logs) > 100:
+        activity_logs.pop(0)
+
+@app.get("/activity")
+def get_activity():
+    return activity_logs
 
 @app.post("/ingest/binary")
 def ingest_binary(data: dict):
-    # data expects {"functions": [...]}
+    if not search_engine:
+        return {"error": "Search engine not initialized"}
+    
     funcs = data.get("functions", [])
-    print(f"Received {len(funcs)} functions for ingestion.")
+    binary_name = data.get("binary", "unknown")
     
-    # TODO: Pass to a BinaryIngestor class to chunk and properly index in Chroma
-    # linking them to the Knowledge Graph
+    collection = search_engine.client.get_or_create_collection("binary_functions")
     
-    return {"status": "received", "count": len(funcs)}
+    ids = []
+    documents = []
+    metadatas = []
+    
+    for f in funcs:
+        f_id = f"{binary_name}_{f['address']}"
+        ids.append(f_id)
+        content = f"Function: {f['name']} at {f['address']}. Signature: {f['signature']}"
+        if f.get('comment'):
+            content += f". Comment: {f['comment']}"
+        documents.append(content)
+        metadatas.append({"source": "ghidra_analysis", "binary": binary_name, "type": "function"})
+        
+    if ids:
+        collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
+        log_event(f"Ingested {len(ids)} functions from {binary_name}", source="AI")
+    
+    return {"status": "success", "count": len(ids)}
+
+@app.post("/chat")
+async def chat_endpoint(request: ChatRequest):
+    if not search_engine:
+        return {"error": "Search engine not initialized. Check logs."}
+    
+    log_event(f"User Query: {request.query}", source="User")
+    
+    # 1. Retrieve Context
+    context_hits = search_engine.search(request.query)
+    context_str = search_engine.format_context(context_hits)
+    
+    # 2. Call LLM (Ollama)
+    import requests
+    try:
+        ollama_res = requests.post(
+            "http://re-ai:11434/api/generate",
+            json={
+                "model": request.model,
+                "prompt": f"Context:\n{context_str}\n\nQuestion: {request.query}\n\nAnswer concisely as a reverse engineer expert.",
+                "stream": False
+            }
+        )
+        response_text = ollama_res.json().get('response', "I couldn't generate a response.")
+        log_event(f"AI Replied using {len(context_hits)} context blocks", source="AI")
+        return {
+            "response": response_text,
+            "context_used": context_hits
+        }
+    except Exception as e:
+        logger.error(f"LLM Call Failed: {e}")
+        return {"response": f"AI error: {e}"}
 
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+# Validates directory existence
+PROJECTS_DIR = "/data/projects"
+JOBS_PENDING_DIR = "/data/jobs/pending"
+BINARIES_DIR = "/data/binaries"
+
+import os
+import json
+import uuid
+import shutil
+from fastapi import File, UploadFile, Form
+
+# Ensure directories exist
+for d in [PROJECTS_DIR, JOBS_PENDING_DIR, BINARIES_DIR]:
+    if not os.path.exists(d):
+        os.makedirs(d)
+
+@app.post("/upload")
+async def upload_file(
+    file: UploadFile = File(...),
+    project_name: str = Form(...),
+    is_new_project: bool = Form(...)
+):
+    try:
+        # Ensure directory exists
+        os.makedirs(BINARIES_DIR, exist_ok=True)
+        
+        # 1. Save File
+        file_location = f"{BINARIES_DIR}/{file.filename}"
+        with open(file_location, "wb+") as file_object:
+            shutil.copyfileobj(file.file, file_object)
+            
+        # 2. Create Job Ticket
+        job_id = str(uuid.uuid4())
+        job_data = {
+            "id": job_id,
+            "file_path": f"/ghidra/binaries/{file.filename}", 
+            "project_name": project_name,
+            "is_new": is_new_project
+        }
+        
+        job_path = f"{JOBS_PENDING_DIR}/{job_id}.json"
+        with open(job_path, "w") as f:
+            json.dump(job_data, f)
+            
+        log_event(f"File uploaded and queued: {file.filename}", source="System")
+        return {"status": "queued", "job_id": job_id, "file": file.filename}
+    except Exception as e:
+        logger.error(f"Upload failed: {e}")
+        return {"error": str(e)}
+
+@app.get("/projects")
+def list_projects():
+    try:
+        if not os.path.exists(PROJECTS_DIR):
+            return []
+        projects = [f for f in os.listdir(PROJECTS_DIR) if os.path.isdir(os.path.join(PROJECTS_DIR, f))]
+        return projects
+    except Exception as e:
+        logger.error(f"List projects failed: {e}")
+        return []
