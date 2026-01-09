@@ -8,6 +8,36 @@ A containerized, multi-modal RAG system that integrates Ghidra with specialized 
 
 reAIghidra consists of 5 Docker containers:
 
+```mermaid
+graph TD
+    User([User / Browser])
+    
+    subgraph "Docker Environment (re-net)"
+        Web[re-web: Next.js Frontend]
+        API[re-api: FastAPI Backend]
+        Ghidra[re-ghidra: Analysis Engine]
+        Memory[(re-memory: ChromaDB)]
+        AI[re-ai / Host Ollama: LLM]
+    end
+
+    subgraph "Knowledge Base"
+        Docs[Ghidra Docs]
+        Mal[Malware Tactics]
+        Pat[Compiler Patterns]
+        Exp[Expert Writeups]
+    end
+
+    User <-->|HTTP: 3000| Web
+    Web <-->|VNC: 6080| Ghidra
+    Web <-->|API: 8000| API
+    
+    API <-->|RAG Search| Memory
+    API <-->|Inference| AI
+    
+    Ghidra -->|Decompiled Funcs| API
+    Docs & Mal & Pat & Exp -->|Ingestion| API
+```
+
 1. **re-web**: Next.js frontend with VNC integration
 2. **re-api**: FastAPI backend with RAG search engine
 3. **re-ghidra**: Ghidra analysis environment with VNC access
