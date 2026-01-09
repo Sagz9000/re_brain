@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # 1. Frontend: The "Cockpit"
+  re-web:
+    build: ./web
+    container_name: re-web
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - re-api
+    networks:
+      - re-net
+
+  # 2. RAG Backend: The "Brain" (FastAPI + RAG Logic)
+  re-api:
+    build: ./backend
+    container_name: re-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./data:/data
+      - ./ghidra_scripts:/ghidra_scripts
+    environment:
+      - CHROMA_HOST=re-memory
+      - CHROMA_PORT=8000
+      - OLLAMA_HOST=http://host.docker.internal:11434 # Connect to host Ollama
+      - GHIDRA_HOST=re-ghidra
+    depends_on:
+      - re-memory
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Enable host access
+    networks:
+      - re-net
+
+  # 3. Ghidra: The "Analysis Engine"
+  re-ghidra:
+    image: blacktop/ghidra:latest
+    container_name: re-ghidra
+    ports:
+      - "5900:5900" # VNC
+      - "6080:6080" # noVNC (Web Access)
+    environment:
+      - VNC_PASSWORD=ghidra
+    volumes:
+      - ./data/binaries:/ghidra/binaries
+      - ./ghidra_scripts:/ghidra/scripts
+    networks:
+      - re-net
+
+  # 4. AI Core: REMOVED - Using Host Ollama
+  # Access via http://host.docker.internal:11434
+
+  # 5. Connective Memory: ChromaDB
+  re-memory:
+    image: chromadb/chroma:latest
+    container_name: re-memory
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma-data:/chroma/chroma
+    networks:
+      - re-net
+
+networks:
+  re-net:
+    driver: bridge
+
+volumes:
+  chroma-data:

@@ -53,6 +53,20 @@ docker run --rm -v ollama-data:/root/.ollama ollama/ollama pull qwen2.5:7b
 docker-compose up -d
 ```
 
+**Alternative: Using Host Ollama**
+
+If you already have Ollama running on your host machine:
+
+```bash
+# Use the host-ollama configuration
+docker-compose -f docker-compose.host-ollama.yml up -d
+```
+
+This configuration:
+- Removes the `re-ai` container
+- Connects to `host.docker.internal:11434` (your host Ollama)
+- Reduces resource usage and startup time
+
 4. **Access the UI**
 Open `http://localhost:3000` in your browser.
 
