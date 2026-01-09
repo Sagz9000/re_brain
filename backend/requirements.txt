@@ -1,0 +1,14 @@
+fastapi==0.109.0
+uvicorn==0.27.0
+chromadb==0.4.22
+ollama==0.1.6
+beautifulsoup4==4.12.3
+requests==2.31.0
+networkx==3.2.1
+pydantic==2.6.0
+python-multipart==0.0.9
+sentence-transformers==2.3.1
+markdownify==0.11.6
+pytest==8.0.0
+pdfminer.six==20231228
+lxml==5.1.0
