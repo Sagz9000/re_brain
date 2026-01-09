@@ -12,3 +12,4 @@ markdownify==0.11.6
 pytest==8.0.0
 pdfminer.six==20231228
 lxml==5.1.0
+numpy<2.0.0
