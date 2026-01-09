@@ -40,7 +40,7 @@ services:
 
   # 3. Ghidra: The "Analysis Engine"
   re-ghidra:
-    image: blacktop/ghidra:latest
+    build: ./docker/ghidra # Custom build with X11/VNC
     container_name: re-ghidra
     ports:
       - "5900:5900" # VNC
