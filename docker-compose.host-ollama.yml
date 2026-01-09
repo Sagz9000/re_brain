@@ -11,7 +11,8 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8005 # Updated port
     depends_on:
-      - re-api
+      re-api:
+        condition: service_healthy
     networks:
       - re-net
 
@@ -31,9 +32,15 @@ services:
       - OLLAMA_HOST=http://host.docker.internal:11434 # Connect to host Ollama
       - GHIDRA_HOST=re-ghidra
     depends_on:
-      - re-memory
+      re-memory:
+        condition: service_healthy
     extra_hosts:
       - "host.docker.internal:host-gateway" # Enable host access
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - re-net
 
@@ -49,11 +56,9 @@ services:
     volumes:
       - ./data/binaries:/ghidra/binaries
       - ./ghidra_scripts:/ghidra/scripts
+    entrypoint: [ "/bin/bash", "-c", "echo 'Starting Ghidra VNC...'; /entrypoint.sh" ]
     networks:
       - re-net
-
-  # 4. AI Core: REMOVED - Using Host Ollama
-  # Access via http://host.docker.internal:11434
 
   # 5. Connective Memory: ChromaDB
   re-memory:
@@ -62,7 +67,12 @@ services:
     ports:
       - "8001:8000"
     volumes:
-      - chroma-data:/chroma/chroma
+      - chroma-data-v2:/chroma/chroma
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - re-net
 
@@ -71,4 +81,4 @@ networks:
     driver: bridge
 
 volumes:
-  chroma-data:
+  chroma-data-v2:
