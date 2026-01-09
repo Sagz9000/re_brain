@@ -193,6 +193,67 @@ async def upload_file(
         logger.error(f"Upload failed: {e}")
         return {"error": str(e)}
 
+@app.get("/binaries")
+def list_binaries():
+    if not os.path.exists(BINARIES_DIR):
+        return []
+    return [f for f in os.listdir(BINARIES_DIR) if os.path.isfile(os.path.join(BINARIES_DIR, f))]
+
+@app.get("/binary/{name}/hex")
+def get_hex_view(name: str, offset: int = 0, limit: int = 512):
+    file_path = os.path.join(BINARIES_DIR, name)
+    if not os.path.exists(file_path):
+        return {"error": "File not found"}
+    
+    try:
+        with open(file_path, "rb") as f:
+            file_size = os.path.getsize(file_path)
+            f.seek(offset)
+            data = f.read(limit)
+            hex_str = data.hex()
+            return {
+                "hex": hex_str,
+                "offset": offset,
+                "limit": limit,
+                "total_size": file_size
+            }
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/binary/{name}/functions")
+def get_functions(name: str):
+    if not search_engine:
+        return {"error": "Search engine not initialized"}
+        
+    try:
+        collection = search_engine.client.get_collection("binary_functions")
+        res = collection.get(
+            where={"binary": name}
+        )
+        
+        funcs = []
+        if res['ids']:
+            for i, doc in enumerate(res['documents']):
+                meta = res['metadatas'][i]
+                if meta.get('type') == 'function':
+                   content = doc
+                   try:
+                       name_part = content.split("Function: ")[1].split(" at ")[0]
+                       addr_part = content.split(" at ")[1].split(". Signature: ")[0]
+                       sig_part = content.split("Signature: ")[1]
+                       funcs.append({
+                           "name": name_part,
+                           "address": addr_part,
+                           "signature": sig_part
+                       })
+                   except:
+                       continue
+                   
+        return funcs
+    except Exception as e:
+        logger.error(f"Error fetching functions: {e}")
+        return []
+
 @app.get("/projects")
 def list_projects():
     try:
