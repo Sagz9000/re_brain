@@ -28,7 +28,7 @@ export default function Home() {
     setIsTyping(true);
 
     try {
-      const response = await fetch('http://localhost:8000/chat', {
+      const response = await fetch('http://localhost:8005/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: input }),
@@ -111,10 +111,10 @@ export default function Home() {
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm ${m.role === 'user'
-                    ? 'bg-purple-600 text-white rounded-tr-none'
-                    : m.role === 'system'
-                      ? 'bg-slate-800/30 border border-white/5 text-slate-400 italic font-mono text-xs'
-                      : 'bg-white/5 border border-white/10 text-slate-200 rounded-tl-none'
+                  ? 'bg-purple-600 text-white rounded-tr-none'
+                  : m.role === 'system'
+                    ? 'bg-slate-800/30 border border-white/5 text-slate-400 italic font-mono text-xs'
+                    : 'bg-white/5 border border-white/10 text-slate-200 rounded-tl-none'
                   }`}>
                   {m.content}
                 </div>
