@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 
 # Fix websockify import error commonly found in ubuntu packages
 # Link novnc to webroot
-RUN ln -s /usr/share/novnc /usr/share/novnc/vnc_lite.html /usr/share/novnc/index.html
+RUN mkdir -p /usr/share/novnc && ln -sf /usr/share/novnc/vnc_lite.html /usr/share/novnc/index.html
 
 # Setup Supervisor to run Xvfb + VNC + Ghidra
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
