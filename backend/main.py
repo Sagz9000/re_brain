@@ -107,6 +107,17 @@ async def chat_endpoint(request: ChatRequest):
     context_hits = search_engine.search(request.query)
     context_str = search_engine.format_context(context_hits)
     
+    # [NEW] Global Project State
+    try:
+        binaries = os.listdir(BINARIES_DIR)
+        file_count = len(binaries)
+        file_list_str = ", ".join(binaries)
+    except:
+        file_count = 0
+        file_list_str = "None"
+        
+    system_context = f"Project State: {file_count} files analyzed: [{file_list_str}]."
+
     # 2. Call LLM (Ollama)
     import requests
     try:
@@ -114,7 +125,7 @@ async def chat_endpoint(request: ChatRequest):
             "http://re-ai:11434/api/generate",
             json={
                 "model": request.model,
-                "prompt": f"Context:\n{context_str}\n\nQuestion: {request.query}\n\nAnswer concisely as a reverse engineer expert.",
+                "prompt": f"System Context: {system_context}\n\nRAG Context:\n{context_str}\n\nQuestion: {request.query}\n\nAnswer concisely as a reverse engineer expert. Use the System Context for high-level project questions.",
                 "stream": False
             }
         )
