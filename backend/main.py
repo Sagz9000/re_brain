@@ -1,22 +1,43 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+import logging
+import sys
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+try:
+    from search_engine import SearchEngine
+except ImportError as e:
+    logger.error(f"Failed to import SearchEngine: {e}")
+    SearchEngine = None
 
 app = FastAPI(title="reAIghidra API", version="0.1.0")
 
 class ChatRequest(BaseModel):
     query: str
-    model: str = "qwen3:8b"
+    model: str = "qwen2.5:7b" 
+
+# Global SearchEngine instance
+search_engine = None
+try:
+    if SearchEngine:
+        search_engine = SearchEngine()
+        logger.info("Search Engine initialized successfully.")
+except Exception as e:
+    logger.error(f"Failed to initialize SearchEngine: {e}")
+
 
 @app.get("/")
 def read_root():
     return {"status": "online", "service": "reAIghidra Backend"}
 
-from search_engine import SearchEngine
-
-search_engine = SearchEngine()
-
 @app.post("/chat")
 def chat_endpoint(request: ChatRequest):
+    if not search_engine:
+        return {"error": "Search engine not initialized. Check logs."}
+    
     # 1. Retrieve Context via RRF
     context_hits = search_engine.search(request.query)
     context_str = search_engine.format_context(context_hits)
