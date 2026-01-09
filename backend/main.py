@@ -15,6 +15,16 @@ except ImportError as e:
 
 app = FastAPI(title="reAIghidra API", version="0.1.0")
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # Allow all origins for dev (fixes localhost ports mismatch)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class ChatRequest(BaseModel):
     query: str
     model: str = "qwen2.5:7b" 
