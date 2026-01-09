@@ -25,7 +25,7 @@ export default function Home() {
       <Header apiStatus={apiStatus} onFeatureClick={handleFeatureClick} />
 
       {/* Main Layout */}
-      <div className="flex-1 flex pt-16 h-screen relative z-0"> {/* pt-16 to account for fixed header */}
+      <div className="flex-1 flex pt-16 h-full relative z-0"> {/* pt-16 to account for fixed header */}
         <GhidraPanel />
         <ChatPanel apiStatus={apiStatus} onApiStatusChange={setApiStatus} />
       </div>

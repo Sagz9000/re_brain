@@ -83,6 +83,13 @@ def ingest_binary(data: dict):
         documents.append(content)
         metadatas.append({"source": "ghidra_analysis", "binary": binary_name, "type": "function"})
         
+    # [NEW] Add a specific summary document for the file itself
+    summary_id = f"{binary_name}_summary"
+    summary_content = f"Analysis Summary: The binary '{binary_name}' has been analyzed. It contains {len(ids)} functions exported from Ghidra."
+    ids.append(summary_id)
+    documents.append(summary_content)
+    metadatas.append({"source": "ghidra_analysis", "binary": binary_name, "type": "summary"})
+        
     if ids:
         collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
         log_event(f"Ingested {len(ids)} functions from {binary_name}", source="AI")
