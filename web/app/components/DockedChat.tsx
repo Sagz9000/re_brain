@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, MessageSquare } from 'lucide-react';
+import { Send, Sparkles, MessageSquare, Trash2 } from 'lucide-react';
 
 interface DockedChatProps {
     apiStatus: 'online' | 'offline' | 'checking';
     onApiStatusChange: (status: 'online' | 'offline' | 'checking') => void;
+    onCommand?: (cmd: any) => void;
 }
 
 interface Message {
@@ -13,15 +14,34 @@ interface Message {
     content: string;
 }
 
-export default function DockedChat({ apiStatus, onApiStatusChange }: DockedChatProps) {
-    const [messages, setMessages] = useState<Message[]>([
-        { role: 'assistant', content: "I'm your analyis copilot. I have context on the open file." }
-    ]);
+export default function DockedChat({ apiStatus, onApiStatusChange, onCommand }: DockedChatProps) {
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const API_URL = 'http://localhost:8005';
+
+    // Load history
+    useEffect(() => {
+        const saved = localStorage.getItem('re_brain_chat_history');
+        if (saved) {
+            try {
+                setMessages(JSON.parse(saved));
+            } catch (e) {
+                console.error("Failed to load chat history", e);
+            }
+        } else {
+            setMessages([{ role: 'assistant', content: "I'm re-Brain-AI, your analysis copilot. I have context on the open file." }]);
+        }
+    }, []);
+
+    // Save history
+    useEffect(() => {
+        if (messages.length > 0) {
+            localStorage.setItem('re_brain_chat_history', JSON.stringify(messages));
+        }
+    }, [messages]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -46,10 +66,17 @@ export default function DockedChat({ apiStatus, onApiStatusChange }: DockedChatP
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const handleClear = () => {
+        const initialMsg: Message = { role: 'assistant', content: "Chat cleared. Ready for new analysis." };
+        setMessages([initialMsg]);
+        localStorage.setItem('re_brain_chat_history', JSON.stringify([initialMsg]));
+    };
+
     const handleSend = async () => {
         if (!input.trim()) return;
         const userMessage = { role: 'user', content: input } as Message;
-        setMessages(prev => [...prev, userMessage]);
+        const newHistory = [...messages, userMessage];
+        setMessages(newHistory);
         setInput('');
         setIsTyping(true);
 
@@ -57,11 +84,34 @@ export default function DockedChat({ apiStatus, onApiStatusChange }: DockedChatP
             const response = await fetch(`${API_URL}/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: input }),
+                body: JSON.stringify({
+                    query: input,
+                    history: newHistory
+                }),
             });
             if (!response.ok) throw new Error(response.statusText);
             const data = await response.json();
-            setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+            let text = data.response;
+
+            // UI Command Logic - More robust parsing
+            if (text.includes('UI_COMMAND:')) {
+                const parts = text.split('UI_COMMAND:');
+                text = parts[0].trim();
+                const possibleJson = parts[1].trim();
+
+                try {
+                    // Try to find the first JSON object in the string
+                    const jsonMatch = possibleJson.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        const cmd = JSON.parse(jsonMatch[0]);
+                        if (onCommand) onCommand(cmd);
+                    }
+                } catch (e) {
+                    console.error("Failed to parse UI command", e);
+                }
+            }
+
+            setMessages(prev => [...prev, { role: 'assistant', content: text }]);
         } catch (error) {
             setMessages(prev => [...prev, { role: 'assistant', content: `Connection Failed: ${error}` }]);
             onApiStatusChange('offline');
@@ -71,14 +121,16 @@ export default function DockedChat({ apiStatus, onApiStatusChange }: DockedChatP
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#09090b] border-l border-white/5 w-80 shrink-0">
-            {/* Header */}
-            <div className="h-10 border-b border-white/5 flex items-center justify-between px-4 bg-zinc-900/50">
+        <div className="flex flex-col h-full bg-[#09090b] flex-1">
+            {/* Header with Clear Button */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-[#121214]">
                 <div className="flex items-center gap-2">
                     <Sparkles size={14} className="text-indigo-400" />
-                    <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider">AI Copilot</span>
+                    <span className="text-xs font-bold text-zinc-300">re-Brain-AI</span>
                 </div>
-                <div className={`w-1.5 h-1.5 rounded-full ${apiStatus === 'online' ? 'bg-emerald-500' : 'bg-red-500'}`} title={apiStatus} />
+                <button onClick={handleClear} className="text-zinc-500 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-colors" title="Clear Chat">
+                    <Trash2 size={14} />
+                </button>
             </div>
 
             {/* Messages */}
@@ -115,7 +167,7 @@ export default function DockedChat({ apiStatus, onApiStatusChange }: DockedChatP
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                        placeholder="Ask Copilot..."
+                        placeholder="Ask re-Brain-AI..."
                         className="w-full bg-zinc-800 border-none rounded-lg pl-3 pr-10 py-2.5 text-sm text-zinc-200 focus:ring-1 focus:ring-indigo-500"
                     />
                     <button

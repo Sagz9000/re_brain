@@ -1,83 +1,73 @@
-import os
-import glob
+import requests
 from bs4 import BeautifulSoup
 import chromadb
-from chromadb.config import Settings
-import logging
+import sys
+import os
 
-# Configuration
-DOCS_PATH = "/ghidra_docs/GhidraAPI_javadoc"  # Path inside container
-CHROMA_HOST = os.getenv("CHROMA_HOST", "re-memory")
-CHROMA_PORT = os.getenv("CHROMA_PORT", "8000")
-COLLECTION_NAME = "ghidra_api"
+# Ensure we can import SearchEngine
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from search_engine import SearchEngine
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+def ingest_ghidra_docs():
+    print("Initializing Search Engine...")
+    se = SearchEngine()
+    if not se.client:
+        print("Failed to connect to DB.")
+        return
 
-def connect_db():
-    client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
-    return client
-
-def parse_html_file(filepath):
-    """Extracts text content and metadata from a Javadoc HTML file."""
-    try:
-        with open(filepath, 'r', encoding='utf-8') as f:
-            soup = BeautifulSoup(f, 'html.parser')
-            
-            # Simple extraction strategy: Title + Main content
-            title = soup.title.string if soup.title else os.path.basename(filepath)
-            
-            # Remove scripts and styles
-            for script in soup(["script", "style"]):
-                script.extract()
-                
-            text = soup.get_text(separator=' ', strip=True)
-            
-            # Metadata from file structure
-            rel_path = os.path.relpath(filepath, DOCS_PATH)
-            
-            return {
-                "content": text,
-                "metadata": {
-                    "source": "ghidra_api",
-                    "filename": os.path.basename(filepath),
-                    "path": rel_path
-                }
-            }
-    except Exception as e:
-        logger.error(f"Failed to parse {filepath}: {e}")
-        return None
-
-def ingest_docs():
-    client = connect_db()
+    collection = se.client.get_or_create_collection("ghidra_docs")
     
-    # Create or get collection
-    collection = client.get_or_create_collection(name=COLLECTION_NAME)
+    # Target URLs
+    urls = [
+        "https://ghidra.re/ghidra_docs/api/help-doc.html#tree",
+        "https://ghidra.re/ghidra_docs/api/overview-tree.html",
+        "https://ghidra.re/ghidra_docs/api/index.html"
+    ]
     
-    logger.info(f"Scanning for docs in {DOCS_PATH}")
-    files = glob.glob(os.path.join(DOCS_PATH, "**/*.html"), recursive=True)
-    logger.info(f"Found {len(files)} HTML files.")
-
-    batch_size = 50
-    ids = []
     documents = []
+    ids = []
     metadatas = []
-
-    for i, file in enumerate(files):
-        data = parse_html_file(file)
-        if data:
-            ids.append(f"doc_{i}")
-            documents.append(data['content'][:8000]) # Chroma limit safeguard, better chunking needed later
-            metadatas.append(data['metadata'])
+    
+    print("Scraping URLs...")
+    for url in urls:
+        try:
+            print(f"Fetching {url}...")
+            res = requests.get(url)
+            if res.status_code != 200:
+                print(f"Failed to fetch {url}")
+                continue
             
-            if len(ids) >= batch_size:
-                collection.add(ids=ids, documents=documents, metadatas=metadatas)
-                logger.info(f"Indexed batch {i}")
-                ids, documents, metadatas = [], [], []
-
+            soup = BeautifulSoup(res.text, 'html.parser')
+            
+            # Extract main content
+            # The structure varies, but generally text in <main> or <body>
+            main_content = soup.find('main') or soup.body
+            if not main_content:
+                continue
+                
+            text = main_content.get_text(separator='\n', strip=True)
+            
+            # Simple chunking by paragraphs or length
+            chunks = []
+            chunk_size = 1000
+            for i in range(0, len(text), chunk_size):
+                chunks.append(text[i:i+chunk_size])
+            
+            for i, chunk in enumerate(chunks):
+                doc_id = f"{url}_{i}"
+                ids.append(doc_id)
+                documents.append(chunk)
+                metadatas.append({"source": "ghidra_docs", "url": url, "chunk": i})
+                
+        except Exception as e:
+            print(f"Error processing {url}: {e}")
+            
     if ids:
-        collection.add(ids=ids, documents=documents, metadatas=metadatas)
-        logger.info("Indexed final batch.")
+        print(f"Upserting {len(ids)} chunks to 'ghidra_docs' collection...")
+        collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
+        print("Ingestion complete.")
+    else:
+        print("No content found to ingest.")
 
 if __name__ == "__main__":
-    ingest_docs()
+    ingest_ghidra_docs()

@@ -1,92 +1,96 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Code } from 'lucide-react';
+import { FileCode, Search, RefreshCw } from 'lucide-react';
 
-interface FunctionTableProps {
-    file: string;
-}
-
-interface FuncInfo {
+interface FunctionData {
     name: string;
     address: string;
     signature: string;
 }
 
-export default function FunctionTable({ file }: FunctionTableProps) {
-    const [functions, setFunctions] = useState<FuncInfo[]>([]);
-    const [filtered, setFiltered] = useState<FuncInfo[]>([]);
-    const [search, setSearch] = useState('');
-    const [loading, setLoading] = useState(false);
+interface FunctionTableProps {
+    file: string;
+    onSelectFunction?: (func: { name: string, address: string }) => void;
+}
 
-    const API_URL = 'http://localhost:8005';
+export default function FunctionTable({ file, onSelectFunction }: FunctionTableProps) {
+    const [functions, setFunctions] = useState<FunctionData[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [search, setSearch] = useState('');
+
+    const fetchFunctions = async () => {
+        if (!file) return;
+        setLoading(true);
+        try {
+            const res = await fetch(`http://localhost:8005/binary/${file}/functions`);
+            const data = await res.json();
+            if (Array.isArray(data)) setFunctions(data);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchFuncs = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch(`${API_URL}/binary/${file}/functions`);
-                const data = await res.json();
-                if (Array.isArray(data)) {
-                    setFunctions(data);
-                    setFiltered(data);
-                }
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchFuncs();
+        fetchFunctions();
     }, [file]);
 
-    useEffect(() => {
-        const query = search.toLowerCase();
-        setFiltered(functions.filter(f =>
-            f.name.toLowerCase().includes(query) ||
-            f.address.toLowerCase().includes(query)
-        ));
-    }, [search, functions]);
+    const filtered = functions.filter(f =>
+        f.name.toLowerCase().includes(search.toLowerCase()) ||
+        f.address.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-[#050505] overflow-hidden">
+        <div className="flex-1 flex flex-col min-h-0 bg-[#0c0c0e]">
             {/* Toolbar */}
-            <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0">
+            <div className="h-10 border-b border-white/5 bg-[#121214] flex items-center px-4 gap-4">
                 <div className="flex items-center gap-2">
-                    <Code size={18} className="text-indigo-500" />
-                    <span className="font-semibold text-zinc-200">Analyzed Functions</span>
-                    <span className="text-xs bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">{filtered.length}</span>
+                    <FileCode size={14} className="text-indigo-400" />
+                    <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest">Symbol Tree</span>
                 </div>
-                <div className="relative w-64">
-                    <Search className="absolute left-3 top-2.5 text-zinc-500" size={14} />
+
+                <div className="flex-1 max-w-sm relative">
+                    <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
                     <input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Filter by name..."
-                        className="w-full bg-zinc-900 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-zinc-200 focus:ring-1 focus:ring-indigo-500 hover:bg-zinc-800/50 transition-colors"
+                        placeholder="Filter symbols..."
+                        className="w-full bg-zinc-800/50 border border-white/5 rounded pl-8 pr-3 py-1 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500/50"
                     />
                 </div>
+
+                <button onClick={fetchFunctions} className="p-1.5 text-zinc-500 hover:text-white transition-colors ml-auto">
+                    <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+                </button>
             </div>
 
-            {/* Table Header */}
-            <div className="grid grid-cols-12 gap-4 px-6 py-2 border-b border-white/5 bg-zinc-900/30 text-xs font-bold text-zinc-500 uppercase tracking-wider shrink-0">
-                <div className="col-span-2">Address</div>
-                <div className="col-span-3">Name</div>
-                <div className="col-span-7">Signature</div>
-            </div>
-
-            {/* List */}
-            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-800">
-                {loading ? (
-                    <div className="text-zinc-500 p-10 text-center">Loading Symbols...</div>
-                ) : (
-                    filtered.map((f, i) => (
-                        <div key={i} className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-white/5 hover:bg-white/5 text-sm transition-colors cursor-pointer group">
-                            <div className="col-span-2 font-mono text-zinc-400 group-hover:text-zinc-200">{f.address}</div>
-                            <div className="col-span-3 font-medium text-zinc-300 group-hover:text-indigo-400 truncate" title={f.name}>{f.name}</div>
-                            <div className="col-span-7 font-mono text-xs text-zinc-500 truncate mt-0.5 group-hover:text-zinc-300" title={f.signature}>{f.signature}</div>
-                        </div>
-                    ))
+            <div className="flex-1 overflow-auto">
+                <table className="w-full text-left font-mono text-xs border-collapse">
+                    <thead className="sticky top-0 bg-[#0c0c0e] z-10 shadow-sm">
+                        <tr className="border-b border-white/5">
+                            <th className="px-4 py-2 text-zinc-500 font-medium">Address</th>
+                            <th className="px-4 py-2 text-zinc-500 font-medium">Name</th>
+                            <th className="px-4 py-2 text-zinc-500 font-medium">Signature</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filtered.map((f, i) => (
+                            <tr
+                                key={i}
+                                onClick={() => onSelectFunction?.(f)}
+                                className={`border-b border-white/[0.02] hover:bg-white/[0.05] transition-colors cursor-pointer group`}
+                            >
+                                <td className="px-4 py-2 text-indigo-400 font-medium">{f.address}</td>
+                                <td className="px-4 py-2 text-zinc-300 group-hover:text-white transition-colors">{f.name}</td>
+                                <td className="px-4 py-2 text-zinc-500 italic max-w-md truncate">{f.signature}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                {filtered.length === 0 && !loading && (
+                    <div className="p-8 text-center text-zinc-600 italic">No symbols found</div>
                 )}
             </div>
         </div>

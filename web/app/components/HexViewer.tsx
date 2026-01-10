@@ -77,7 +77,7 @@ export default function HexViewer({ file }: HexViewerProps) {
     };
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-[#050505] overflow-hidden">
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
             {/* Toolbar */}
             <div className="h-12 border-b border-white/5 flex items-center justify-between px-4 bg-zinc-900/30">
                 <div className="flex items-center gap-4">

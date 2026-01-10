@@ -1,12 +1,30 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, Form
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+from typing import List, Optional
 import logging
 import sys
 import time
+import os
+import json
+import uuid
+import shutil
+import subprocess
+import requests
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Constants
+PROJECTS_DIR = "/data/projects"
+JOBS_PENDING_DIR = "/data/jobs/pending"
+BINARIES_DIR = "/data/binaries"
+
+# Ensure directories exist
+for d in [PROJECTS_DIR, JOBS_PENDING_DIR, BINARIES_DIR]:
+    if not os.path.exists(d):
+        os.makedirs(d, exist_ok=True)
 
 try:
     from search_engine import SearchEngine
@@ -16,11 +34,9 @@ except ImportError as e:
 
 app = FastAPI(title="reAIghidra API", version="0.1.0")
 
-from fastapi.middleware.cors import CORSMiddleware
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all origins for dev (fixes localhost ports mismatch)
+    allow_origins=["*"], # Allow all origins for dev
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,7 +44,8 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     query: str
-    model: str = "qwen2.5:7b" 
+    model: str = "qwen2.5:7b"
+    history: Optional[List[dict]] = None
 
 # Global SearchEngine instance
 search_engine = None
@@ -39,11 +56,6 @@ try:
 except Exception as e:
     logger.error(f"Failed to initialize SearchEngine: {e}")
 
-
-@app.get("/")
-def read_root():
-    return {"status": "online", "service": "reAIghidra Backend"}
-
 # Activity Log
 activity_logs = []
 
@@ -52,9 +64,12 @@ def log_event(message, source="System"):
     event = {"time": timestamp, "message": message, "source": source}
     activity_logs.append(event)
     logger.info(f"[{source}] {message}")
-    # Keep only last 100
     if len(activity_logs) > 100:
         activity_logs.pop(0)
+
+@app.get("/")
+def read_root():
+    return {"status": "online", "service": "reAIghidra Backend"}
 
 @app.get("/activity")
 def get_activity():
@@ -67,7 +82,6 @@ def ingest_binary(data: dict):
     
     funcs = data.get("functions", [])
     binary_name = data.get("binary", "unknown")
-    
     collection = search_engine.client.get_or_create_collection("binary_functions")
     
     ids = []
@@ -83,7 +97,6 @@ def ingest_binary(data: dict):
         documents.append(content)
         metadatas.append({"source": "ghidra_analysis", "binary": binary_name, "type": "function"})
         
-    # [NEW] Add a specific summary document for the file itself
     summary_id = f"{binary_name}_summary"
     summary_content = f"Analysis Summary: The binary '{binary_name}' has been analyzed. It contains {len(ids)} functions exported from Ghidra."
     ids.append(summary_id)
@@ -107,7 +120,7 @@ async def chat_endpoint(request: ChatRequest):
     context_hits = search_engine.search(request.query)
     context_str = search_engine.format_context(context_hits)
     
-    # [NEW] Global Project State
+    # Global Project State
     try:
         binaries = os.listdir(BINARIES_DIR)
         file_count = len(binaries)
@@ -118,14 +131,30 @@ async def chat_endpoint(request: ChatRequest):
         
     system_context = f"Project State: {file_count} files analyzed: [{file_list_str}]."
 
-    # 2. Call LLM (Ollama)
-    import requests
+    # Format History
+    history_str = ""
+    if request.history:
+        for msg in request.history[-5:]:
+            role = msg.get('role', 'user').upper()
+            content = msg.get('content', '')
+            history_str += f"{role}: {content}\n"
+
+    final_prompt = (
+        f"System Context: {system_context}\n\n"
+        f"RAG Context:\n{context_str}\n\n"
+        f"Chat History:\n{history_str}\n"
+        "You are the RE Copilot. If the user wants to see data (hex, strings, functions, decompile), "
+        "provide your analysis AND append a JSON block at the very end like this: \n"
+        "UI_COMMAND: {\"action\": \"SWITCH_TAB\", \"tab\": \"hex\" | \"functions\" | \"strings\" | \"dashboard\" | \"graph\" | \"tree\", \"file\": \"filename\", \"address\": \"0x...\", \"function\": \"name\"}\n"
+        f"User: {request.query}\n\nAnswer like a senior malware researcher."
+    )
+
     try:
         ollama_res = requests.post(
             "http://re-ai:11434/api/generate",
             json={
                 "model": request.model,
-                "prompt": f"System Context: {system_context}\n\nRAG Context:\n{context_str}\n\nQuestion: {request.query}\n\nAnswer concisely as a reverse engineer expert. Use the System Context for high-level project questions.",
+                "prompt": final_prompt,
                 "stream": False
             }
         )
@@ -143,22 +172,6 @@ async def chat_endpoint(request: ChatRequest):
 def health_check():
     return {"status": "healthy"}
 
-# Validates directory existence
-PROJECTS_DIR = "/data/projects"
-JOBS_PENDING_DIR = "/data/jobs/pending"
-BINARIES_DIR = "/data/binaries"
-
-import os
-import json
-import uuid
-import shutil
-from fastapi import File, UploadFile, Form
-
-# Ensure directories exist
-for d in [PROJECTS_DIR, JOBS_PENDING_DIR, BINARIES_DIR]:
-    if not os.path.exists(d):
-        os.makedirs(d)
-
 @app.post("/upload")
 async def upload_file(
     file: UploadFile = File(...),
@@ -166,15 +179,11 @@ async def upload_file(
     is_new_project: bool = Form(...)
 ):
     try:
-        # Ensure directory exists
         os.makedirs(BINARIES_DIR, exist_ok=True)
-        
-        # 1. Save File
         file_location = f"{BINARIES_DIR}/{file.filename}"
         with open(file_location, "wb+") as file_object:
             shutil.copyfileobj(file.file, file_object)
             
-        # 2. Create Job Ticket
         job_id = str(uuid.uuid4())
         job_data = {
             "id": job_id,
@@ -205,7 +214,6 @@ def delete_binary(name: str):
     try:
         if os.path.exists(file_path):
             os.remove(file_path)
-            # Optional: Remove from ChromaDB (omitted for now to prevent blocking)
             log_event(f"Deleted file: {name}", source="System")
             return {"status": "deleted", "file": name}
         else:
@@ -225,9 +233,8 @@ def get_hex_view(name: str, offset: int = 0, limit: int = 512):
             file_size = os.path.getsize(file_path)
             f.seek(offset)
             data = f.read(limit)
-            hex_str = data.hex()
             return {
-                "hex": hex_str,
+                "hex": data.hex(),
                 "offset": offset,
                 "limit": limit,
                 "total_size": file_size
@@ -242,17 +249,15 @@ def get_functions(name: str):
         
     try:
         collection = search_engine.client.get_collection("binary_functions")
-        res = collection.get(
-            where={"binary": name}
-        )
+        res = collection.get(where={"binary": name})
         
         funcs = []
         if res['ids']:
             for i, doc in enumerate(res['documents']):
                 meta = res['metadatas'][i]
                 if meta.get('type') == 'function':
-                   content = doc
                    try:
+                       content = doc
                        name_part = content.split("Function: ")[1].split(" at ")[0]
                        addr_part = content.split(" at ")[1].split(". Signature: ")[0]
                        sig_part = content.split("Signature: ")[1]
@@ -263,11 +268,64 @@ def get_functions(name: str):
                        })
                    except:
                        continue
-                   
         return funcs
     except Exception as e:
         logger.error(f"Error fetching functions: {e}")
         return []
+
+@app.get("/binary/{name}/strings")
+def get_strings(name: str):
+    file_path = os.path.join(BINARIES_DIR, name)
+    if not os.path.exists(file_path):
+        return {"error": "File not found"}
+    
+    try:
+        result = subprocess.run(['strings', '-n', '6', file_path], capture_output=True, text=True)
+        lines = list(set(result.stdout.splitlines()))[:500]
+        return lines
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/binary/{name}/function/{addr}/decompile")
+def decompile_function(name: str, addr: str):
+    project_dir = "/data/projects"
+    project_name = None
+    
+    if os.path.exists(project_dir):
+        for f in os.listdir(project_dir):
+            if f.endswith(".gpr"):
+                project_name = f.replace(".gpr", "")
+                break
+            
+    if not project_name:
+        return {"error": "No Ghidra project found"}
+
+    cmd = [
+        "/ghidra/support/analyzeHeadless",
+        project_dir,
+        project_name,
+        "-process", name,
+        "-noanalysis",
+        "-scriptPath", "/ghidra/scripts",
+        "-postScript", "DecompileFunction.java", addr
+    ]
+    
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        output = result.stdout
+        
+        lines = output.splitlines()
+        code_lines = []
+        capture = False
+        for line in lines:
+            if "DecompileFunction.java>" in line: capture = True; continue
+            if capture: code_lines.append(line)
+            
+        return {"code": "\n".join(code_lines) if code_lines else "Decompilation produced no output."}
+    except subprocess.TimeoutExpired:
+        return {"error": "Decompilation timed out (30s)"}
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.get("/projects")
 def list_projects():
@@ -279,3 +337,55 @@ def list_projects():
     except Exception as e:
         logger.error(f"List projects failed: {e}")
         return []
+
+@app.get("/binary/{name}/tree")
+def get_program_tree(name: str):
+    project_dir = "/data/projects"
+    project_name = None
+    
+    if os.path.exists(project_dir):
+        for f in os.listdir(project_dir):
+            if f.endswith(".gpr"):
+                project_name = f.replace(".gpr", "")
+                break
+            
+    if not project_name:
+        return {"error": "No Ghidra project found"}
+
+    cmd = [
+        "/ghidra/support/analyzeHeadless",
+        project_dir,
+        project_name,
+        "-process", name,
+        "-noanalysis",
+        "-scriptPath", "/ghidra/scripts",
+        "-postScript", "GetMemoryBlocks.java"
+    ]
+    
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        output = result.stdout
+        
+        blocks = []
+        capture = False
+        for line in output.splitlines():
+            if "GetMemoryBlocks.java>START" in line: capture = True; continue
+            if "GetMemoryBlocks.java>END" in line: capture = False; break
+            
+            if capture and "|" in line:
+                parts = line.split("|")
+                if len(parts) >= 6:
+                    blocks.append({
+                        "name": parts[0],
+                        "start": parts[1],
+                        "end": parts[2],
+                        "size": parts[3],
+                        "perms": parts[4],
+                        "type": parts[5]
+                    })
+        
+        return blocks
+    except subprocess.TimeoutExpired:
+        return {"error": "Tree fetch timed out (30s)"}
+    except Exception as e:
+        return {"error": str(e)}

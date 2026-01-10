@@ -28,6 +28,7 @@ services:
       - ./data/projects:/data/projects # Shared Projects
       - ./data/jobs:/data/jobs # Shared Job Queue
       - ./ghidra_scripts:/ghidra_scripts # Access to scripts to parse/update
+      - ghidra-dist:/ghidra # Shared Ghidra installation
     environment:
       - CHROMA_HOST=re-memory
       - CHROMA_PORT=8000
@@ -60,6 +61,7 @@ services:
       - ./data/projects:/ghidra/projects
       - ./data/jobs:/ghidra/jobs
       - ./ghidra_scripts:/ghidra/scripts
+      - ghidra-dist:/ghidra # Populate this volume
 
     networks:
       - re-net
@@ -114,3 +116,4 @@ networks:
 volumes:
   ollama-data:
   chroma-data-v2:
+  ghidra-dist:
