@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, MessageSquare, Trash2 } from 'lucide-react';
+import { Send, Sparkles, MessageSquare, Trash2, Crosshair } from 'lucide-react';
 
 interface DockedChatProps {
     apiStatus: 'online' | 'offline' | 'checking';
@@ -13,6 +13,66 @@ interface Message {
     role: 'system' | 'user' | 'assistant';
     content: string;
 }
+
+const FormattedMessage = ({ content, onLinkClick }: { content: string, onLinkClick?: (addr: string) => void }) => {
+    // Basic markdown parser
+    const parts = content.split(/(```[\s\S]*?```)/g);
+    return (
+        <div className="text-sm space-y-2">
+            {parts.map((part, i) => {
+                if (part.startsWith('```')) {
+                    const code = part.replace(/```\w*\n?/, '').replace(/```$/, '');
+                    return (
+                        <pre key={i} className="bg-black/50 p-2 rounded text-xs overflow-x-auto font-mono text-zinc-300 pointer-events-auto select-text">
+                            {code}
+                        </pre>
+                    );
+                }
+                // Handle bold, lists, and addresses
+                return (
+                    <div key={i} className="whitespace-pre-wrap">
+                        {part.split('\n').map((line, j) => {
+                            // Headers
+                            if (line.startsWith('### ')) return <h3 key={j} className="text-indigo-400 font-bold mt-2">{line.replace('### ', '')}</h3>;
+                            if (line.startsWith('## ')) return <h2 key={j} className="text-indigo-300 font-bold mt-3 border-b border-indigo-500/30 pb-1">{line.replace('## ', '')}</h2>;
+
+                            // Process line for bold and addresses
+                            const tokens = line.split(/(\[0x[a-fA-F0-9]+\])|(\*\*.*?\*\*)/g).filter(Boolean);
+
+                            return (
+                                <div key={j} className={line.startsWith('- ') ? "ml-4 flex gap-2" : "min-h-[1.2em]"}>
+                                    {line.startsWith('- ') && <span className="text-zinc-500">•</span>}
+                                    <span>
+                                        {tokens.map((token, k) => {
+                                            if (token.startsWith('**') && token.endsWith('**')) {
+                                                return <strong key={k} className="text-zinc-200">{token.slice(2, -2)}</strong>;
+                                            }
+                                            if (token.match(/^\[0x[a-fA-F0-9]+\]$/)) {
+                                                const addr = token.slice(1, -1);
+                                                return (
+                                                    <span
+                                                        key={k}
+                                                        onClick={() => onLinkClick && onLinkClick(addr)}
+                                                        className="mx-1 px-1.5 py-0.5 bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/30 cursor-pointer hover:bg-indigo-500/40 hover:text-white transition-colors font-mono text-xs select-none inline-flex items-center gap-1"
+                                                        title={`Go to ${addr}`}
+                                                    >
+                                                        <Crosshair size={8} />
+                                                        {addr}
+                                                    </span>
+                                                );
+                                            }
+                                            return <span key={k}>{line.startsWith('- ') ? token.replace('- ', '') : token}</span>
+                                        })}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
 
 export default function DockedChat({ apiStatus, onApiStatusChange, onCommand }: DockedChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -63,13 +123,18 @@ export default function DockedChat({ apiStatus, onApiStatusChange, onCommand }: 
             }
         };
         checkHealth();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleClear = () => {
         const initialMsg: Message = { role: 'assistant', content: "Chat cleared. Ready for new analysis." };
         setMessages([initialMsg]);
         localStorage.setItem('re_brain_chat_history', JSON.stringify([initialMsg]));
+    };
+
+    const handleLinkClick = (addr: string) => {
+        if (onCommand) {
+            onCommand({ action: 'goto', target: addr });
+        }
     };
 
     const handleSend = async () => {
@@ -140,41 +205,43 @@ export default function DockedChat({ apiStatus, onApiStatusChange, onCommand }: 
                         <div className={`
                             max-w-[90%] px-3 py-2 text-sm leading-relaxed shadow-sm break-words
                             ${m.role === 'user'
-                                ? 'bg-indigo-600/20 text-indigo-100 rounded-lg border border-indigo-500/30'
-                                : 'bg-zinc-800/50 text-zinc-300 rounded-lg border border-white/5'
-                            }
+                                ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-sm'
+                                : 'bg-[#27272a] text-zinc-200 rounded-2xl rounded-tl-sm border border-white/5'}
                         `}>
-                            {m.content}
+                            {m.role === 'user' ? m.content : <FormattedMessage content={m.content} onLinkClick={handleLinkClick} />}
                         </div>
                     </div>
                 ))}
+
                 {isTyping && (
                     <div className="flex justify-start">
-                        <div className="bg-zinc-800/50 border border-white/5 px-3 py-2 rounded-lg flex gap-1 items-center">
-                            <div className="w-1 h-1 bg-zinc-400 rounded-full animate-bounce" />
-                            <div className="w-1 h-1 bg-zinc-400 rounded-full animate-bounce [animation-delay:0.2s]" />
-                            <div className="w-1 h-1 bg-zinc-400 rounded-full animate-bounce [animation-delay:0.4s]" />
+                        <div className="bg-[#27272a] px-4 py-2 rounded-2xl rounded-tl-sm border border-white/5 flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                            <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                            <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce" />
                         </div>
                     </div>
                 )}
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <div className="p-3 bg-zinc-900/50 border-t border-white/5">
-                <div className="relative">
+            {/* Input Area */}
+            <div className="p-3 bg-[#121214] border-t border-white/5">
+                <div className="relative flex items-center">
                     <input
+                        type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                        placeholder="Ask re-Brain-AI..."
-                        className="w-full bg-zinc-800 border-none rounded-lg pl-3 pr-10 py-2.5 text-sm text-zinc-200 focus:ring-1 focus:ring-indigo-500"
+                        placeholder="Ask about the binary..."
+                        className="w-full bg-[#1e1e20] border border-white/10 rounded-full pl-4 pr-10 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all placeholder:text-zinc-600"
                     />
                     <button
                         onClick={handleSend}
-                        className="absolute right-2 top-2 p-0.5 text-zinc-400 hover:text-indigo-400 transition-colors"
+                        disabled={!input.trim()}
+                        className="absolute right-2 p-1.5 bg-indigo-600 text-white rounded-full hover:bg-indigo-500 disabled:opacity-50 disabled:hover:bg-indigo-600 transition-colors"
                     >
-                        <Send size={16} />
+                        <Send size={14} />
                     </button>
                 </div>
             </div>

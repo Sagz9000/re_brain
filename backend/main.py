@@ -44,7 +44,7 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     query: str
-    model: str = "qwen2.5:7b"
+    model: str = "qwen3-vl:8b"
     history: Optional[List[dict]] = None
 
 # Global SearchEngine instance
@@ -128,9 +128,25 @@ async def chat_endpoint(request: ChatRequest):
     except:
         file_count = 0
         file_list_str = "None"
-        
-    system_context = f"Project State: {file_count} files analyzed: [{file_list_str}]."
-
+    
+    # Extract environment context from history/query if available
+    current_file = "None"
+    current_address = "N/A"
+    current_function = "N/A"
+    arch_info = "x86_64, Little Endian"  # Default, could be extracted from binary metadata
+    
+    # Try to extract context from recent history
+    if request.history and len(request.history) > 0:
+        for msg in reversed(request.history[-3:]):
+            content = msg.get('content', '').lower()
+            # Simple heuristic extraction (could be enhanced)
+            if 'file' in content or '.exe' in content or '.dll' in content:
+                words = msg.get('content', '').split()
+                for word in words:
+                    if word.endswith(('.exe', '.dll', '.bin')):
+                        current_file = word
+                        break
+    
     # Format History
     history_str = ""
     if request.history:
@@ -139,15 +155,38 @@ async def chat_endpoint(request: ChatRequest):
             content = msg.get('content', '')
             history_str += f"{role}: {content}\n"
 
-    final_prompt = (
-        f"System Context: {system_context}\n\n"
-        f"RAG Context:\n{context_str}\n\n"
-        f"Chat History:\n{history_str}\n"
-        "You are the RE Copilot. If the user wants to see data (hex, strings, functions, decompile), "
-        "provide your analysis AND append a JSON block at the very end like this: \n"
-        "UI_COMMAND: {\"action\": \"SWITCH_TAB\", \"tab\": \"hex\" | \"functions\" | \"strings\" | \"dashboard\" | \"graph\" | \"tree\", \"file\": \"filename\", \"address\": \"0x...\", \"function\": \"name\"}\n"
-        f"User: {request.query}\n\nAnswer like a senior malware researcher."
-    )
+    final_prompt = f"""System Role: You are the Lead Malware Researcher (re-Brain). You are assisting a user in reversing a binary. You think in terms of execution flow, memory corruption, and adversarial intent. You are concise, technical, and never explain basic concepts unless asked.
+
+Environment State:
+- Analyzed Files: {file_count} ([{file_list_str}])
+- Current Focus: {current_file} at address {current_address}
+- Current Function: {current_function}
+- Architecture: {arch_info}
+
+RAG & Analysis Context:
+{context_str}
+
+Chat History:
+{history_str}
+
+Task Rules:
+1. Technical Precision: Use terms like "prologue," "indirect call," "stack canary," and "PIC code" where appropriate.
+2. Hypothesis Generation: If you see an unknown function, suggest what it might be based on its imports.
+3. Interactive Addresses: When mentioning an address or function start, ALWAYS format it as `[0x...]` (e.g., `[0x401000]`). This allows the user to click it.
+4. UI Control: To forcefully change the view, use the UI_COMMAND block.
+
+Output Schema:
+- Detailed Analysis: Bulleted insights into the code/logic. Use `[0x...]` for all addresses.
+- Command Block: A standalone JSON block labeled UI_COMMAND: (if applicable)
+
+Supported Commands:
+- SWITCH_TAB: Changes the active view (target: "decompile", "hex", "strings", "graph")
+- GOTO: Jumps to a specific address or function name
+- RENAME: Suggests a name for a symbol (requires "old_name" and "new_name")
+
+User Query: {request.query}
+
+Respond now:"""
 
     try:
         ollama_res = requests.post(
@@ -366,25 +405,24 @@ def get_program_tree(name: str):
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         output = result.stdout
         
-        blocks = []
+        json_str = ""
         capture = False
         for line in output.splitlines():
             if "GetMemoryBlocks.java>START" in line: capture = True; continue
             if "GetMemoryBlocks.java>END" in line: capture = False; break
             
-            if capture and "|" in line:
-                parts = line.split("|")
-                if len(parts) >= 6:
-                    blocks.append({
-                        "name": parts[0],
-                        "start": parts[1],
-                        "end": parts[2],
-                        "size": parts[3],
-                        "perms": parts[4],
-                        "type": parts[5]
-                    })
+            if capture:
+                json_str += line
         
-        return blocks
+        if not json_str.strip():
+            return {"error": "Script produced no output"}
+            
+        import json
+        try:
+            return json.loads(json_str) 
+        except json.JSONDecodeError:
+             return {"error": "Failed to decode script JSON output", "raw": json_str}
+
     except subprocess.TimeoutExpired:
         return {"error": "Tree fetch timed out (30s)"}
     except Exception as e:

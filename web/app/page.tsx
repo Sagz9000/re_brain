@@ -5,22 +5,29 @@ import WindowFrame from './components/WindowFrame';
 import ProjectExplorer from './components/ProjectExplorer';
 import DockedChat from './components/DockedChat';
 import HexViewer from './components/HexViewer';
-import FunctionTable from './components/FunctionTable';
+import SymbolTree from './components/SymbolTree';
 import CodeViewer from './components/CodeViewer';
 import StringsViewer from './components/StringsViewer';
 import FileUpload from './components/FileUpload';
 import ActivityLog from './components/ActivityLog';
-import {
-  Code, Sparkles, Terminal, Files, Search, Settings, Box,
-  FolderTree, GitGraph, ListTree, LayoutDashboard, Binary, FileCode, Type, Upload, X
-} from 'lucide-react';
 import ProgramTree from './components/ProgramTree';
 import FunctionGraph from './components/FunctionGraph';
+import DisassemblyView from './components/DisassemblyView';
+import DataTypeManager from './components/DataTypeManager';
+import CallTree from './components/CallTree';
+import ScriptManager from './components/ScriptManager';
+import BookmarkManager from './components/BookmarkManager';
+
+import {
+  Code, Sparkles, Terminal, Files, Search, Settings, Box,
+  FolderTree, GitGraph, ListTree, LayoutDashboard, Binary, FileCode, Type, Upload, X,
+  AlignLeft, Database, GitCommit, Play, Bookmark
+} from 'lucide-react';
 
 interface WindowState {
   id: string;
   title: string;
-  type: 'project' | 'chat' | 'hex' | 'functions' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph';
+  type: 'project' | 'chat' | 'hex' | 'symbol_tree' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph' | 'listing' | 'datatypes' | 'call_tree' | 'scripts' | 'bookmarks';
   isOpen: boolean;
   zIndex: number;
   initialPos: { x: number, y: number };
@@ -40,14 +47,30 @@ export default function Home() {
 
   // Initial Window States
   const [windows, setWindows] = useState<WindowState[]>([
-    { id: 'project', title: 'File Explorer', type: 'project', isOpen: true, zIndex: 1, initialPos: { x: 80, y: 20 }, initialSize: { w: 260, h: 500 }, icon: Files },
-    { id: 'dashboard', title: 'System Overview', type: 'dashboard', isOpen: true, zIndex: 0, initialPos: { x: 360, y: 20 }, initialSize: { w: 800, h: 500 }, icon: LayoutDashboard },
-    { id: 'chat', title: 're-Brain-AI', type: 'chat', isOpen: true, zIndex: 5, initialPos: { x: 1180, y: 20 }, initialSize: { w: 320, h: 800 }, icon: Sparkles },
-    { id: 'output', title: 'Activity Output', type: 'output', isOpen: true, zIndex: 2, initialPos: { x: 360, y: 540 }, initialSize: { w: 800, h: 280 }, icon: Terminal },
-    { id: 'hex', title: 'Hex Data', type: 'hex', isOpen: false, zIndex: 3, initialPos: { x: 400, y: 100 }, initialSize: { w: 700, h: 450 }, icon: Binary },
-    { id: 'functions', title: 'Symbol Tree', type: 'functions', isOpen: false, zIndex: 3, initialPos: { x: 450, y: 150 }, initialSize: { w: 600, h: 400 }, icon: FileCode },
-    { id: 'strings', title: 'Strings', type: 'strings', isOpen: false, zIndex: 3, initialPos: { x: 500, y: 200 }, initialSize: { w: 500, h: 400 }, icon: Type },
-    { id: 'decompile', title: 'Decompilation', type: 'decompile', isOpen: false, zIndex: 4, initialPos: { x: 550, y: 250 }, initialSize: { w: 800, h: 600 }, icon: Code },
+    // Core Management
+    { id: 'project', title: 'File Explorer', type: 'project', isOpen: true, zIndex: 1, initialPos: { x: 20, y: 20 }, initialSize: { w: 260, h: 600 }, icon: Files },
+    { id: 'dashboard', title: 'System Overview', type: 'dashboard', isOpen: true, zIndex: 0, initialPos: { x: 300, y: 20 }, initialSize: { w: 800, h: 500 }, icon: LayoutDashboard },
+
+    // Core Analysis
+    { id: 'listing', title: 'Listing View', type: 'listing', isOpen: false, zIndex: 2, initialPos: { x: 300, y: 540 }, initialSize: { w: 800, h: 400 }, icon: AlignLeft },
+    { id: 'symbol_tree', title: 'Symbol Tree', type: 'symbol_tree', isOpen: false, zIndex: 3, initialPos: { x: 1120, y: 20 }, initialSize: { w: 300, h: 400 }, icon: ListTree },
+    { id: 'datatypes', title: 'Data Type Manager', type: 'datatypes', isOpen: false, zIndex: 3, initialPos: { x: 1120, y: 440 }, initialSize: { w: 300, h: 400 }, icon: Database },
+    { id: 'tree', title: 'Program Tree', type: 'tree', isOpen: false, zIndex: 3, initialPos: { x: 300, y: 20 }, initialSize: { w: 300, h: 400 }, icon: FolderTree },
+
+    // Views
+    { id: 'decompile', title: 'Decompiler', type: 'decompile', isOpen: false, zIndex: 4, initialPos: { x: 620, y: 20 }, initialSize: { w: 500, h: 500 }, icon: Code },
+    { id: 'graph', title: 'Function Graph', type: 'graph', isOpen: false, zIndex: 4, initialPos: { x: 400, y: 100 }, initialSize: { w: 600, h: 500 }, icon: GitGraph },
+    { id: 'call_tree', title: 'Function Call Tree', type: 'call_tree', isOpen: false, zIndex: 4, initialPos: { x: 450, y: 150 }, initialSize: { w: 400, h: 500 }, icon: GitCommit },
+    { id: 'hex', title: 'Bytes', type: 'hex', isOpen: false, zIndex: 3, initialPos: { x: 400, y: 400 }, initialSize: { w: 600, h: 300 }, icon: Binary },
+    { id: 'strings', title: 'Defined Strings', type: 'strings', isOpen: false, zIndex: 3, initialPos: { x: 500, y: 200 }, initialSize: { w: 500, h: 400 }, icon: Type },
+
+    // Tools
+    { id: 'scripts', title: 'Script Manager', type: 'scripts', isOpen: false, zIndex: 5, initialPos: { x: 500, y: 50 }, initialSize: { w: 400, h: 300 }, icon: Play },
+    { id: 'bookmarks', title: 'Bookmarks', type: 'bookmarks', isOpen: false, zIndex: 5, initialPos: { x: 550, y: 80 }, initialSize: { w: 300, h: 400 }, icon: Bookmark },
+
+    // Misc
+    { id: 'output', title: 'Console Output', type: 'output', isOpen: true, zIndex: 2, initialPos: { x: 300, y: 800 }, initialSize: { w: 800, h: 200 }, icon: Terminal },
+    { id: 'chat', title: 're-Brain-AI', type: 'chat', isOpen: true, zIndex: 10, initialPos: { x: window.innerWidth - 340, y: 20 }, initialSize: { w: 320, h: 800 }, icon: Sparkles },
   ]);
 
   useEffect(() => {
@@ -60,96 +83,97 @@ export default function Home() {
     try {
       const res = await fetch('http://localhost:8005/binaries');
       const data = await res.json();
-      if (Array.isArray(data)) setFiles(data);
-    } catch (e) { console.error(e) }
+      setFiles(data);
+    } catch (e) { console.error(e); }
   };
 
-  const toggleWindow = (id: string, forceOpen = false) => {
-    setWindows((prev: WindowState[]) => {
-      const next = prev.map(w => {
-        if (w.id === id) {
-          const nextOpen = forceOpen || !w.isOpen;
-          return { ...w, isOpen: nextOpen, zIndex: nextOpen ? topZ + 1 : w.zIndex };
-        }
-        return w;
-      });
-      return next;
-    });
-    setTopZ((prev: number) => prev + 1);
-  };
-
-  const focusWindow = (id: string) => {
-    setWindows((prev: WindowState[]) => prev.map(w => {
-      if (w.id === id) return { ...w, zIndex: topZ + 1 };
-      return w;
-    }));
-    setTopZ((prev: number) => prev + 1);
+  const toggleWindow = (id: string) => {
+    setWindows(prev => prev.map(w => w.id === id ? { ...w, isOpen: !w.isOpen, zIndex: topZ + 1 } : w));
+    setTopZ(prev => prev + 1);
   };
 
   const closeWindow = (id: string) => {
-    setWindows((prev: WindowState[]) => prev.map(w => w.id === id ? { ...w, isOpen: false } : w));
+    setWindows(prev => prev.map(w => w.id === id ? { ...w, isOpen: false } : w));
+  };
+
+  const focusWindow = (id: string) => {
+    setWindows(prev => prev.map(w => w.id === id ? { ...w, zIndex: topZ + 1 } : w));
+    setTopZ(prev => prev + 1);
   };
 
   const onSelectFunction = (func: { name: string, address: string }) => {
     setSelectedFunction(func);
-    toggleWindow('decompile', true);
+    // Auto-open decompiler and focus it
+    setWindows(prev => prev.map(w => {
+      if (w.id === 'decompile') return { ...w, isOpen: true, zIndex: topZ + 2 };
+      return w;
+    }));
+    setTopZ(prev => prev + 2);
   };
 
   const handleUiCommand = (cmd: any) => {
-    if (!cmd || !cmd.action) return;
     if (cmd.action === 'SWITCH_TAB') {
-      const typeMap: Record<string, string> = {
-        'hex': 'hex',
-        'functions': 'functions',
-        'strings': 'strings',
-        'dashboard': 'dashboard'
-      };
-      const winId = typeMap[cmd.tab] || cmd.tab;
+      const targetId = cmd.tab;
+      // Map AI terms to IDs if needed
+      let winId = targetId;
+      if (targetId === 'functions') winId = 'symbol_tree';
 
-      if (cmd.file) setActiveFile(cmd.file);
+      setWindows(prev => prev.map(w => {
+        if (w.id === winId) return { ...w, isOpen: true, zIndex: topZ + 1 };
+        return w;
+      }));
+      setTopZ(prev => prev + 1);
+
+      if (cmd.file && cmd.file !== activeFile) setActiveFile(cmd.file);
       if (cmd.function && cmd.address) {
         setSelectedFunction({ name: cmd.function, address: cmd.address });
-        toggleWindow('decompile', true);
-      } else if (winId) {
-        toggleWindow(winId, true);
       }
     }
   };
 
-  const handleDeleteFile = async (name: string) => {
-    try {
-      await fetch(`http://localhost:8005/binary/${name}`, { method: 'DELETE' });
-      if (activeFile === name) {
-        setActiveFile(null);
-        setSelectedFunction(null);
+  const handleDeleteFile = async (file: string) => {
+    if (confirm(`Delete ${file}? This cannot be undone.`)) {
+      try {
+        await fetch(`http://localhost:8005/binary/${file}`, { method: 'DELETE' });
+        if (activeFile === file) {
+          setActiveFile(null);
+          setSelectedFunction(null);
+        }
+        fetchFiles();
+      } catch (e) {
+        console.error(e);
       }
-      fetchFiles();
-    } catch (e) { console.error(e) }
+    }
   };
 
   return (
-    <div className="flex h-screen bg-[#020203] text-zinc-100 font-sans overflow-hidden relative">
-      <div className="absolute inset-0 z-0 bg-grid-white/[0.02] bg-[size:40px_40px] pointer-events-none" />
-      <div className="absolute inset-0 z-0 bg-gradient-to-tr from-indigo-500/5 via-transparent to-transparent pointer-events-none" />
-
-      <div className="w-16 bg-[#09090b]/80 backdrop-blur-md border-r border-white/5 flex flex-col items-center py-4 gap-4 z-50">
-        <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/20">
-          <Box className="text-white" size={20} />
+    <div className="flex h-screen bg-[#1e1e1e] text-zinc-300 font-sans overflow-hidden">
+      {/* Launch Bar */}
+      <div className="w-12 bg-[#2d2d30] border-r border-[#3e3e42] flex flex-col items-center py-4 gap-3 z-50">
+        <div className="mb-4">
+          <Box size={24} className="text-indigo-500" />
         </div>
 
-        {windows.map((w: WindowState) => (
-          <button
-            key={w.id}
-            onClick={() => toggleWindow(w.id)}
-            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 group relative ${w.isOpen ? 'bg-white/10 text-indigo-400' : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-300'}`}
-          >
-            <w.icon size={20} />
-            {w.isOpen && <div className="absolute left-0 w-1 h-4 bg-indigo-500 rounded-r-full" />}
-            <div className="absolute left-full ml-3 px-2 py-1 bg-zinc-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-              {w.title}
-            </div>
-          </button>
-        ))}
+        {/* Core Analysis Group */}
+        <div className="flex flex-col gap-2 w-full items-center pb-2 border-b border-white/5">
+          {windows.filter(w => ['project', 'listing', 'symbol_tree', 'tree', 'datatypes'].includes(w.type)).map(w => (
+            <LaunchIcon key={w.id} w={w} toggleWindow={toggleWindow} />
+          ))}
+        </div>
+
+        {/* Views Group */}
+        <div className="flex flex-col gap-2 w-full items-center pb-2 border-b border-white/5">
+          {windows.filter(w => ['decompile', 'graph', 'call_tree', 'hex', 'strings'].includes(w.type)).map(w => (
+            <LaunchIcon key={w.id} w={w} toggleWindow={toggleWindow} />
+          ))}
+        </div>
+
+        {/* Tools Group */}
+        <div className="flex flex-col gap-2 w-full items-center">
+          {windows.filter(w => ['scripts', 'bookmarks', 'chat', 'output', 'dashboard'].includes(w.type)).map(w => (
+            <LaunchIcon key={w.id} w={w} toggleWindow={toggleWindow} />
+          ))}
+        </div>
 
         <div className="mt-auto flex flex-col gap-4">
           <button onClick={() => setShowUpload(true)} className="w-10 h-10 text-zinc-500 hover:text-indigo-400 flex items-center justify-center"><Upload size={20} /></button>
@@ -157,7 +181,7 @@ export default function Home() {
         </div>
       </div>
 
-      <main className="flex-1 relative overflow-hidden z-10">
+      <main className="flex-1 relative overflow-hidden z-10 bg-[#1e1e1e]">
         {windows.map((win: WindowState) => win.isOpen && (
           <WindowFrame
             key={win.id}
@@ -178,30 +202,29 @@ export default function Home() {
                 onDeleteFile={handleDeleteFile}
               />
             )}
+            {win.type === 'listing' && <DisassemblyView file={activeFile} />}
+            {win.type === 'symbol_tree' && <SymbolTree file={activeFile} onSelectFunction={onSelectFunction} />}
+            {win.type === 'datatypes' && <DataTypeManager file={activeFile} />}
             {win.type === 'tree' && <ProgramTree file={activeFile} />}
-            {win.type === 'graph' && <FunctionGraph />}
-            {win.type === 'dashboard' && (
-              <div className="flex-1 p-6 overflow-auto">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                  <LayoutDashboard size={20} className="text-indigo-400" />
-                  Project Dashboard
-                </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 p-4 rounded-lg border border-white/5">
-                    <span className="text-[10px] text-zinc-500 uppercase">Binaries</span>
-                    <p className="text-2xl font-mono">{files.length}</p>
-                  </div>
-                  <div className="bg-white/5 p-4 rounded-lg border border-white/5">
-                    <span className="text-[10px] text-zinc-500 uppercase">Status</span>
-                    <p className="text-sm font-bold text-emerald-400">{apiStatus}</p>
-                  </div>
-                </div>
-                <div className="mt-8">
-                  <h3 className="text-xs font-bold text-zinc-400 mb-4 uppercase tracking-widest">Recent Activity</h3>
-                  <ActivityLog />
-                </div>
-              </div>
+
+            {win.type === 'decompile' && activeFile && selectedFunction && (
+              <CodeViewer file={activeFile} address={selectedFunction.address} functionName={selectedFunction.name} />
             )}
+            {win.type === 'decompile' && (!activeFile || !selectedFunction) && <NoFunctionSelected />}
+
+            {win.type === 'graph' && <FunctionGraph />}
+            {win.type === 'call_tree' && <CallTree file={activeFile} />}
+            {win.type === 'hex' && activeFile && <HexViewer file={activeFile} />}
+            {win.type === 'hex' && !activeFile && <NoFileSelected />}
+            {win.type === 'strings' && activeFile && <StringsViewer file={activeFile} />}
+            {win.type === 'strings' && !activeFile && <NoFileSelected />}
+
+            {win.type === 'scripts' && <ScriptManager />}
+            {win.type === 'bookmarks' && <BookmarkManager file={activeFile} />}
+
+            {win.type === 'dashboard' && <Dashboard apiStatus={apiStatus} fileCount={files.length} />}
+            {win.type === 'output' && <ActivityLog />}
+
             {win.type === 'chat' && (
               <DockedChat
                 apiStatus={apiStatus}
@@ -209,17 +232,6 @@ export default function Home() {
                 onCommand={handleUiCommand}
               />
             )}
-            {win.type === 'output' && <ActivityLog />}
-            {win.type === 'hex' && activeFile && <HexViewer file={activeFile} />}
-            {win.type === 'hex' && !activeFile && <NoFileSelected />}
-            {win.type === 'functions' && activeFile && <FunctionTable file={activeFile} onSelectFunction={onSelectFunction} />}
-            {win.type === 'functions' && !activeFile && <NoFileSelected />}
-            {win.type === 'strings' && activeFile && <StringsViewer file={activeFile} />}
-            {win.type === 'strings' && !activeFile && <NoFileSelected />}
-            {win.type === 'decompile' && activeFile && selectedFunction && (
-              <CodeViewer file={activeFile} address={selectedFunction.address} functionName={selectedFunction.name} />
-            )}
-            {win.type === 'decompile' && (!activeFile || !selectedFunction) && <NoFunctionSelected />}
           </WindowFrame>
         ))}
       </main>
@@ -240,12 +252,26 @@ export default function Home() {
   );
 }
 
+function LaunchIcon({ w, toggleWindow }: { w: WindowState, toggleWindow: (id: string) => void }) {
+  return (
+    <button
+      onClick={() => toggleWindow(w.id)}
+      className={`w-8 h-8 rounded flex items-center justify-center transition-all duration-200 group relative ${w.isOpen ? 'bg-white/10 text-indigo-400' : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-300'}`}
+    >
+      <w.icon size={18} />
+      {w.isOpen && <div className="absolute left-0 w-0.5 h-4 bg-indigo-500 rounded-r-full" />}
+      <div className="absolute left-full ml-3 px-2 py-1 bg-[#252526] border border-[#3e3e42] text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg">
+        {w.title}
+      </div>
+    </button>
+  );
+}
+
 function NoFileSelected() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-zinc-600 bg-[#0c0c0e]/30 backdrop-blur-sm p-12 text-center">
       <Files size={40} className="mb-4 opacity-20" />
-      <p className="italic text-sm">Select a binary from the File Explorer to analyze its contents</p>
-      <div className="mt-4 w-12 h-0.5 bg-indigo-500/20 rounded-full" />
+      <p className="italic text-sm">Select a binary from the File Explorer</p>
     </div>
   )
 }
@@ -254,8 +280,32 @@ function NoFunctionSelected() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-zinc-600 bg-[#0c0c0e]/30 backdrop-blur-sm p-12 text-center">
       <Code size={40} className="mb-4 opacity-20" />
-      <p className="italic text-sm">Select a function from the Symbol Tree to generate decompiled C code</p>
-      <div className="mt-4 w-12 h-0.5 bg-indigo-500/20 rounded-full" />
+      <p className="italic text-sm">Select a function from the Symbol Tree</p>
     </div>
   )
+}
+
+function Dashboard({ apiStatus, fileCount }: { apiStatus: string, fileCount: number }) {
+  return (
+    <div className="flex-1 p-6 overflow-auto bg-[#1e1e1e]">
+      <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-200">
+        <LayoutDashboard size={20} className="text-indigo-400" />
+        Project Dashboard
+      </h2>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-[#252526] p-4 rounded-lg border border-[#3e3e42]">
+          <span className="text-[10px] text-zinc-500 uppercase">Binaries</span>
+          <p className="text-2xl font-mono text-zinc-200">{fileCount}</p>
+        </div>
+        <div className="bg-[#252526] p-4 rounded-lg border border-[#3e3e42]">
+          <span className="text-[10px] text-zinc-500 uppercase">Status</span>
+          <p className={`text-sm font-bold ${apiStatus === 'online' ? 'text-emerald-400' : 'text-red-400'}`}>{apiStatus}</p>
+        </div>
+      </div>
+      <div className="mt-8">
+        <h3 className="text-xs font-bold text-zinc-400 mb-4 uppercase tracking-widest">Recent Activity</h3>
+        <ActivityLog />
+      </div>
+    </div>
+  );
 }

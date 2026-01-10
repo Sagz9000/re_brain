@@ -18,28 +18,79 @@
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
+import ghidra.program.model.data.DataTypeManager;
+import ghidra.program.model.data.DataType;
+import ghidra.program.model.listing.Listing;
+import ghidra.program.model.listing.Data;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GetMemoryBlocks extends GhidraScript {
 
+    private String escape(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
+    }
+
     @Override
     public void run() throws Exception {
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        
+        // 1. Memory Blocks
+        json.append("\"blocks\": [");
         Memory memory = currentProgram.getMemory();
         MemoryBlock[] blocks = memory.getBlocks();
-        
-        println("GetMemoryBlocks.java>START");
-        for (MemoryBlock block : blocks) {
-            String name = block.getName();
-            String start = block.getStart().toString();
-            String end = block.getEnd().toString();
-            long size = block.getSize();
+        for (int i = 0; i < blocks.length; i++) {
+            MemoryBlock block = blocks[i];
             String perms = "";
             if (block.isRead()) perms += "R";
             if (block.isWrite()) perms += "W";
             if (block.isExecute()) perms += "X";
             
-            // Output format: Name|Start|End|Size|Perms|Type
-            println(name + "|" + start + "|" + end + "|" + size + "|" + perms + "|" + block.getType().toString());
+            json.append(String.format("{\"name\": \"%s\", \"start\": \"%s\", \"end\": \"%s\", \"size\": \"%d\", \"perms\": \"%s\", \"type\": \"%s\"}",
+                escape(block.getName()), block.getStart(), block.getEnd(), block.getSize(), perms, block.getType()));
+            
+            if (i < blocks.length - 1) json.append(",");
         }
+        json.append("],");
+        
+        // 2. Headers
+        json.append("\"headers\": [");
+        Listing listing = currentProgram.getListing();
+        Data data = listing.getDataAt(currentProgram.getMinAddress());
+        int count = 0;
+        List<String> headerObjs = new ArrayList<>();
+        while (data != null && count < 20) {
+            String val = data.getValue() != null ? data.getValue().toString() : "??";
+            headerObjs.add(String.format("{\"address\": \"%s\", \"type\": \"%s\", \"value\": \"%s\"}",
+                data.getAddress(), escape(data.getDataType().getName()), escape(val)));
+            
+            data = listing.getDataAfter(data.getAddress());
+            count++;
+        }
+        json.append(String.join(",", headerObjs));
+        json.append("],");
+
+        // 3. Data Types
+        json.append("\"datatypes\": [");
+        DataTypeManager dtm = currentProgram.getDataTypeManager();
+        Iterator<DataType> allTypes = dtm.getAllDataTypes();
+        count = 0;
+        List<String> typeNames = new ArrayList<>();
+        while(allTypes.hasNext() && count < 200) {
+             DataType dt = allTypes.next();
+             typeNames.add("\"" + escape(dt.getName()) + "\"");
+             count++;
+        }
+        json.append(String.join(",", typeNames));
+        json.append("]");
+
+        json.append("}");
+
+        println("GetMemoryBlocks.java>START");
+        println(json.toString());
         println("GetMemoryBlocks.java>END");
     }
 }
