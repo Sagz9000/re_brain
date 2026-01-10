@@ -2,7 +2,7 @@
 
 **AI-Powered Reverse Engineering Environment**
 
-reAIghidra is a containerized, multi-modal RAG system that integrates Ghidra with specialized AI knowledge streams to assist in binary analysis and malware reverse engineering.
+re-Brain is a containerized, multi-modal RAG system that integrates Ghidra with specialized AI knowledge streams to assist in binary analysis and malware reverse engineering.
 
 ![re-Brain AI Analysis](pictures/ui_ai.png)
 
