@@ -18,34 +18,37 @@ const FormattedMessage = ({ content, onLinkClick }: { content: string, onLinkCli
     // Basic markdown parser
     const parts = content.split(/(```[\s\S]*?```)/g);
     return (
-        <div className="text-sm space-y-2">
+        <div className="text-sm space-y-3">
             {parts.map((part, i) => {
                 if (part.startsWith('```')) {
                     const code = part.replace(/```\w*\n?/, '').replace(/```$/, '');
                     return (
-                        <pre key={i} className="bg-black/50 p-2 rounded text-xs overflow-x-auto font-mono text-zinc-300 pointer-events-auto select-text">
+                        <pre key={i} className="bg-black/50 p-3 rounded text-xs overflow-x-auto font-mono text-zinc-300 pointer-events-auto select-text border border-zinc-700/50">
                             {code}
                         </pre>
                     );
                 }
                 // Handle bold, lists, and addresses
                 return (
-                    <div key={i} className="whitespace-pre-wrap">
+                    <div key={i} className="space-y-2">
                         {part.split('\n').map((line, j) => {
+                            // Skip empty lines but preserve spacing
+                            if (!line.trim()) return <div key={j} className="h-2" />;
+
                             // Headers
-                            if (line.startsWith('### ')) return <h3 key={j} className="text-indigo-400 font-bold mt-2">{line.replace('### ', '')}</h3>;
-                            if (line.startsWith('## ')) return <h2 key={j} className="text-indigo-300 font-bold mt-3 border-b border-indigo-500/30 pb-1">{line.replace('## ', '')}</h2>;
+                            if (line.startsWith('### ')) return <h3 key={j} className="text-indigo-400 font-bold mt-3 mb-1 text-base">{line.replace('### ', '')}</h3>;
+                            if (line.startsWith('## ')) return <h2 key={j} className="text-indigo-300 font-bold mt-4 mb-2 text-lg border-b border-indigo-500/30 pb-1">{line.replace('## ', '')}</h2>;
 
                             // Process line for bold and addresses
                             const tokens = line.split(/(\[0x[a-fA-F0-9]+\])|(\*\*.*?\*\*)/g).filter(Boolean);
 
                             return (
-                                <div key={j} className={line.startsWith('- ') ? "ml-4 flex gap-2" : "min-h-[1.2em]"}>
-                                    {line.startsWith('- ') && <span className="text-zinc-500">•</span>}
-                                    <span>
+                                <div key={j} className={line.startsWith('- ') ? "ml-6 flex gap-2 my-1.5" : "my-1.5 leading-relaxed"}>
+                                    {line.startsWith('- ') && <span className="text-zinc-500 mt-0.5">•</span>}
+                                    <span className="flex-1">
                                         {tokens.map((token, k) => {
                                             if (token.startsWith('**') && token.endsWith('**')) {
-                                                return <strong key={k} className="text-zinc-200">{token.slice(2, -2)}</strong>;
+                                                return <strong key={k} className="text-zinc-100 font-semibold">{token.slice(2, -2)}</strong>;
                                             }
                                             if (token.match(/^\[0x[a-fA-F0-9]+\]$/)) {
                                                 const addr = token.slice(1, -1);
@@ -203,7 +206,7 @@ export default function DockedChat({ apiStatus, onApiStatusChange, onCommand }: 
                 {messages.map((m, i) => (
                     <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`
-                            max-w-[90%] px-3 py-2 text-sm leading-relaxed shadow-sm break-words
+                            max-w-[90%] px-4 py-3 text-sm leading-relaxed shadow-sm break-words
                             ${m.role === 'user'
                                 ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-sm'
                                 : 'bg-[#27272a] text-zinc-200 rounded-2xl rounded-tl-sm border border-white/5'}
