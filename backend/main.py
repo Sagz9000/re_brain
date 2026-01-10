@@ -46,6 +46,9 @@ class ChatRequest(BaseModel):
     query: str
     model: str = "qwen3-vl:8b"
     history: Optional[List[dict]] = None
+    current_file: Optional[str] = None
+    current_function: Optional[str] = None
+    current_address: Optional[str] = None
 
 # Global SearchEngine instance
 search_engine = None
@@ -110,43 +113,70 @@ def ingest_binary(data: dict):
     return {"status": "success", "count": len(ids)}
 
 @app.post("/chat")
-async def chat_endpoint(request: ChatRequest):
+def chat_endpoint(request: ChatRequest):
     if not search_engine:
         return {"error": "Search engine not initialized. Check logs."}
     
     log_event(f"User Query: {request.query}", source="User")
+
+    context_str = ""
+    context_hits = []
     
-    # 1. Retrieve Context
-    context_hits = search_engine.search(request.query)
-    context_str = search_engine.format_context(context_hits)
+    # Files Context
+    file_list = []
+    if os.path.exists(BINARIES_DIR):
+        file_list = [f for f in os.listdir(BINARIES_DIR) if os.path.isfile(os.path.join(BINARIES_DIR, f))]
+    file_count = len(file_list)
+    file_list_str = ", ".join(file_list) if file_list else "None"
     
-    # Global Project State
+    current_file = request.current_file or "None"
+    current_address = request.current_address or "None"
+    current_function = request.current_function or "None"
+    
+    arch_info = "Unknown (Analysis Pending)"
+    decompiled_code = "No code selected."
+
+    # Fetch Architecture & Decompiled Code if applicable
+    if request.current_file:
+         # Arch
+         arch_path = f"{BINARIES_DIR}/{request.current_file}.arch.txt"
+         if os.path.exists(arch_path):
+             with open(arch_path, 'r') as f: arch_info = f.read().strip()
+         
+         # Decompiled Code
+         if request.current_address:
+             try:
+                 # Re-use run_headless_script logic for decompilation on the fly
+                 # Note: Ideally cache this, but for now we run it on demand (can be slow ~3-5s)
+                 # Optimized: use 'DecompileAt.java' (need to make sure this exists or inline it)
+                 # Actually, let's use the existing endpoint logic
+                 result = decompile_function(request.current_file, request.current_address)
+                 if isinstance(result, dict) and "code" in result:
+                     decompiled_code = result["code"]
+                 elif isinstance(result, dict) and "error" in result:
+                     decompiled_code = f"Decompilation failed: {result['error']}"
+             except Exception as e:
+                 decompiled_code = f"Decompilation error: {str(e)}"
+
+    # RAG Context (ChromaDB)
     try:
-        binaries = os.listdir(BINARIES_DIR)
-        file_count = len(binaries)
-        file_list_str = ", ".join(binaries)
-    except:
-        file_count = 0
-        file_list_str = "None"
-    
-    # Extract environment context from history/query if available
-    current_file = "None"
-    current_address = "N/A"
-    current_function = "N/A"
-    arch_info = "x86_64, Little Endian"  # Default, could be extracted from binary metadata
-    
-    # Try to extract context from recent history
-    if request.history and len(request.history) > 0:
-        for msg in reversed(request.history[-3:]):
-            content = msg.get('content', '').lower()
-            # Simple heuristic extraction (could be enhanced)
-            if 'file' in content or '.exe' in content or '.dll' in content:
-                words = msg.get('content', '').split()
-                for word in words:
-                    if word.endswith(('.exe', '.dll', '.bin')):
-                        current_file = word
-                        break
-    
+        if request.current_file and search_engine and search_engine.client:
+            coll = search_engine.client.get_or_create_collection(name=f"ghidra_{request.current_file}")
+            # Query related to user input
+            results = coll.query(
+                query_texts=[request.query],
+                n_results=3
+            )
+            if results['documents'] and results['documents'][0]:
+                for i, doc in enumerate(results['documents'][0]):
+                    meta = results['metadatas'][0][i]
+                    func_name = meta.get('function', 'unknown')
+                    context_hits.append(func_name)
+                    context_str += f"\n--- Function: {func_name} ---\n{doc}\n"
+    except Exception as e:
+        logger.error(f"RAG Error: {e}")
+        context_str = f"RAG unavailable: {e}"
+
     # Format History
     history_str = ""
     if request.history:
@@ -163,6 +193,11 @@ Environment State:
 - Current Function: {current_function}
 - Architecture: {arch_info}
 
+CURRENT CODE (Decompiled):
+```c
+{decompiled_code}
+```
+
 RAG & Analysis Context:
 {context_str}
 
@@ -174,15 +209,11 @@ Task Rules:
 2. Hypothesis Generation: If you see an unknown function, suggest what it might be based on its imports.
 3. Interactive Addresses: When mentioning an address or function start, ALWAYS format it as `[0x...]` (e.g., `[0x401000]`). This allows the user to click it.
 4. UI Control: To forcefully change the view, use the UI_COMMAND block.
+5. If the user asks about the code, refer to the "CURRENT CODE" block above.
 
 Output Schema:
 - Detailed Analysis: Bulleted insights into the code/logic. Use `[0x...]` for all addresses.
 - Command Block: A standalone JSON block labeled UI_COMMAND: (if applicable)
-
-Supported Commands:
-- SWITCH_TAB: Changes the active view (target: "decompile", "hex", "strings", "graph")
-- GOTO: Jumps to a specific address or function name
-- RENAME: Suggests a name for a symbol (requires "old_name" and "new_name")
 
 User Query: {request.query}
 
@@ -194,7 +225,10 @@ Respond now:"""
             json={
                 "model": request.model,
                 "prompt": final_prompt,
-                "stream": False
+                "stream": False,
+                "options": {
+                    "num_ctx": 8192 # Increase context window for code analysis
+                }
             }
         )
         response_text = ollama_res.json().get('response', "I couldn't generate a response.")
@@ -345,7 +379,7 @@ def decompile_function(name: str, addr: str):
         project_name,
         "-process", name,
         "-noanalysis",
-        "-scriptPath", "/ghidra/scripts",
+        "-scriptPath", "/app/ghidra_scripts",
         "-postScript", "DecompileFunction.java", addr
     ]
     
@@ -397,7 +431,7 @@ def get_program_tree(name: str):
         project_name,
         "-process", name,
         "-noanalysis",
-        "-scriptPath", "/ghidra/scripts",
+        "-scriptPath", "/app/ghidra_scripts",
         "-postScript", "GetMemoryBlocks.java"
     ]
     
@@ -427,3 +461,116 @@ def get_program_tree(name: str):
         return {"error": "Tree fetch timed out (30s)"}
     except Exception as e:
         return {"error": str(e)}
+
+@app.get("/binary/{name}/symbols")
+def get_symbols(name: str):
+    project_dir = "/data/projects"
+    project_name = None
+    
+    if os.path.exists(project_dir):
+        for f in os.listdir(project_dir):
+            if f.endswith(".gpr"):
+                project_name = f.replace(".gpr", "")
+                break
+            
+    if not project_name:
+        return {"error": "No Ghidra project found"}
+
+    cmd = [
+        "/ghidra/support/analyzeHeadless",
+        project_dir,
+        project_name,
+        "-process", name,
+        "-noanalysis",
+        "-scriptPath", "/app/ghidra_scripts",
+        "-postScript", "GetSymbols.java"
+    ]
+    
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=45)
+        output = result.stdout
+        
+        json_str = ""
+        capture = False
+        for line in output.splitlines():
+            if "GetSymbols.java>START" in line: capture = True; continue
+            if "GetSymbols.java>END" in line: capture = False; break
+            
+            if capture:
+                json_str += line
+        
+        if not json_str.strip():
+            return {"error": "Script produced no output"}
+            
+        import json
+        try:
+            return json.loads(json_str) 
+        except json.JSONDecodeError:
+             return {"error": "Failed to decode script JSON output", "raw": json_str}
+
+    except subprocess.TimeoutExpired:
+        return {"error": "Symbols fetch timed out (45s)"}
+    except Exception as e:
+        return {"error": str(e)}
+
+def run_headless_script(name: str, script: str, timeout: int = 45):
+    project_dir = "/data/projects"
+    project_name = None
+    
+    if os.path.exists(project_dir):
+        for f in os.listdir(project_dir):
+            if f.endswith(".gpr"):
+                project_name = f.replace(".gpr", "")
+                break
+            
+    if not project_name:
+        return {"error": "No Ghidra project found"}
+
+    cmd = [
+        "/ghidra/support/analyzeHeadless",
+        project_dir,
+        project_name,
+        "-process", name,
+        "-noanalysis",
+        "-scriptPath", "/app/ghidra_scripts",
+        "-postScript", script
+    ]
+    
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        output = result.stdout
+        
+        json_str = ""
+        capture = False
+        for line in output.splitlines():
+            if f"{script}>START" in line: capture = True; continue
+            if f"{script}>END" in line: capture = False; break
+            
+            if capture:
+                json_str += line
+        
+        if not json_str.strip():
+            return {"error": "Script produced no output"}
+            
+        import json
+        try:
+            return json.loads(json_str) 
+        except json.JSONDecodeError:
+             return {"error": "Failed to decode script JSON output", "raw": json_str}
+
+    except subprocess.TimeoutExpired:
+        return {"error": f"Script {script} timed out ({timeout}s)"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/binary/{name}/calltree")
+def get_calltree(name: str):
+    return run_headless_script(name, "GetCallTree.java")
+
+@app.get("/binary/{name}/datatypes")
+def get_datatypes(name: str):
+    return run_headless_script(name, "GetDataTypes.java", timeout=60)
+
+@app.get("/binary/{name}/bookmarks")
+def get_bookmarks(name: str):
+    return run_headless_script(name, "GetBookmarks.java")

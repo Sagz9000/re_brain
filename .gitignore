@@ -34,4 +34,6 @@ data/binaries/*
 data/malware/*
 data/compiler_patterns/*
 data/expert/*
+data/projects/*
+data/jobs/*
 !data/.gitkeep

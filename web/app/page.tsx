@@ -213,7 +213,7 @@ export default function Home() {
             {win.type === 'decompile' && (!activeFile || !selectedFunction) && <NoFunctionSelected />}
 
             {win.type === 'graph' && <FunctionGraph />}
-            {win.type === 'call_tree' && <CallTree file={activeFile} />}
+            {win.type === 'call_tree' && <CallTree file={activeFile} onSelectFunction={onSelectFunction} />}
             {win.type === 'hex' && activeFile && <HexViewer file={activeFile} />}
             {win.type === 'hex' && !activeFile && <NoFileSelected />}
             {win.type === 'strings' && activeFile && <StringsViewer file={activeFile} />}
@@ -230,6 +230,9 @@ export default function Home() {
                 apiStatus={apiStatus}
                 onApiStatusChange={setApiStatus}
                 onCommand={handleUiCommand}
+                currentFile={activeFile}
+                currentFunction={selectedFunction?.name ?? null}
+                currentAddress={selectedFunction?.address ?? null}
               />
             )}
           </WindowFrame>

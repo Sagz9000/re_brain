@@ -7,6 +7,9 @@ interface DockedChatProps {
     apiStatus: 'online' | 'offline' | 'checking';
     onApiStatusChange: (status: 'online' | 'offline' | 'checking') => void;
     onCommand?: (cmd: any) => void;
+    currentFile: string | null;
+    currentFunction: string | null;
+    currentAddress: string | null;
 }
 
 interface Message {
@@ -77,7 +80,14 @@ const FormattedMessage = ({ content, onLinkClick }: { content: string, onLinkCli
     );
 };
 
-export default function DockedChat({ apiStatus, onApiStatusChange, onCommand }: DockedChatProps) {
+export default function DockedChat({
+    apiStatus,
+    onApiStatusChange,
+    onCommand,
+    currentFile,
+    currentFunction,
+    currentAddress
+}: DockedChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -154,7 +164,10 @@ export default function DockedChat({ apiStatus, onApiStatusChange, onCommand }: 
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     query: input,
-                    history: newHistory
+                    history: newHistory,
+                    current_file: currentFile,
+                    current_function: currentFunction,
+                    current_address: currentAddress
                 }),
             });
             if (!response.ok) throw new Error(response.statusText);

@@ -1,12 +1,16 @@
-# reAIghidra
+# re-Brain
 
 **AI-Powered Reverse Engineering Environment**
 
-A containerized, multi-modal RAG system that integrates Ghidra with specialized AI knowledge streams to assist in binary analysis and malware reverse engineering.
+reAIghidra is a containerized, multi-modal RAG system that integrates Ghidra with specialized AI knowledge streams to assist in binary analysis and malware reverse engineering.
 
-## 🧠 Architecture
+![re-Brain AI Analysis](pictures/ui_ai.png)
 
-reAIghidra consists of 5 Docker containers:
+---
+
+## 🏛️ Architecture
+
+The re-Brain ecosystem is composed of 5 specialized Docker containers working in concert:
 
 ```mermaid
 graph TD
@@ -38,117 +42,61 @@ graph TD
     Docs & Mal & Pat & Exp -->|Ingestion| API
 ```
 
-1. **re-web**: Next.js frontend with VNC integration
-2. **re-api**: FastAPI backend with RAG search engine
-3. **re-ghidra**: Ghidra analysis environment with VNC access
-4. **re-ai**: Ollama LLM inference (GPU-accelerated)
-5. **re-memory**: ChromaDB vector database
+### Core Components
+1.  **re-web**: Modern Next.js interface providing terminal-like flexibility with floating windows and VNC integration for Ghidra access.
+2.  **re-api**: FastAPI-driven "Brain" that manages RAG (Retrieval-Augmented Generation), search ranking (RRF), and orchestration.
+3.  **re-ghidra**: Headless and VNC-enabled Ghidra instance for deep binary analysis and script execution.
+4.  **re-ai**: Local Ollama instance (GPU-accelerated) providing high-performance LLM inference without external API dependencies.
+5.  **re-memory**: ChromaDB vector store containing ingested documentation, malware tactics, and decompiler snippets.
 
-## 🎯 Features
+---
 
-### Knowledge Graph RAG
-- **Ghidra API Documentation**: Web-scraped docs and PDFs from ghidra.re
-- **Compiler Patterns**: C/Assembly pairs for recognizing optimizations
-- **Malware Tactics**: MITRE ATT&CK and Malpedia integration
-- **Expert Knowledge**: CTF writeups and instruction manuals
+## 🚀 Feature Walkthrough & AI Analysis
 
-### Reciprocal Rank Fusion (RRF)
-Multi-stream search that combines results from all knowledge sources to provide comprehensive answers.
+### UI Customization & Workspace Layout
+The interface is designed for analyst productivity, allowing for a fully custom workspace. Floating windows can be opened, closed, and rearranged.
 
-### Secure Binary Analysis
-All binaries are analyzed within the `re-ghidra` container - no execution on the host system.
+- **Bytes & Strings**: The **Bytes** (Hex) and **Defined Strings** windows can be docked or moved to clear center-stage for code analysis.
+- **Optimized Chat**: The **re-Brain-AI** panel can be resized (e.g., to 50% width) to facilitate simultaneous code review and AI consultation.
 
-## 🚀 Quick Start
+![UI Layout](pictures/ui_layout.png)
+
+### In-Depth AI Binary Analysis
+Perform deep-dive triage on target binaries using the persistent AI Analyst.
+
+#### Case Study: `hwmonitor_1.53.exe`
+1.  **Selection**: Select the target binary from the File Explorer.
+2.  **Prompting**: Issue descriptive analysis requests in natural language.
+    - *Query:* `"Geve a full step by step break down and analysis of hwmonitor_1.53.exe"`
+3.  **RAG Triage**: The system performs a multi-stream search across its internal knowledge base to identify patterns, Ghidra API usage, and known malware tactics.
+
+![AI Analysis](pictures/ai_analysis.png)
+
+---
+
+## 🔧 Missing or Non-Working Features
+
+While the core orchestration is functional, several features are currently under development or require manual configuration:
+
+1.  **AI Response Persistency**: Currently, the AI bot may occasionally return *"I couldn't generate a response"* if the backend inference engine (Ollama) times out or if the RAG context retrieval returns zero relevant blocks for a specific binary version.
+2.  **Automated Ingestion (Scripts)**: While `AnalyzeAndIngest.py` exists, its integration with the frontend's "Analyze" button is currently manual in several build environments.
+3.  **Window State Persistence**: Layout arrangements (like 50% chat width) do not persist across page refreshes.
+4.  **Model Specificity**: The system is optimized for `qwen2.5:7b`, but automated model-pulling during initial container setup may require manual intervention (`ollama pull`) in some Docker configurations.
+
+---
+
+## ⚡ Quick Start
 
 ### Prerequisites
-- Docker Desktop with GPU support
-- 16GB+ VRAM recommended
-- Git
+- Docker & Docker Compose
+- NVIDIA GPU (Recommended)
 
-### Setup
-
-1. **Clone the repository**
+### Implementation
 ```bash
-git clone https://github.com/Sagz9000/re_brain.git
-cd re_brain
+# 1. Fresh build (Clear previous data)
+docker-compose down -v
+
+# 2. Launch Stack
+docker-compose up --build -d
 ```
-
-2. **Pull the LLM model**
-```bash
-docker run --rm -v ollama-data:/root/.ollama ollama/ollama pull qwen2.5:7b
-```
-
-3. **Start the stack**
-```bash
-docker-compose up -d
-```
-
-**Alternative: Using Host Ollama**
-
-If you already have Ollama running on your host machine:
-
-```bash
-# Use the host-ollama configuration
-docker-compose -f docker-compose.host-ollama.yml up -d
-```
-
-This configuration:
-- Removes the `re-ai` container
-- Connects to `host.docker.internal:11434` (your host Ollama)
-- Reduces resource usage and startup time
-
-4. **Access the UI**
-Open `http://localhost:3000` in your browser.
-
-## 📊 Usage
-
-### Analyzing a Binary
-
-1. Upload your binary to `data/binaries/`
-2. Open Ghidra via the VNC interface (left panel)
-3. Load your binary in Ghidra
-4. Run the `AnalyzeAndIngest.py` script from `Tools > AI > Analyze and Ingest`
-5. Ask questions in the AI chat panel (right side)
-
-### Ingesting Knowledge Sources
-
-```bash
-# Enter the backend container
-docker exec -it re-api bash
-
-# Run the knowledge manager
-python -c "from knowledge_base import KnowledgeManager; KnowledgeManager().ingest_all()"
-```
-
-## 🛠️ Project Structure
-
-```
-reAIghidra/
-├── backend/              # FastAPI + RAG logic
-│   ├── knowledge_base/   # Ingestion pipelines
-│   ├── search_engine.py  # RRF implementation
-│   └── main.py           # API endpoints
-├── web/                  # Next.js frontend
-│   └── app/              # Pages and components
-├── ghidra_scripts/       # Ghidra automation scripts
-├── data/                 # Knowledge sources (gitignored)
-└── docker-compose.yml    # Service orchestration
-```
-
-## 🔧 Configuration
-
-### GPU Settings
-Edit `docker-compose.yml` to adjust GPU allocation for the `re-ai` service.
-
-### Model Selection
-Change the model in `backend/main.py` or via the API request body.
-
-## 📝 License
-
-MIT
-
-## 🙏 Acknowledgments
-
-- Ghidra by NSA
-- Ollama for local LLM inference
-- ChromaDB for vector storage
+Access the environment at `http://localhost:3000`.
