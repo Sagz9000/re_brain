@@ -82,22 +82,25 @@ Standard vector search can be biased towards a single database's embedding space
 
 ---
 
-## �️ 2. UI Walkthrough & Component Guide
+## 🖥️ 2. UI Walkthrough & Component Guide
 
-The re-Brain interface is a highly customizable, window-based environment designed for complex forensic tasks.
-
-### 2.1 Workspace Overview
-Observe the clean, transparent-blended desktop. All components are **floating windows** that can be moved, resized, or grouped.
+### 🧬 2.1 The "Floating UI" Design Philosophy
+The re-Brain frontend reimagines the reverse engineering workspace as a **Dynamic Fluid Desktop**. Unlike traditional static tabs, re-Brain uses a reactive **Floating UI** architecture:
+- **Zero Constraint Layout**: Every analysis module (Decompiler, Hex, Chat) exists as an independent, draggable entity.
+- **Micro-App Orchestration**: Each window is its own isolated component that communicates via a global message bus, allowing for "Goto" and "Sync" actions to propagate instantly.
+- **Glassmorphic Aesthetics**: A translucent, dark-themed interface ensures that background wallpaper and secondary windows remain subtly visible, maintaining spatial awareness during deep-dive analysis.
 
 ![UI Layout](pictures/ui_layout.png)
 
-### 2.2 Component Directory
-- **🐚 AI Docked Chat**: Your primary interface with the "Brain." It features reasoning transparency (Show/Hide Reasoning), inline link rendering for addresses/functions, and a direct Python execution console.
-- **🌳 Symbol Tree**: A fully searchable index of all functions, imports, exports, and labels discovered during analysis. It supports real-time filtering to locate specific logic instantly.
-- **📜 Decompiler View**: High-fidelity C-style translation of assembly. Integrated with the AI, it allows for one-click navigation and synchronization with the AI's analysis.
-- **🔢 Hex Viewer**: A precision byte viewer for low-level inspection. It supports "Goto" synchronization, automatically jumping to addresses mentioned in the AI chat.
-- **🧵 Strings Viewer**: Extracts and indexes all strings. Crucially, it provides the **Hexadecimal Memory Offset** for every string, allowing for immediate cross-referencing in the Hex or Decompiler views.
-- **🖥️ Ghidra VNC**: For tasks requiring standard Ghidra GUI interaction, a full instance is accessible via an embedded noVNC window, sharing the same project state as the AI.
+### 🧩 2.2 Component Directory & Functionality
+| Component | Description | Deep-Link Integration |
+| :--- | :--- | :--- |
+| **🐚 AI Docked Chat** | The command center. Features real-time reasoning visualization and a direct Python execution runtime. | Intercepts `goto` and `rename` JSON payloads. |
+| **🌳 Symbol Tree** | A hierarchical index of program structure. Supports fuzzy search and filtering for Functions, Imports, and Labels. | Syncs with Decompiler and Hex views on selection. |
+| **📜 Decompiler** | C-style high-level representation of assembly logic. Augmented with AI-driven comments and automatic variable renaming. | Receives `comment` and `rename` updates from AI. |
+| **🔢 Hex Viewer** | Precision memory inspector. Bridges the gap between raw data and high-level code. | Direct sync with `goto` commands. |
+| **🧵 Strings Viewer** | Deep-indexes binary strings. Includes **Hexadecimal Memory Offsets** for every entry. | Clicking an offset triggers a global `goto` event. |
+| **🖥️ Ghidra VNC** | A full-featured Ghidra GUI instance accessible via browser (noVNC). | Shared project state with the AI-powered headless backend. |
 
 ---
 
@@ -110,7 +113,7 @@ Integrated directly into the chat interface, re-Brain enables on-the-fly Python 
 
 ---
 
-## �️ 4. Advanced Component technicals
+## 🛠️ 4. Advanced Component technicals
 
 ### 4.1 re-api2: The Orchestration Brain
 Manages the complex interactions between Ghidra scripts and AI inference.
