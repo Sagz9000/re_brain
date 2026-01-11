@@ -5,7 +5,7 @@
 ### 📽️ Feature Highlight: Python Execution
 Integrated directly into the chat, you can execute arbitrary Python scripts to aid analysis. Use it for XORing a buffer, calculating a custom hash, or parsing an proprietary struct.
 
-<video src="pictures/runpythoncode.mp4" width="600"></video>
+<video src="https://github.com/Sagz9000/re_brain/raw/main/pictures/runpythoncode.mp4" width="600" controls></video>
 
 ---
 
@@ -85,7 +85,7 @@ The **Strings Viewer** captures every sequence of characters, mapping them to th
 #### **Workflow Demonstration**
 Watch re-Brain in action as it disassembles a target, identifies core logic, and uses AI context to solve a reverse engineering challenge.
 
-<video src="pictures/simplecrack.mp4" width="600"></video>
+<video src="https://github.com/Sagz9000/re_brain/raw/main/pictures/simplecrack.mp4" width="600" controls></video>
 
 ---
 
