@@ -2,9 +2,14 @@
 
 **re-Brain** is a professional-grade, multi-modal reverse engineering platform that synthesizes the precision of **Ghidra** with the reasoning power of **Local Large Language Models (LLMs)**. Designed for the modern malware researcher, it implements a highly optimized **Retrieval-Augmented Generation (RAG)** pipeline to bridge the gap between static disassembly and high-level AI analysis.
 
+> [!NOTE]
+> **re-Brain 2.0** was heavily influenced by and leverages core analysis concepts from [GhidraMCP](https://github.com/LaurieWired/GhidraMCP) by LaurieWired.
+
 ### � Workspace Overview
 ![re-Brain Fullscreen Workspace](pictures/fullscreen.png)
-![re-Brain Workspace](pictures/workspace.png)
+
+
+
 ![re-Brain Clear Workspace](pictures/workspaceclear.png)
 
 ### �📽️ Analysis Workflow Demonstration
@@ -159,4 +164,6 @@ A high-performance inference server that runs completely locally, ensuring your 
 3.  **Bootstrap Models**: The system will automatically pull `qwen2.5-coder:14b`.
 
 ---
-*Designed for the elite reverse engineering community. re-Brain 2026.*
+![re-Brain Workspace](pictures/workspace.png)
+
+ re-Brain 2026.*
