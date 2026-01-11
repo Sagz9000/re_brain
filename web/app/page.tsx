@@ -17,6 +17,7 @@ import DataTypeManager from './components/DataTypeManager';
 import CallTree from './components/CallTree';
 import ScriptManager from './components/ScriptManager';
 import BookmarkManager from './components/BookmarkManager';
+import ProjectManager from './components/ProjectManager';
 
 import {
   Code, Sparkles, Terminal, Files, Search, Settings, Box,
@@ -27,7 +28,7 @@ import {
 interface WindowState {
   id: string;
   title: string;
-  type: 'project' | 'chat' | 'hex' | 'symbol_tree' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph' | 'listing' | 'datatypes' | 'call_tree' | 'scripts' | 'bookmarks';
+  type: 'project' | 'chat' | 'hex' | 'symbol_tree' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph' | 'listing' | 'datatypes' | 'call_tree' | 'scripts' | 'bookmarks' | 'projects';
   isOpen: boolean;
   zIndex: number;
   initialPos: { x: number, y: number };
@@ -67,6 +68,7 @@ export default function Home() {
     // Tools
     { id: 'scripts', title: 'Script Manager', type: 'scripts', isOpen: false, zIndex: 5, initialPos: { x: 500, y: 50 }, initialSize: { w: 400, h: 300 }, icon: Play },
     { id: 'bookmarks', title: 'Bookmarks', type: 'bookmarks', isOpen: false, zIndex: 5, initialPos: { x: 550, y: 80 }, initialSize: { w: 300, h: 400 }, icon: Bookmark },
+    { id: 'projects', title: 'Project Manager', type: 'projects', isOpen: false, zIndex: 5, initialPos: { x: 600, y: 100 }, initialSize: { w: 500, h: 400 }, icon: FolderTree },
 
     // Misc
     { id: 'output', title: 'Console Output', type: 'output', isOpen: true, zIndex: 2, initialPos: { x: 300, y: 800 }, initialSize: { w: 800, h: 200 }, icon: Terminal },
@@ -170,7 +172,7 @@ export default function Home() {
 
         {/* Tools Group */}
         <div className="flex flex-col gap-2 w-full items-center">
-          {windows.filter(w => ['scripts', 'bookmarks', 'chat', 'output', 'dashboard'].includes(w.type)).map(w => (
+          {windows.filter(w => ['scripts', 'bookmarks', 'projects', 'chat', 'output', 'dashboard'].includes(w.type)).map(w => (
             <LaunchIcon key={w.id} w={w} toggleWindow={toggleWindow} />
           ))}
         </div>
@@ -221,6 +223,7 @@ export default function Home() {
 
             {win.type === 'scripts' && <ScriptManager />}
             {win.type === 'bookmarks' && <BookmarkManager file={activeFile} />}
+            {win.type === 'projects' && <ProjectManager />}
 
             {win.type === 'dashboard' && <Dashboard apiStatus={apiStatus} fileCount={files.length} />}
             {win.type === 'output' && <ActivityLog />}
@@ -312,3 +315,5 @@ function Dashboard({ apiStatus, fileCount }: { apiStatus: string, fileCount: num
     </div>
   );
 }
+
+

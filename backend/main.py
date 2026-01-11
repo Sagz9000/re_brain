@@ -210,8 +210,9 @@ Task Rules:
 1. Technical Precision: Use terms like "prologue," "indirect call," "stack canary," and "PIC code" where appropriate.
 2. Hypothesis Generation: If you see an unknown function, suggest what it might be based on its imports.
 3. Interactive Addresses: When mentioning an address or function start, ALWAYS format it as `[0x...]` (e.g., `[0x401000]`). This allows the user to click it.
-4. UI Control: To forcefully change the view, use the UI_COMMAND block.
-5. If the user asks about the code, refer to the "CURRENT CODE" block above.
+4. Interactive Functions: When mentioning a function by name, format it as `[func:FunctionName@0xAddress]` (e.g., `[func:main@0x401000]`). This makes it clickable to open the decompiler.
+5. UI Control: To forcefully change the view, use the UI_COMMAND block.
+6. If the user asks about the code, refer to the "CURRENT CODE" block above.
 
 Output Schema:
 - Detailed Analysis: Bulleted insights into the code/logic. Use `[0x...]` for all addresses.
@@ -372,6 +373,43 @@ def list_projects():
         logger.error(f"List projects failed: {e}")
         return []
 
+@app.delete("/projects/{name}")
+def delete_project(name: str):
+    """Delete a Ghidra project and all associated files"""
+    try:
+        import shutil
+        
+        # Security: prevent path traversal
+        if ".." in name or "/" in name or "\\" in name:
+            return {"error": "Invalid project name"}
+        
+        project_dir = PROJECTS_DIR
+        if not os.path.exists(project_dir):
+            return {"error": "Projects directory not found"}
+        
+        # Delete .gpr file and .rep directory
+        gpr_file = os.path.join(project_dir, f"{name}.gpr")
+        rep_dir = os.path.join(project_dir, f"{name}.rep")
+        
+        deleted = []
+        if os.path.exists(gpr_file):
+            os.remove(gpr_file)
+            deleted.append(f"{name}.gpr")
+        
+        if os.path.exists(rep_dir):
+            shutil.rmtree(rep_dir)
+            deleted.append(f"{name}.rep")
+        
+        if not deleted:
+            return {"error": f"Project '{name}' not found"}
+        
+        log_event(f"Deleted project: {name}", source="System")
+        return {"status": "success", "deleted": deleted, "project": name}
+        
+    except Exception as e:
+        logger.error(f"Delete project failed: {e}")
+        return {"error": str(e)}
+
 @app.get("/binary/{name}/tree")
 def get_program_tree(name: str):
     return run_headless_script(name, "GetMemoryBlocks.java")
@@ -473,6 +511,7 @@ def run_headless_script(name: str, script: str, timeout: int = 120, args: list =
                     project_dir,
                     project_name,
                     "-import", file_path,
+                    "-overwrite",
                     "-scriptPath", "/app/ghidra_scripts",
                     "-postScript", script
                 ]

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, MessageSquare, Trash2, Crosshair } from 'lucide-react';
+import { Send, Sparkles, MessageSquare, Trash2, Crosshair, Code } from 'lucide-react';
 
 interface DockedChatProps {
     apiStatus: 'online' | 'offline' | 'checking';
@@ -17,7 +17,7 @@ interface Message {
     content: string;
 }
 
-const FormattedMessage = ({ content, onLinkClick }: { content: string, onLinkClick?: (addr: string) => void }) => {
+const FormattedMessage = ({ content, onLinkClick, onFunctionClick }: { content: string, onLinkClick?: (addr: string) => void, onFunctionClick?: (name: string, addr: string) => void }) => {
     // Basic markdown parser
     const parts = content.split(/(```[\s\S]*?```)/g);
     return (
@@ -31,7 +31,7 @@ const FormattedMessage = ({ content, onLinkClick }: { content: string, onLinkCli
                         </pre>
                     );
                 }
-                // Handle bold, lists, and addresses
+                // Handle bold, lists, addresses, and functions
                 return (
                     <div key={i} className="space-y-2">
                         {part.split('\n').map((line, j) => {
@@ -42,8 +42,8 @@ const FormattedMessage = ({ content, onLinkClick }: { content: string, onLinkCli
                             if (line.startsWith('### ')) return <h3 key={j} className="text-indigo-400 font-bold mt-3 mb-1 text-base">{line.replace('### ', '')}</h3>;
                             if (line.startsWith('## ')) return <h2 key={j} className="text-indigo-300 font-bold mt-4 mb-2 text-lg border-b border-indigo-500/30 pb-1">{line.replace('## ', '')}</h2>;
 
-                            // Process line for bold and addresses
-                            const tokens = line.split(/(\[0x[a-fA-F0-9]+\])|(\*\*.*?\*\*)/g).filter(Boolean);
+                            // Process line for bold, addresses, and functions
+                            const tokens = line.split(/(\[func:[^\]]+\])|(\[0x[a-fA-F0-9]+\])|(\*\*.*?\*\*)/g).filter(Boolean);
 
                             return (
                                 <div key={j} className={line.startsWith('- ') ? "ml-6 flex gap-2 my-1.5" : "my-1.5 leading-relaxed"}>
@@ -53,6 +53,25 @@ const FormattedMessage = ({ content, onLinkClick }: { content: string, onLinkCli
                                             if (token.startsWith('**') && token.endsWith('**')) {
                                                 return <strong key={k} className="text-zinc-100 font-semibold">{token.slice(2, -2)}</strong>;
                                             }
+                                            // Function link: [func:FunctionName@0x12345678]
+                                            if (token.match(/^\[func:[^\]]+\]$/)) {
+                                                const match = token.match(/\[func:\s*([^@]+?)\s*@\s*(0x[a-fA-F0-9]+)\s*\]/);
+                                                if (match) {
+                                                    const [, funcName, funcAddr] = match;
+                                                    return (
+                                                        <span
+                                                            key={k}
+                                                            onClick={() => onFunctionClick && onFunctionClick(funcName, funcAddr)}
+                                                            className="mx-1 px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30 cursor-pointer hover:bg-emerald-500/40 hover:text-white transition-colors font-mono text-xs select-none inline-flex items-center gap-1"
+                                                            title={`Open decompiler for ${funcName}`}
+                                                        >
+                                                            <Code size={10} />
+                                                            {funcName}
+                                                        </span>
+                                                    );
+                                                }
+                                            }
+                                            // Address link: [0x12345678]
                                             if (token.match(/^\[0x[a-fA-F0-9]+\]$/)) {
                                                 const addr = token.slice(1, -1);
                                                 return (
@@ -150,6 +169,18 @@ export default function DockedChat({
         }
     };
 
+    const handleFunctionClick = (name: string, addr: string) => {
+        if (onCommand) {
+            onCommand({
+                action: 'SWITCH_TAB',
+                tab: 'decompile',
+                file: currentFile,
+                function: name,
+                address: addr
+            });
+        }
+    };
+
     const handleSend = async () => {
         if (!input.trim()) return;
         const userMessage = { role: 'user', content: input } as Message;
@@ -224,7 +255,7 @@ export default function DockedChat({
                                 ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-sm'
                                 : 'bg-[#27272a] text-zinc-200 rounded-2xl rounded-tl-sm border border-white/5'}
                         `}>
-                            {m.role === 'user' ? m.content : <FormattedMessage content={m.content} onLinkClick={handleLinkClick} />}
+                            {m.role === 'user' ? m.content : <FormattedMessage content={m.content} onLinkClick={handleLinkClick} onFunctionClick={handleFunctionClick} />}
                         </div>
                     </div>
                 ))}
