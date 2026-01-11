@@ -5,9 +5,10 @@ import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 
 interface HexViewerProps {
     file: string;
+    address?: string | null;
 }
 
-export default function HexViewer({ file }: HexViewerProps) {
+export default function HexViewer({ file, address }: HexViewerProps) {
     const [hexData, setHexData] = useState<string>('');
     const [offset, setOffset] = useState(0);
     const [limit] = useState(512); // bytes per page
@@ -15,6 +16,18 @@ export default function HexViewer({ file }: HexViewerProps) {
     const [loading, setLoading] = useState(false);
 
     const API_URL = 'http://localhost:8005';
+
+    // sync address prop to offset
+    useEffect(() => {
+        if (address) {
+            let addr = address;
+            if (addr.startsWith('0x')) addr = addr.slice(2);
+            const num = parseInt(addr, 16);
+            if (!isNaN(num)) {
+                setOffset(num);
+            }
+        }
+    }, [address]);
 
     useEffect(() => {
         const fetchHex = async () => {

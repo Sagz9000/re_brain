@@ -1,8 +1,8 @@
 services:
   # 1. Frontend: The "Cockpit"
-  re-web:
+  re-web2:
     build: ./web
-    container_name: re-web
+    container_name: re-web2
     ports:
       - "3000:3000"
     volumes:
@@ -11,15 +11,15 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8005 # Updated port
     depends_on:
-      re-api:
+      re-api2:
         condition: service_healthy
     networks:
       - re-net
 
   # 2. RAG Backend: The "Brain" (FastAPI + RAG Logic)
-  re-api:
+  re-api2:
     build: ./backend
-    container_name: re-api
+    container_name: re-api2
     ports:
       - "8005:8000" # Changed host port to 8005
     volumes:
@@ -30,14 +30,14 @@ services:
       - ./ghidra_scripts:/ghidra_scripts # Access to scripts to parse/update
       - ghidra-dist:/ghidra # Shared Ghidra installation
     environment:
-      - CHROMA_HOST=re-memory
+      - CHROMA_HOST=re-memory2
       - CHROMA_PORT=8000
-      - OLLAMA_HOST=http://re-ai:11434
-      - GHIDRA_HOST=re-ghidra
+      - OLLAMA_HOST=http://re-ai2:11434
+      - GHIDRA_HOST=re-ghidra2
     depends_on:
-      re-memory:
+      re-memory2:
         condition: service_healthy
-      re-ai:
+      re-ai2:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
@@ -48,9 +48,9 @@ services:
       - re-net
 
   # 3. Ghidra: The "Analysis Engine"
-  re-ghidra:
+  re-ghidra2:
     build: ./docker/ghidra # Custom build with X11/VNC
-    container_name: re-ghidra
+    container_name: re-ghidra2
     ports:
       - "5900:5900" # VNC
       - "6080:6080" # noVNC (Web Access)
@@ -67,9 +67,9 @@ services:
       - re-net
 
   # 4. AI Core: Ollama
-  re-ai:
+  re-ai2:
     image: ollama/ollama:latest
-    container_name: re-ai
+    container_name: re-ai2
     ports:
       - "11434:11434"
     volumes:
@@ -90,9 +90,9 @@ services:
       - re-net
 
   # 5. Connective Memory: ChromaDB
-  re-memory:
+  re-memory2:
     image: chromadb/chroma:0.5.0
-    container_name: re-memory
+    container_name: re-memory2
     ports:
       - "8001:8000"
     volumes:

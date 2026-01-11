@@ -41,6 +41,7 @@ export default function Home() {
   const [files, setFiles] = useState<string[]>([]);
   const [activeFile, setActiveFile] = useState<string | null>(null);
   const [selectedFunction, setSelectedFunction] = useState<{ name: string, address: string } | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [showUpload, setShowUpload] = useState(false);
 
   // Window Z-Index Tracker
@@ -72,7 +73,7 @@ export default function Home() {
 
     // Misc
     { id: 'output', title: 'Console Output', type: 'output', isOpen: true, zIndex: 2, initialPos: { x: 300, y: 800 }, initialSize: { w: 800, h: 200 }, icon: Terminal },
-    { id: 'chat', title: 're-Brain-AI', type: 'chat', isOpen: true, zIndex: 10, initialPos: { x: window.innerWidth - 340, y: 20 }, initialSize: { w: 320, h: 800 }, icon: Sparkles },
+    { id: 'chat', title: 're-Brain-AI', type: 'chat', isOpen: true, zIndex: 10, initialPos: { x: 1100, y: 20 }, initialSize: { w: 320, h: 800 }, icon: Sparkles },
   ]);
 
   useEffect(() => {
@@ -131,6 +132,21 @@ export default function Home() {
         setSelectedFunction({ name: cmd.function, address: cmd.address });
       }
     }
+
+    // Handle goto -> Hex View, Decompiler, Graph, Symbol Tree
+    if (cmd.action === 'goto') {
+      const addr = cmd.target;
+      setSelectedAddress(addr);
+
+      // Open all relevant analysis views
+      setWindows(prev => prev.map(w => {
+        if (['hex', 'decompile', 'graph', 'symbol_tree'].includes(w.id)) {
+          return { ...w, isOpen: true, zIndex: topZ + 1 };
+        }
+        return w;
+      }));
+      setTopZ(prev => prev + 1);
+    }
   };
 
   const handleDeleteFile = async (file: string) => {
@@ -153,7 +169,11 @@ export default function Home() {
       {/* Launch Bar */}
       <div className="w-12 bg-[#2d2d30] border-r border-[#3e3e42] flex flex-col items-center py-4 gap-3 z-50">
         <div className="mb-4">
-          <Box size={24} className="text-indigo-500" />
+          <img
+            src="/logoicon.png"
+            alt="Logo"
+            className="w-8 h-8 object-contain opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+          />
         </div>
 
         {/* Core Analysis Group */}
@@ -184,6 +204,12 @@ export default function Home() {
       </div>
 
       <main className="flex-1 relative overflow-hidden z-10 bg-[#1e1e1e]">
+        {/* Workspace Wallpaper */}
+        <div
+          className="absolute inset-0 z-0 opacity-10 pointer-events-none bg-center bg-no-repeat grayscale"
+          style={{ backgroundImage: 'url(/logoicon.png)', backgroundSize: '85%' }}
+        />
+
         {windows.map((win: WindowState) => win.isOpen && (
           <WindowFrame
             key={win.id}
@@ -205,18 +231,22 @@ export default function Home() {
               />
             )}
             {win.type === 'listing' && <DisassemblyView file={activeFile} />}
-            {win.type === 'symbol_tree' && <SymbolTree file={activeFile} onSelectFunction={onSelectFunction} />}
+            {win.type === 'symbol_tree' && <SymbolTree file={activeFile} onSelectFunction={onSelectFunction} selectedAddress={selectedAddress} />}
             {win.type === 'datatypes' && <DataTypeManager file={activeFile} />}
             {win.type === 'tree' && <ProgramTree file={activeFile} />}
 
-            {win.type === 'decompile' && activeFile && selectedFunction && (
-              <CodeViewer file={activeFile} address={selectedFunction.address} functionName={selectedFunction.name} />
+            {win.type === 'decompile' && activeFile && (selectedFunction || selectedAddress) && (
+              <CodeViewer
+                file={activeFile}
+                address={selectedFunction?.address ?? selectedAddress!}
+                functionName={selectedFunction?.name ?? `Loc_${selectedAddress}`}
+              />
             )}
-            {win.type === 'decompile' && (!activeFile || !selectedFunction) && <NoFunctionSelected />}
+            {win.type === 'decompile' && (!activeFile || (!selectedFunction && !selectedAddress)) && <NoFunctionSelected />}
 
-            {win.type === 'graph' && <FunctionGraph file={activeFile} functionAddress={selectedFunction?.address ?? null} />}
+            {win.type === 'graph' && <FunctionGraph file={activeFile} functionAddress={selectedFunction?.address ?? selectedAddress ?? null} />}
             {win.type === 'call_tree' && <CallTree file={activeFile} onSelectFunction={onSelectFunction} />}
-            {win.type === 'hex' && activeFile && <HexViewer file={activeFile} />}
+            {win.type === 'hex' && activeFile && <HexViewer file={activeFile} address={selectedAddress} />}
             {win.type === 'hex' && !activeFile && <NoFileSelected />}
             {win.type === 'strings' && activeFile && <StringsViewer file={activeFile} />}
             {win.type === 'strings' && !activeFile && <NoFileSelected />}

@@ -11,6 +11,10 @@ import uuid
 import shutil
 import subprocess
 import requests
+import threading
+import re
+
+ghidra_lock = threading.Lock()
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -46,7 +50,7 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     query: str
-    model: str = "qwen3-vl:8b"
+    model: str = "qwen2.5-coder:14b"
     history: Optional[List[dict]] = None
     current_file: Optional[str] = None
     current_function: Optional[str] = None
@@ -114,10 +118,17 @@ def ingest_binary(data: dict):
     
     return {"status": "success", "count": len(ids)}
 
+def get_decompile(name: str, addr: str):
+    return run_headless_script(name, "DecompileFunction.java", args=[addr], read_only=True)
+
+@app.get("/binary/{name}/function/{addr}/decompile")
+def get_decompile_endpoint(name: str, addr: str):
+    return get_decompile(name, addr)
+
 @app.post("/chat")
 def chat_endpoint(request: ChatRequest):
     if not search_engine:
-        return {"error": "Search engine not initialized. Check logs."}
+        return {"response": "Search engine not initialized. Check logs."}
     
     log_event(f"User Query: {request.query}", source="User")
 
@@ -152,7 +163,7 @@ def chat_endpoint(request: ChatRequest):
                  # Note: Ideally cache this, but for now we run it on demand (can be slow ~3-5s)
                  # Optimized: use 'DecompileAt.java' (need to make sure this exists or inline it)
                  # Actually, let's use the existing endpoint logic
-                 result = decompile_function(request.current_file, request.current_address)
+                 result = get_decompile(request.current_file, request.current_address)
                  if isinstance(result, dict) and "code" in result:
                      decompiled_code = result["code"]
                  elif isinstance(result, dict) and "error" in result:
@@ -187,54 +198,75 @@ def chat_endpoint(request: ChatRequest):
             content = msg.get('content', '')
             history_str += f"{role}: {content}\n"
 
-    final_prompt = f"""System Role: You are the Lead Malware Researcher (re-Brain). You are assisting a user in reversing a binary. You think in terms of execution flow, memory corruption, and adversarial intent. You are concise, technical, and never explain basic concepts unless asked.
+    system_prompt = """You are the Lead Malware Researcher (re-Brain). You analyze binaries for malicious intent.
+Rules:
+1. Technical Precision: Use terms like "prologue," "indirect call," "stack canary," etc.
+2. Hypothesis Generation: Identify functions/behaviors based on imports/logic.
+3. Interactive Addresses: Format addresses as `[0x...]` (e.g. `[0x401000]`).
+4. Interactive Functions: Format functions as `[func:Name@0xAddr]`.
+5. Reasoning: ALWAYS wrap your internal logic/planning in `<think>` and `</think>` tags.
+6. UI Control: Use standalone JSON blocks for actions.
+   - Rename: `{ "action": "rename", "target": "FUN_...", "new_name": "login_check" }`
+   - Comment: `{ "action": "comment", "address": "0x401000", "comment": "...", "type": "plate" }`
+   - Goto: `{ "action": "goto", "address": "0x401000" }`
 
-Environment State:
-- Analyzed Files: {file_count} ([{file_list_str}])
-- Current Focus: {current_file} at address {current_address}
-- Current Function: {current_function}
+NEGATIVE CONSTRAINTS:
+- DO NOT output conversational filler (e.g., "I will now analyze", "I decide to").
+- DO NOT repeat the prompt instructions or the schema labels in your response.
+- DO NOT explain your reasoning outside of <think> tags.
+- DO NOT use bullet points for JSON commands. Use ```json blocks.
+"""
+
+    context_prompt = f"""Environment:
+- Focus: {current_file} @ {current_address} ({current_function})
 - Architecture: {arch_info}
 
-CURRENT CODE (Decompiled):
+CURRENT CODE:
 ```c
 {decompiled_code}
 ```
 
-RAG & Analysis Context:
+RAG Context:
 {context_str}
 
-Chat History:
+History:
 {history_str}
-
-Task Rules:
-1. Technical Precision: Use terms like "prologue," "indirect call," "stack canary," and "PIC code" where appropriate.
-2. Hypothesis Generation: If you see an unknown function, suggest what it might be based on its imports.
-3. Interactive Addresses: When mentioning an address or function start, ALWAYS format it as `[0x...]` (e.g., `[0x401000]`). This allows the user to click it.
-4. Interactive Functions: When mentioning a function by name, format it as `[func:FunctionName@0xAddress]` (e.g., `[func:main@0x401000]`). This makes it clickable to open the decompiler.
-5. UI Control: To forcefully change the view, use the UI_COMMAND block.
-6. If the user asks about the code, refer to the "CURRENT CODE" block above.
-
-Output Schema:
-- Detailed Analysis: Bulleted insights into the code/logic. Use `[0x...]` for all addresses.
-- Command Block: A standalone JSON block labeled UI_COMMAND: (if applicable)
 
 User Query: {request.query}
 
-Respond now:"""
+Respond using the schema:
+<think> (Your internal reasoning) </think>
+## Analysis
+(Technical breakdown with interactive links)
+## Actions
+(Optional: ```json block with UI commands)
+"""
 
     try:
+        ollama_base = os.getenv("OLLAMA_HOST", "http://re-ai:11434")
         ollama_res = requests.post(
-            "http://re-ai:11434/api/generate",
+            f"{ollama_base}/api/generate",
             json={
                 "model": request.model,
-                "prompt": final_prompt,
+                "system": system_prompt,
+                "prompt": context_prompt,
                 "stream": False,
                 "options": {
-                    "num_ctx": 8192 # Increase context window for code analysis
+                    "num_ctx": 8192,
+                    "temperature": 0.2 # Lower temperature for structural stability
                 }
-            }
+            },
+            timeout=120 # Give it 2 minutes for deep analysis, but the frontend will likely abort at 90
         )
         response_text = ollama_res.json().get('response', "I couldn't generate a response.")
+        
+        # Extract thinking process for console output
+        think_match = re.search(r'<think>([\s\S]*?)</think>', response_text, re.IGNORECASE)
+        if think_match:
+            thought = think_match.group(1).strip()
+            if thought:
+                log_event(f"Reasoning: {thought}", source="AI")
+
         log_event(f"AI Replied using {len(context_hits)} context blocks", source="AI")
         return {
             "response": response_text,
@@ -356,9 +388,22 @@ def get_strings(name: str):
         return {"error": "File not found"}
     
     try:
-        result = subprocess.run(['strings', '-n', '6', file_path], capture_output=True, text=True)
-        lines = list(set(result.stdout.splitlines()))[:500]
-        return lines
+        # -t x outputs offset in hex
+        result = subprocess.run(['strings', '-n', '6', '-t', 'x', file_path], capture_output=True, text=True)
+        
+        output_data = []
+        # Output format is "  offset string"
+        # We need to parse this
+        lines = result.stdout.splitlines()
+        for line in lines:
+            parts = line.strip().split(" ", 1)
+            if len(parts) == 2:
+                output_data.append({
+                    "offset": f"0x{parts[0]}", 
+                    "value": parts[1]
+                })
+                
+        return output_data[:2000] # Increased limit slightly, frontend can handle it
     except Exception as e:
         return {"error": str(e)}
 
@@ -383,25 +428,44 @@ def delete_project(name: str):
         if ".." in name or "/" in name or "\\" in name:
             return {"error": "Invalid project name"}
         
+        # Normalize name: strip extension if provided from UI listing
+        base_name = name
+        if base_name.endswith(".rep"):
+            base_name = base_name[:-4]
+        elif base_name.endswith(".gpr"):
+            base_name = base_name[:-4]
+
         project_dir = PROJECTS_DIR
         if not os.path.exists(project_dir):
             return {"error": "Projects directory not found"}
         
         # Delete .gpr file and .rep directory
-        gpr_file = os.path.join(project_dir, f"{name}.gpr")
-        rep_dir = os.path.join(project_dir, f"{name}.rep")
+        gpr_file = os.path.join(project_dir, f"{base_name}.gpr")
+        rep_dir = os.path.join(project_dir, f"{base_name}.rep")
         
         deleted = []
         if os.path.exists(gpr_file):
             os.remove(gpr_file)
-            deleted.append(f"{name}.gpr")
+            deleted.append(f"{base_name}.gpr")
         
         if os.path.exists(rep_dir):
             shutil.rmtree(rep_dir)
-            deleted.append(f"{name}.rep")
+            deleted.append(f"{base_name}.rep")
         
         if not deleted:
-            return {"error": f"Project '{name}' not found"}
+            # Fallback: maybe the user really meant a directory named exactly "name" that isn't a standard ghidra project structure?
+            # But mostly we care about cleaning up the project artifacts.
+            # If we didn't find the calculated ones, try deleting exactly what was passed if it exists
+            exact_path = os.path.join(project_dir, name)
+            if os.path.exists(exact_path):
+                 if os.path.isdir(exact_path):
+                     shutil.rmtree(exact_path)
+                 else:
+                     os.remove(exact_path)
+                 deleted.append(name)
+                 return {"status": "success", "deleted": deleted, "project": name}
+
+            return {"error": f"Project '{base_name}' not found (checked .gpr and .rep)"}
         
         log_event(f"Deleted project: {name}", source="System")
         return {"status": "success", "deleted": deleted, "project": name}
@@ -412,14 +476,14 @@ def delete_project(name: str):
 
 @app.get("/binary/{name}/tree")
 def get_program_tree(name: str):
-    return run_headless_script(name, "GetMemoryBlocks.java")
+    return run_headless_script(name, "GetMemoryBlocks.java", read_only=True)
 
 
 @app.get("/binary/{name}/symbols")
 def get_symbols(name: str):
-    return run_headless_script(name, "GetSymbols.java")
+    return run_headless_script(name, "GetSymbols.java", read_only=True)
 
-def run_headless_script(name: str, script: str, timeout: int = 120, args: list = None):
+def run_headless_script(name: str, script: str, timeout: int = 120, args: list = None, read_only: bool = True):
     project_dir = "/data/projects"
     project_name = None
     
@@ -466,17 +530,22 @@ def run_headless_script(name: str, script: str, timeout: int = 120, args: list =
         project_name,
         "-process", name,
         "-noanalysis",
-        "-scriptPath", "/app/ghidra_scripts",
-        "-postScript", script
+        "-scriptPath", "/app/ghidra_scripts"
     ]
+
+    if read_only:
+        cmd_process.append("-readOnly")
+        
+    cmd_process.extend(["-postScript", script])
     
     if args:
         cmd_process.extend(args)
     
     
     try:
-        log_event(f"Attempting script {script} on {name} (Project: {project_name})", source="Ghidra")
-        result = subprocess.run(cmd_process, capture_output=True, text=True, timeout=timeout)
+        log_event(f"Attempting script {script} on {name} (Project: {project_name}) [RO={read_only}]", source="Ghidra")
+        with ghidra_lock:
+            result = subprocess.run(cmd_process, capture_output=True, text=True, timeout=timeout)
         output = result.stdout
         
         # 1. Try to extract JSON first (Best case)
@@ -493,12 +562,22 @@ def run_headless_script(name: str, script: str, timeout: int = 120, args: list =
                 json_str += line
         
         if json_str.strip():
+            # Robust strip for log prefixes like "INFO  MyScript.java> {"
+            if json_str.startswith("INFO") and ">" in json_str:
+                json_str = json_str.split(">", 1)[1].strip()
+            
             import json
             try:
                 return json.loads(json_str) 
             except json.JSONDecodeError as e:
-                 # If we have markers but bad JSON, that's a real format error
-                 return {"error": "Failed to decode script JSON output", "raw": json_str, "exception": str(e)}
+                # If we have markers but bad JSON, try to find the start of the object
+                if "{" in json_str:
+                    try:
+                        potential_json = json_str[json_str.find("{"):]
+                        return json.loads(potential_json)
+                    except:
+                        pass
+                return {"error": "Failed to decode script JSON output", "raw": json_str, "exception": str(e)}
 
         # 2. If no JSON, THEN check for specific Ghidra errors that imply missing file
         if "ERROR: Unable to prompt user" in output or "not found" in output.lower():
@@ -552,7 +631,8 @@ def run_headless_script(name: str, script: str, timeout: int = 120, args: list =
             pass
 
         # Final failure reporting
-        logger.error(f"Ghidra failure for {name}: {output}")
+        # Final failure reporting
+        logger.error(f"Ghidra failure for {name}: {output}\nSTDERR: {result.stderr}")
         return {
             "error": "Script produced no output (DEBUG MODE)",
             "stdout": output,
@@ -570,23 +650,78 @@ def run_headless_script(name: str, script: str, timeout: int = 120, args: list =
         return {"error": str(e)}
 
 
+@app.get("/binary/{name}/memory")
+def get_memory_blocks(name: str):
+    return run_headless_script(name, "GetMemoryBlocks.java", read_only=True)
+
 @app.get("/binary/{name}/calltree")
 def get_calltree(name: str):
-    return run_headless_script(name, "GetCallTree.java")
+    return run_headless_script(name, "GetCallTree.java", read_only=True)
 
 @app.get("/binary/{name}/datatypes")
 def get_datatypes(name: str):
-    return run_headless_script(name, "GetDataTypes.java", timeout=120)
+    return run_headless_script(name, "GetDataTypes.java", timeout=120, read_only=True)
 
 @app.get("/binary/{name}/bookmarks")
 def get_bookmarks(name: str):
-    return run_headless_script(name, "GetBookmarks.java")
+    return run_headless_script(name, "GetBookmarks.java", read_only=True)
 
 @app.get("/binary/{name}/function/{addr}/cfg")
 def get_function_cfg(name: str, addr: str):
-    return run_headless_script(name, "GetFunctionCFG.java", args=[addr])
+    return run_headless_script(name, "GetFunctionCFG.java", args=[addr], read_only=True)
 
-@app.get("/binary/{name}/function/{addr}/decompile")
-def get_decompile(name: str, addr: str):
-    return run_headless_script(name, "DecompileFunction.java", args=[addr])
+class RunRequest(BaseModel):
+    code: str
 
+@app.post("/run")
+def run_python(req: RunRequest):
+    try:
+        # Run code in a subprocess for isolation (to some extent)
+        # Using sys.executable ensures we use the same python env (with installed deps)
+        result = subprocess.run(
+            [sys.executable, "-c", req.code],
+            capture_output=True,
+            text=True,
+            timeout=30 # 30s timeout for safety
+        )
+        return {
+            "output": result.stdout,
+            "error": result.stderr,
+            "exit_code": result.returncode
+        }
+    except subprocess.TimeoutExpired:
+        return {"error": "Execution timed out (30s limit)", "output": "", "exit_code": -1}
+    except Exception as e:
+        return {"error": str(e), "output": "", "exit_code": -1}
+
+@app.get("/binary/{name}/function/{addr}/cfg")
+def get_function_cfg(name: str, addr: str):
+    return run_headless_script(name, "GetFunctionCFG.java", args=[addr], read_only=True)
+
+
+
+class RenameRequest(BaseModel):
+    function: str
+    new_name: str
+    address: Optional[str] = None
+
+@app.post("/binary/{name}/rename")
+def rename_function(name: str, req: RenameRequest):
+    # Depending on whether address is provided or not, we choose the target argument
+    # If address is available, it's safer to use it to resolve ambiguity
+    target = req.address if req.address else req.function
+    return run_headless_script(name, "RenameFunction.java", args=[target, req.new_name], read_only=False)
+
+
+class CommentRequest(BaseModel):
+    address: str
+    comment: str
+    type: str = "plate" # "plate", "pre", "post", "eol"
+
+@app.post("/binary/{name}/comment")
+def set_comment(name: str, req: CommentRequest):
+    return run_headless_script(name, "SetComment.java", args=[req.address, req.comment, req.type], read_only=False)
+
+@app.get("/binary/{name}/xrefs")
+def get_xrefs(name: str, address: str):
+    return run_headless_script(name, "GetXRefs.java", args=[address], read_only=True)

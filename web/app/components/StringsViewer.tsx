@@ -7,8 +7,13 @@ interface StringsViewerProps {
     file: string;
 }
 
+interface StringEntry {
+    offset: string;
+    value: string;
+}
+
 export default function StringsViewer({ file }: StringsViewerProps) {
-    const [strings, setStrings] = useState<string[]>([]);
+    const [strings, setStrings] = useState<StringEntry[]>([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState('');
 
@@ -30,7 +35,7 @@ export default function StringsViewer({ file }: StringsViewerProps) {
         fetchStrings();
     }, [file]);
 
-    const filtered = strings.filter(s => s.toLowerCase().includes(filter.toLowerCase()));
+    const filtered = strings.filter(s => s.value.toLowerCase().includes(filter.toLowerCase()));
 
     return (
         <div className="flex-1 flex flex-col min-h-0 bg-[#0c0c0e]">
@@ -65,6 +70,7 @@ export default function StringsViewer({ file }: StringsViewerProps) {
                     <thead className="sticky top-0 bg-[#0c0c0e] z-10 shadow-sm">
                         <tr className="border-b border-white/5">
                             <th className="px-4 py-2 text-zinc-500 font-medium w-12 italic">#</th>
+                            <th className="px-4 py-2 text-zinc-500 font-medium w-24">Offset</th>
                             <th className="px-4 py-2 text-zinc-500 font-medium">Value</th>
                         </tr>
                     </thead>
@@ -72,7 +78,8 @@ export default function StringsViewer({ file }: StringsViewerProps) {
                         {filtered.map((s, i) => (
                             <tr key={i} className="border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors group">
                                 <td className="px-4 py-1.5 text-zinc-600 tabular-nums">{i + 1}</td>
-                                <td className="px-4 py-1.5 text-zinc-300 break-all">{s}</td>
+                                <td className="px-4 py-1.5 text-zinc-500">{s.offset}</td>
+                                <td className="px-4 py-1.5 text-zinc-300 break-all">{s.value}</td>
                             </tr>
                         ))}
                     </tbody>

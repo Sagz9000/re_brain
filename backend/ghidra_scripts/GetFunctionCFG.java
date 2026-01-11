@@ -21,6 +21,7 @@ public class GetFunctionCFG extends GhidraScript {
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "removal"})
     public void run() throws Exception {
         // Argument: Function Address
         String[] args = getScriptArgs();

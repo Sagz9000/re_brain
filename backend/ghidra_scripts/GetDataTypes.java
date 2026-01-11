@@ -35,7 +35,19 @@ public class GetDataTypes extends GhidraScript {
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "removal"})
     public void run() throws Exception {
+        StringBuilder json = new StringBuilder();
+        
+        DataTypeManager dtm = currentProgram.getDataTypeManager();
+        Category root = dtm.getRootCategory();
+        
+        if (root != null) {
+            processCategory(root, json);
+        } else {
+            json.append("{\"name\": \"Root\", \"types\": [], \"subcategories\": []}");
+        }
+
         System.out.println("JSON_START");
         System.out.println(json.toString());
         System.out.println("JSON_END");

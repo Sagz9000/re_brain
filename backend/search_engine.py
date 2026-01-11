@@ -5,11 +5,13 @@ import sys
 
 class SearchEngine:
     def __init__(self):
-        host = "re-memory" # In docker
+        import os
+        host = os.getenv("CHROMA_HOST", "localhost")
+        port = int(os.getenv("CHROMA_PORT", 8000))
         max_retries = 10
         for attempt in range(max_retries):
             try:
-                self.client = chromadb.HttpClient(host=host, port=8000)
+                self.client = chromadb.HttpClient(host=host, port=port)
                 self.client.heartbeat() # Verify connection
                 print(f"Successfully connected to ChromaDB at {host}")
                 return

@@ -13,6 +13,7 @@ public class GetBookmarks extends GhidraScript {
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "removal"})
     public void run() throws Exception {
         StringBuilder json = new StringBuilder();
         json.append("[");
@@ -32,8 +33,8 @@ public class GetBookmarks extends GhidraScript {
         json.append(String.join(",", bmkObjs));
         json.append("]");
 
-        println("GetBookmarks.java>START");
-        println(json.toString());
-        println("GetBookmarks.java>END");
+        System.out.println("JSON_START");
+        System.out.println(json.toString());
+        System.out.println("JSON_END");
     }
 }

@@ -34,6 +34,7 @@ public class GetMemoryBlocks extends GhidraScript {
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "removal"})
     public void run() throws Exception {
         StringBuilder json = new StringBuilder();
         json.append("{");
@@ -89,8 +90,8 @@ public class GetMemoryBlocks extends GhidraScript {
 
         json.append("}");
 
-        println("GetMemoryBlocks.java>START");
-        println(json.toString());
-        println("GetMemoryBlocks.java>END");
+        System.out.println("JSON_START");
+        System.out.println(json.toString());
+        System.out.println("JSON_END");
     }
 }

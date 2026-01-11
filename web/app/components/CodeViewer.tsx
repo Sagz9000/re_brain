@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Code, Copy, RefreshCw, AlertCircle } from 'lucide-react';
+import { Code, Copy, RefreshCw, AlertCircle, MessageSquare } from 'lucide-react';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8005';
 
 interface CodeViewerProps {
     file: string;
@@ -19,7 +21,7 @@ export default function CodeViewer({ file, address, functionName }: CodeViewerPr
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`http://localhost:8005/binary/${file}/function/${address}/decompile`);
+            const res = await fetch(`${API_URL}/binary/${file}/function/${address}/decompile`);
             const data = await res.json();
             if (data.error) setError(data.error);
             else setCode(data.code || '');
@@ -36,6 +38,34 @@ export default function CodeViewer({ file, address, functionName }: CodeViewerPr
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(code);
+    };
+
+    const handleAddComment = async () => {
+        const text = window.prompt(`Add EOL comment at ${address}:`);
+        if (!text) return;
+
+        setLoading(true);
+        try {
+            const res = await fetch(`${API_URL}/binary/${file}/comment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    address: address,
+                    text: text,
+                    comment_type: 'eol' // Default to EOL for simplicity
+                })
+            });
+            const result = await res.json();
+            if (result.status === 'success') {
+                fetchDecompilation();
+            } else {
+                alert(`Failed to add comment: ${result.error || 'Unknown error'}`);
+            }
+        } catch (e) {
+            alert(`Failed to add comment: ${e}`);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -55,6 +85,13 @@ export default function CodeViewer({ file, address, functionName }: CodeViewerPr
                         title="Refresh"
                     >
                         <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+                    </button>
+                    <button
+                        onClick={handleAddComment}
+                        className="p-1.5 text-zinc-500 hover:text-white transition-colors"
+                        title="Add EOL Comment"
+                    >
+                        <MessageSquare size={14} />
                     </button>
                     <button
                         onClick={copyToClipboard}
@@ -92,7 +129,7 @@ export default function CodeViewer({ file, address, functionName }: CodeViewerPr
 
             {/* Status Footer */}
             <div className="h-6 border-t border-white/5 bg-[#09090b] flex items-center px-3 justify-between">
-                <span className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">Ghidra-Decompiler-v1</span>
+                <span className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">re-Brain-Decompiler-v1</span>
                 {code && (
                     <span className="text-[10px] text-indigo-400/50 font-mono italic">
                         {code.split('\n').length} lines generated

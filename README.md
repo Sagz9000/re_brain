@@ -1,102 +1,145 @@
-# re-Brain
+# re-Brain: AI-Augmented Binary Analysis Ecosystem 🧠🛡️
 
-**AI-Powered Reverse Engineering Environment**
+**re-Brain** is a professional-grade, multi-modal reverse engineering platform that synthesizes the precision of **Ghidra** with the reasoning power of **Local Large Language Models (LLMs)**. Designed for malware researchers and vulnerability analysts, it implements a sophisticated **Retrieval-Augmented Generation (RAG)** pipeline to turn thousands of lines of assembly into actionable intelligence.
 
-re-Brain is a containerized, multi-modal RAG system that integrates Ghidra with specialized AI knowledge streams to assist in binary analysis and malware reverse engineering.
-
-![re-Brain AI Analysis](pictures/ui_ai.png)
+![Primary UI Layout](pictures/ui_layout.png)
 
 ---
 
-## 🏛️ Architecture
+## 🏛️ 1. Technical Architecture & System Design
 
-The re-Brain ecosystem is composed of 5 specialized Docker containers working in concert:
+re-Brain adheres to a distributed micro-container architecture, ensuring that heavy computational tasks (Ghidra analysis) and intensive inference (LLM) do not bottleneck the user experience.
+
+### 🔄 Data & Process Orchestration
+The system revolves around the **re-api2** "Brain" container, which acts as a central hub for all communications.
 
 ```mermaid
-graph TD
-    User([User / Browser])
-    
-    subgraph "Docker Environment (re-net)"
-        Web[re-web: Next.js Frontend]
-        API[re-api: FastAPI Backend]
-        Ghidra[re-ghidra: Analysis Engine]
-        Memory[(re-memory: ChromaDB)]
-        AI[re-ai / Host Ollama: LLM]
-    end
+sequenceDiagram
+    participant U as Analyst (Browser)
+    participant W as re-web2 (Next.js)
+    participant A as re-api2 (FastAPI)
+    participant G as re-ghidra2 (Headless)
+    participant M as re-memory2 (ChromaDB)
+    participant L as re-ai2 (Ollama/GPU)
 
-    subgraph "Knowledge Base"
-        Docs[Ghidra Docs]
-        Mal[Malware Tactics]
-        Pat[Compiler Patterns]
-        Exp[Expert Writeups]
-    end
-
-    User <-->|HTTP: 3000| Web
-    Web <-->|VNC: 6080| Ghidra
-    Web <-->|API: 8005| API
-    
-    API <-->|RAG Search| Memory
-    API <-->|Inference| AI
-    
-    Ghidra -->|Decompiled Funcs| API
-    Docs & Mal & Pat & Exp -->|Ingestion| API
+    U->>W: Uploads Binary
+    W->>A: POST /upload
+    A->>G: Queue Import Job
+    G-->>A: Import Complete
+    A->>G: Run AnalyzeAndIngest.py
+    G-->>A: Extracted Functions (JSON)
+    A->>M: Upsert Embeddings
+    U->>W: "What does this function do?"
+    W->>A: POST /chat (Query + Func Context)
+    A->>M: Query Semantic Similarities
+    M-->>A: Relevant Code Blocks
+    A->>L: Inference (Code + Context + Prompt)
+    L-->>A: Technical Analysis + Tool Commands
+    A->>W: JSON Actions (Rename/Comment)
+    W->>U: Update UI & Persistence
 ```
 
-### Core Components
-1.  **re-web**: Modern Next.js interface providing terminal-like flexibility with floating windows and VNC integration for Ghidra access.
-2.  **re-api**: FastAPI-driven "Brain" that manages RAG (Retrieval-Augmented Generation), search ranking (RRF), and orchestration.
-3.  **re-ghidra**: Headless and VNC-enabled Ghidra instance for deep binary analysis and script execution.
-4.  **re-ai**: Local Ollama instance (GPU-accelerated) providing high-performance LLM inference without external API dependencies.
-5.  **re-memory**: ChromaDB vector store containing ingested documentation, malware tactics, and decompiler snippets.
+### 📦 Component Breakdown
+
+#### **1.1 Frontend: The Digital Cockpit (`re-web2`)**
+*   **Framework**: Next.js 14 (App Router) with TypeScript.
+*   **State Management**: Real-time React state hooks for window management and AI link interaction.
+*   **UI/UX**: Custom workspace with **floating, groupable windows**. 
+*   **VNC Integration**: Low-latency embedding of the Ghidra GUI via noVNC (Port 6080).
+
+#### **1.2 Backend: The Logical Core (`re-api2`)**
+*   **Engine**: FastAPI (Python 3.10+).
+*   **Ghidra Interfacing**: Uses `subprocess` to trigger `analyzeHeadless`.
+*   **Concurrency Control**: Implements a `ghidra_lock` (Threading Lock) to prevent project corruption during simultaneous analysis tasks.
+*   **Logging**: Persistent event stream showing real-time Ghidra script output and LLM reasoning steps.
+
+#### **1.3 AI Intelligence: Inference & RAG (`re-ai2` & `re-memory2`)**
+*   **Model**: Optimized for **Qwen 2.5 Coder 14B**, providing superior C decompiler understanding.
+*   **Vector Store**: ChromaDB 0.5.0. 
+*   **Embedding Strategy**: Functions are stripped of boilerplate, tokenized, and stored with rich metadata (binary name, virtual address, function signature).
 
 ---
 
-## 🚀 Feature Walkthrough & AI Analysis
+## 🚀 2. Feature Deep-Dive
 
-### UI Customization & Workspace Layout
-The interface is designed for analyst productivity, allowing for a fully custom workspace. Floating windows can be opened, closed, and rearranged.
+### 🤖 The AI Analysis Pipeline
+Unlike generic LLM chats, re-Brain passes the **Current Program Counter (PC)** and **Decompiled Function** context into every prompt.
 
-- **Bytes & Strings**: The **Bytes** (Hex) and **Defined Strings** windows can be docked or moved to clear center-stage for code analysis.
-- **Optimized Chat**: The **re-Brain-AI** panel can be resized (e.g., to 50% width) to facilitate simultaneous code review and AI consultation.
+![AI Analyst Interface](pictures/ai_analysis.png)
 
-![UI Layout](pictures/ui_layout.png)
+#### **Advanced Tool Calling (Action Schema)**
+The AI can emit structured JSON commands that the frontend automatically intercepts and executes:
+| Action | Description | Result |
+| :--- | :--- | :--- |
+| `rename` | Changes function/variable names | GHIDRA PRJ Update |
+| `comment` | Adds Decompiler/Plate comments | GHIDRA DB Sync |
+| `goto` | Navigates the entire UI to an address | Cross-Window Sync |
 
-### In-Depth AI Binary Analysis
-Perform deep-dive triage on target binaries using the persistent AI Analyst.
+### 🔍 Binary Forensic Suite
 
-#### Case Study: `hwmonitor_1.53.exe`
-1.  **Selection**: Select the target binary from the File Explorer.
-2.  **Prompting**: Issue descriptive analysis requests in natural language.
-    - *Query:* `"Geve a full step by step break down and analysis of hwmonitor_1.53.exe"`
-3.  **RAG Triage**: The system performs a multi-stream search across its internal knowledge base to identify patterns, Ghidra API usage, and known malware tactics.
+#### **Symbol Tree & Semantic Search**
+Deep indexing allows for instantaneous searching through thousands of functions. The Symbol Tree tracks:
+- **Imports/Exports**: Direct links to DLL/SO dependencies.
+- **Labels**: User-defined and Ghidra-inferred markers.
 
-![AI Analysis](pictures/ai_analysis.png)
+#### **Strings Analysis (with Memory Mapping)**
+The **Strings Viewer** captures every sequence of characters, mapping them to their exact hexadecimal offset. This is critical for identifying obfuscated strings or data references.
+
+#### **Python Execution Runtime**
+Integrated directly into the chat, you can execute arbitrary Python scripts to aid analysis.
+- **Use Case**: XORing a buffer, calculating a custom hash, or parsing an proprietary struct.
+
+![Python Execution Demo](pictures/runpythoncode.mp4)
 
 ---
 
-## 🔧 Missing or Non-Working Features
+## �️ 3. Workflow Demonstrations
 
-While the core orchestration is functional, several features are currently under development or require manual configuration:
+### **3.1 End-to-End Triage**
+Witness the power of re-Brain in action as it disassembles a target, identifies the core logic, and uses AI to assist in a "CrackMe" style challenge.
 
-1.  **AI Response Persistency**: Currently, the AI bot may occasionally return *"I couldn't generate a response"* if the backend inference engine (Ollama) times out or if the RAG context retrieval returns zero relevant blocks for a specific binary version.
-2.  **Automated Ingestion (Scripts)**: While `AnalyzeAndIngest.py` exists, its integration with the frontend's "Analyze" button is currently manual in several build environments.
-3.  **Window State Persistence**: Layout arrangements (like 50% chat width) do not persist across page refreshes.
-4.  **Model Specificity**: The system is optimized for `qwen2.5:7b`, but automated model-pulling during initial container setup may require manual intervention (`ollama pull`) in some Docker configurations.
+![Triage Workflow](pictures/simplecrack.mp4)
+
+### **3.2 Contextual Analysis**
+Observe how the AI responds differently based on whether you are looking at a `main` loop or an encrypted data section.
+
+![AI UI Context](pictures/ui_ai.png)
 
 ---
 
-## ⚡ Quick Start
+## 🛠️ 4. Advanced Configuration
 
-### Prerequisites
-- Docker & Docker Compose
-- NVIDIA GPU (Recommended)
+### **Environment Variables**
+| Variable | Value | Description |
+| :--- | :--- | :--- |
+| `OLLAMA_HOST` | `http://re-ai2:11434` | Point to the local GPU inference node |
+| `CHROMA_HOST` | `re-memory2` | Metadata and RAG store location |
+| `GHIDRA_HOST` | `re-ghidra2` | Analysis engine endpoint |
 
-### Implementation
-```bash
-# 1. Fresh build (Clear previous data)
-docker-compose down -v
+### **Headless Script Engine**
+All Ghidra interactions are governed by specialized Java scripts located in `./ghidra_scripts`:
+- `GetSymbols.java`: Metadata extraction.
+- `DecompileFunction.java`: Context generation for AI.
+- `RenameFunction.java`: Persistence of AI-suggested changes.
 
-# 2. Launch Stack
-docker-compose up --build -d
-```
-Access the environment at `http://localhost:3000`.
+---
+
+## ⚡ 5. Deployment Guide
+
+### **Prerequisites**
+- **NVIDIA Container Toolkit** (for GPU acceleration).
+- **Docker Compose v2.x**.
+
+### **Installation**
+1.  **Build the Stack**:
+    ```bash
+    docker-compose up --build -d
+    ```
+2.  **Verify Services**:
+    Check `http://localhost:8005/health` to ensure the Brain is online.
+3.  **Bootstrap AI**:
+    The system will automatically attempt to pull the required models. Monitor `docker logs re-ai2` for progress.
+
+---
+
+*Designed for the elite reverse engineering community. re-Brain 2026.*

@@ -22,7 +22,7 @@ const CategoryNode = ({ category, depth = 0 }: { category: CategoryData, depth?:
                 className="flex items-center gap-1 py-0.5 hover:bg-white/5 rounded cursor-pointer group"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                {category.subcategories.length > 0 || category.types.length > 0 ? (
+                {(category.subcategories?.length || 0) > 0 || (category.types?.length || 0) > 0 ? (
                     isOpen ? <ChevronDown size={10} className="text-zinc-500" /> : <ChevronRight size={10} className="text-zinc-500" />
                 ) : <div className="w-2.5" />}
                 <Folder size={12} className={depth === 0 ? "text-indigo-400" : "text-yellow-600/70"} />
@@ -31,10 +31,10 @@ const CategoryNode = ({ category, depth = 0 }: { category: CategoryData, depth?:
 
             {isOpen && (
                 <div className="flex flex-col">
-                    {category.subcategories.map((sub, i) => (
+                    {category.subcategories?.map((sub, i) => (
                         <CategoryNode key={i} category={sub} depth={depth + 1} />
                     ))}
-                    {category.types.map((type, i) => (
+                    {category.types?.map((type, i) => (
                         <div key={i} className="flex items-center gap-2 py-0.5 hover:bg-white/5 rounded cursor-default pl-4 group" style={{ marginLeft: depth * 12 }}>
                             <FileType size={10} className="text-zinc-600 group-hover:text-indigo-300 transition-colors" />
                             <span className="text-zinc-400 text-xs truncate flex-1">{type.name}</span>
