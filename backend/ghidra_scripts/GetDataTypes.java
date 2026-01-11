@@ -36,14 +36,9 @@ public class GetDataTypes extends GhidraScript {
 
     @Override
     public void run() throws Exception {
-        println("GetDataTypes.java>START");
-        DataTypeManager dtm = currentProgram.getDataTypeManager();
-        Category root = dtm.getRootCategory();
-        
-        StringBuilder json = new StringBuilder();
-        processCategory(root, json);
-        
-        println(json.toString());
-        println("GetDataTypes.java>END");
+        System.out.println("JSON_START");
+        System.out.println(json.toString());
+        System.out.println("JSON_END");
+
     }
 }

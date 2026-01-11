@@ -70,8 +70,9 @@ public class GetSymbols extends GhidraScript {
 
         json.append("}");
 
-        println("GetSymbols.java>START");
-        println(json.toString());
-        println("GetSymbols.java>END");
+        System.out.println("JSON_START");
+        System.out.println(json.toString());
+        System.out.println("JSON_END");
+
     }
 }

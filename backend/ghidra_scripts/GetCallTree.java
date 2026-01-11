@@ -67,8 +67,9 @@ public class GetCallTree extends GhidraScript {
         
         json.append("}");
 
-        println("GetCallTree.java>START");
-        println(json.toString());
-        println("GetCallTree.java>END");
+        System.out.println("JSON_START");
+        System.out.println(json.toString());
+        System.out.println("JSON_END");
+
     }
 }

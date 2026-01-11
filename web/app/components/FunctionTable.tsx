@@ -23,9 +23,14 @@ export default function FunctionTable({ file, onSelectFunction }: FunctionTableP
         if (!file) return;
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8005/binary/${file}/functions`);
+            const res = await fetch(`http://localhost:8005/binary/${file}/symbols`);
             const data = await res.json();
-            if (Array.isArray(data)) setFunctions(data);
+            if (data.functions && Array.isArray(data.functions)) {
+                setFunctions(data.functions);
+            } else if (Array.isArray(data)) {
+                // Fallback if it returns array directly (legacy)
+                setFunctions(data);
+            }
         } catch (e) {
             console.error(e);
         } finally {

@@ -36,11 +36,13 @@ app = FastAPI(title="reAIghidra API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all origins for dev
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
+
 
 class ChatRequest(BaseModel):
     query: str
@@ -359,47 +361,6 @@ def get_strings(name: str):
     except Exception as e:
         return {"error": str(e)}
 
-@app.get("/binary/{name}/function/{addr}/decompile")
-def decompile_function(name: str, addr: str):
-    project_dir = "/data/projects"
-    project_name = None
-    
-    if os.path.exists(project_dir):
-        for f in os.listdir(project_dir):
-            if f.endswith(".gpr"):
-                project_name = f.replace(".gpr", "")
-                break
-            
-    if not project_name:
-        return {"error": "No Ghidra project found"}
-
-    cmd = [
-        "/ghidra/support/analyzeHeadless",
-        project_dir,
-        project_name,
-        "-process", name,
-        "-noanalysis",
-        "-scriptPath", "/app/ghidra_scripts",
-        "-postScript", "DecompileFunction.java", addr
-    ]
-    
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        output = result.stdout
-        
-        lines = output.splitlines()
-        code_lines = []
-        capture = False
-        for line in lines:
-            if "DecompileFunction.java>" in line: capture = True; continue
-            if capture: code_lines.append(line)
-            
-        return {"code": "\n".join(code_lines) if code_lines else "Decompilation produced no output."}
-    except subprocess.TimeoutExpired:
-        return {"error": "Decompilation timed out (30s)"}
-    except Exception as e:
-        return {"error": str(e)}
-
 @app.get("/projects")
 def list_projects():
     try:
@@ -413,120 +374,55 @@ def list_projects():
 
 @app.get("/binary/{name}/tree")
 def get_program_tree(name: str):
-    project_dir = "/data/projects"
-    project_name = None
-    
-    if os.path.exists(project_dir):
-        for f in os.listdir(project_dir):
-            if f.endswith(".gpr"):
-                project_name = f.replace(".gpr", "")
-                break
-            
-    if not project_name:
-        return {"error": "No Ghidra project found"}
+    return run_headless_script(name, "GetMemoryBlocks.java")
 
-    cmd = [
-        "/ghidra/support/analyzeHeadless",
-        project_dir,
-        project_name,
-        "-process", name,
-        "-noanalysis",
-        "-scriptPath", "/app/ghidra_scripts",
-        "-postScript", "GetMemoryBlocks.java"
-    ]
-    
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        output = result.stdout
-        
-        json_str = ""
-        capture = False
-        for line in output.splitlines():
-            if "GetMemoryBlocks.java>START" in line: capture = True; continue
-            if "GetMemoryBlocks.java>END" in line: capture = False; break
-            
-            if capture:
-                json_str += line
-        
-        if not json_str.strip():
-            return {"error": "Script produced no output"}
-            
-        import json
-        try:
-            return json.loads(json_str) 
-        except json.JSONDecodeError:
-             return {"error": "Failed to decode script JSON output", "raw": json_str}
-
-    except subprocess.TimeoutExpired:
-        return {"error": "Tree fetch timed out (30s)"}
-    except Exception as e:
-        return {"error": str(e)}
 
 @app.get("/binary/{name}/symbols")
 def get_symbols(name: str):
+    return run_headless_script(name, "GetSymbols.java")
+
+def run_headless_script(name: str, script: str, timeout: int = 120, args: list = None):
     project_dir = "/data/projects"
     project_name = None
     
     if os.path.exists(project_dir):
-        for f in os.listdir(project_dir):
-            if f.endswith(".gpr"):
-                project_name = f.replace(".gpr", "")
-                break
+        # Gather all candidates first
+        candidates = [f.replace(".gpr", "") for f in os.listdir(project_dir) if f.endswith(".gpr")]
+        
+        if candidates:
+            # 1. Exact match (ignoring case)
+            name_stem = os.path.splitext(name)[0].lower()
+            for cand in candidates:
+                if cand.lower() == name_stem:
+                    project_name = cand
+                    break
+            
+            # 2. Prefix match (e.g. vlc-3.0.21.exe matches project 'vlc')
+            if not project_name:
+                for cand in candidates:
+                    if name.lower().startswith(cand.lower()):
+                        project_name = cand
+                        break
+                        
+            # 3. Fallback: Check if 'flare' exists (common CTF bucket)
+            if not project_name and "flare" in candidates:
+                project_name = "flare"
+                
+            # 4. Last resort: substring match in either direction
+            if not project_name:
+                for cand in candidates:
+                    if cand.lower() in name.lower() or name.lower() in cand.lower():
+                        project_name = cand
+                        break
+
+            # 5. Absolute fallback: Pick the first one
+            if not project_name:
+                project_name = candidates[0]
             
     if not project_name:
         return {"error": "No Ghidra project found"}
 
-    cmd = [
-        "/ghidra/support/analyzeHeadless",
-        project_dir,
-        project_name,
-        "-process", name,
-        "-noanalysis",
-        "-scriptPath", "/app/ghidra_scripts",
-        "-postScript", "GetSymbols.java"
-    ]
-    
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=45)
-        output = result.stdout
-        
-        json_str = ""
-        capture = False
-        for line in output.splitlines():
-            if "GetSymbols.java>START" in line: capture = True; continue
-            if "GetSymbols.java>END" in line: capture = False; break
-            
-            if capture:
-                json_str += line
-        
-        if not json_str.strip():
-            return {"error": "Script produced no output"}
-            
-        import json
-        try:
-            return json.loads(json_str) 
-        except json.JSONDecodeError:
-             return {"error": "Failed to decode script JSON output", "raw": json_str}
-
-    except subprocess.TimeoutExpired:
-        return {"error": "Symbols fetch timed out (45s)"}
-    except Exception as e:
-        return {"error": str(e)}
-
-def run_headless_script(name: str, script: str, timeout: int = 45):
-    project_dir = "/data/projects"
-    project_name = None
-    
-    if os.path.exists(project_dir):
-        for f in os.listdir(project_dir):
-            if f.endswith(".gpr"):
-                project_name = f.replace(".gpr", "")
-                break
-            
-    if not project_name:
-        return {"error": "No Ghidra project found"}
-
-    cmd = [
+    cmd_process = [
         "/ghidra/support/analyzeHeadless",
         project_dir,
         project_name,
@@ -536,32 +432,104 @@ def run_headless_script(name: str, script: str, timeout: int = 45):
         "-postScript", script
     ]
     
+    if args:
+        cmd_process.extend(args)
+    
+    
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        log_event(f"Attempting script {script} on {name} (Project: {project_name})", source="Ghidra")
+        result = subprocess.run(cmd_process, capture_output=True, text=True, timeout=timeout)
         output = result.stdout
         
+        # 1. Try to extract JSON first (Best case)
         json_str = ""
         capture = False
         for line in output.splitlines():
-            if f"{script}>START" in line: capture = True; continue
-            if f"{script}>END" in line: capture = False; break
-            
+            if "JSON_START" in line or ">START" in line:
+                capture = True
+                continue
+            if "JSON_END" in line or ">END" in line:
+                capture = False
+                break
             if capture:
                 json_str += line
         
-        if not json_str.strip():
-            return {"error": "Script produced no output"}
-            
-        import json
+        if json_str.strip():
+            import json
+            try:
+                return json.loads(json_str) 
+            except json.JSONDecodeError as e:
+                 # If we have markers but bad JSON, that's a real format error
+                 return {"error": "Failed to decode script JSON output", "raw": json_str, "exception": str(e)}
+
+        # 2. If no JSON, THEN check for specific Ghidra errors that imply missing file
+        if "ERROR: Unable to prompt user" in output or "not found" in output.lower():
+            log_event(f"File {name} not in project, attempting auto-import...", source="Ghidra")
+            file_path = os.path.join(BINARIES_DIR, name)
+            if os.path.exists(file_path):
+                # Try to import it first
+                cmd_import = [
+                    "/ghidra/support/analyzeHeadless",
+                    project_dir,
+                    project_name,
+                    "-import", file_path,
+                    "-scriptPath", "/app/ghidra_scripts",
+                    "-postScript", script
+                ]
+                result_imp = subprocess.run(cmd_import, capture_output=True, text=True, timeout=timeout)
+                # If import works, it might run the script too (if we passed -postScript)
+                # Check output of import command for JSON
+                output = result_imp.stdout
+                
+                # Try extracting JSON again from the import output
+                json_str = ""
+                capture = False
+                for line in output.splitlines():
+                    if "JSON_START" in line or ">START" in line:
+                        capture = True
+                        continue
+                    if "JSON_END" in line or ">END" in line:
+                        capture = False
+                        break
+                    if capture:
+                        json_str += line
+                        
+                if json_str.strip():
+                    import json
+                    try:
+                        return json.loads(json_str) 
+                    except:
+                        pass
+            else:
+                log_event(f"Binary {name} not found on disk at {file_path}", source="Ghidra")
+
+        # 3. Fallback for scripts that just print JSON (no markers) - dangerous but legacy support
         try:
-            return json.loads(json_str) 
-        except json.JSONDecodeError:
-             return {"error": "Failed to decode script JSON output", "raw": json_str}
+            for line in output.splitlines():
+                clean_line = line.strip()
+                if clean_line.startswith("{") or clean_line.startswith("["):
+                    return json.loads(clean_line)
+        except:
+            pass
+
+        # Final failure reporting
+        logger.error(f"Ghidra failure for {name}: {output}")
+        return {
+            "error": "Script produced no output (DEBUG MODE)",
+            "stdout": output,
+            "stderr": result.stderr,
+            "project": project_name,
+            "cmd": " ".join(cmd_process)
+        }
 
     except subprocess.TimeoutExpired:
+
+        log_event(f"Timeout running {script} on {name}", source="Ghidra")
         return {"error": f"Script {script} timed out ({timeout}s)"}
     except Exception as e:
+        log_event(f"General error in run_headless_script: {str(e)}", source="Ghidra")
         return {"error": str(e)}
+
 
 @app.get("/binary/{name}/calltree")
 def get_calltree(name: str):
@@ -569,8 +537,17 @@ def get_calltree(name: str):
 
 @app.get("/binary/{name}/datatypes")
 def get_datatypes(name: str):
-    return run_headless_script(name, "GetDataTypes.java", timeout=60)
+    return run_headless_script(name, "GetDataTypes.java", timeout=120)
 
 @app.get("/binary/{name}/bookmarks")
 def get_bookmarks(name: str):
     return run_headless_script(name, "GetBookmarks.java")
+
+@app.get("/binary/{name}/function/{addr}/cfg")
+def get_function_cfg(name: str, addr: str):
+    return run_headless_script(name, "GetFunctionCFG.java", args=[addr])
+
+@app.get("/binary/{name}/function/{addr}/decompile")
+def get_decompile(name: str, addr: str):
+    return run_headless_script(name, "DecompileFunction.java", args=[addr])
+

@@ -212,7 +212,7 @@ export default function Home() {
             )}
             {win.type === 'decompile' && (!activeFile || !selectedFunction) && <NoFunctionSelected />}
 
-            {win.type === 'graph' && <FunctionGraph />}
+            {win.type === 'graph' && <FunctionGraph file={activeFile} functionAddress={selectedFunction?.address ?? null} />}
             {win.type === 'call_tree' && <CallTree file={activeFile} onSelectFunction={onSelectFunction} />}
             {win.type === 'hex' && activeFile && <HexViewer file={activeFile} />}
             {win.type === 'hex' && !activeFile && <NoFileSelected />}
