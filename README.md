@@ -2,10 +2,10 @@
 
 **re-Brain** is a professional-grade, multi-modal reverse engineering platform that synthesizes the precision of **Ghidra** with the reasoning power of **Local Large Language Models (LLMs)**.
 
-### 📽️ Analysis Workflow Demonstration
-Watch re-Brain in action as it disassembles a target, identifies core logic, and uses AI context to solve a reverse engineering challenge.
+### 📽️ Feature Highlight: Python Execution
+Integrated directly into the chat, you can execute arbitrary Python scripts to aid analysis. Use it for XORing a buffer, calculating a custom hash, or parsing an proprietary struct.
 
-https://www.youtube.com/watch?v=wIv-ikj12NI
+<video src="pictures/runpythoncode.mp4" width="600"></video>
 
 ---
 
@@ -82,10 +82,10 @@ Deep indexing allows for instantaneous searching through thousands of functions.
 #### **Strings Analysis (with Memory Mapping)**
 The **Strings Viewer** captures every sequence of characters, mapping them to their exact hexadecimal offset. This is critical for identifying obfuscated strings or data references.
 
-#### **Python Execution Runtime**
-Integrated directly into the chat, you can execute arbitrary Python scripts to aid analysis. Use it for XORing a buffer, calculating a custom hash, or parsing an proprietary struct.
+#### **Workflow Demonstration**
+Watch re-Brain in action as it disassembles a target, identifies core logic, and uses AI context to solve a reverse engineering challenge.
 
-https://youtu.be/Ihdp65vhp9k
+<video src="pictures/simplecrack.mp4" width="600"></video>
 
 ---
 
