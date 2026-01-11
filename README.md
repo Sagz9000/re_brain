@@ -15,7 +15,7 @@ Watch re-Brain in action as it disassembles a target, identifies core logic, and
 
 re-Brain adheres to a distributed micro-service architecture, ensuring that heavy computational tasks (Ghidra analysis) and intensive inference (LLM) operate in isolation to maximize stability and performance.
 
-### 🔄 Data & Process Orchestration
+### 🔄 1.1 Data & Process Orchestration
 The **re-api2** "Brain" container acts as the central hub, orchestrating the flow between the VNC-enabled analysis engine, the vector memory, and the local inference node.
 
 ```mermaid
@@ -44,58 +44,64 @@ sequenceDiagram
     W->>U: Update UI & Persistence
 ```
 
-### 🧠 1.1 RAG Implementation: Reciprocal Rank Fusion (RRF)
-re-Brain uses a sophisticated **Multi-Stream RAG** strategy powered by **Reciprocal Rank Fusion (RRF)**. This allows the system to aggregate and prioritize intelligence from disparate sources:
+### 🧠 1.2 RAG Architecture: Reciprocal Rank Fusion (RRF)
+re-Brain implements a custom **Multi-Source RAG** strategy that uses **Reciprocal Rank Fusion (RRF)** to synthesize intelligence from five distinct knowledge streams. This ensures the LLM receives the most relevant context regardless of which database contains the answer.
 
-*   **Multi-Source Indexing**: The engine simultaneously queries collections for Ghidra Documentation, Malware Tactics, Compiler Patterns, Expert Writeups, and previously analyzed Binary Functions.
-*   **Rank Fusion**: Unlike simple similarity searches, RRF calculates a consolidated score using the formula `score = sum(1 / (k + rank))`, where `k=60`. This ensures that documents appearing high in *any* of the specialized knowledge streams are prioritized for the LLM's context.
-*   **Semantic Context**: This RRF-ranked context allows the AI to perform "analogical reasoning," identifying malicious traits by comparing your current function against global malware tactical patterns.
+```mermaid
+graph LR
+    Query([User Query]) --> Search[Search Orchestrator]
+    
+    subgraph "Knowledge Streams (ChromaDB)"
+        Docs[Ghidra API & Docs]
+        Tactics[Malware Tactics/TTPs]
+        Patterns[Compiler Patterns]
+        Expert[Expert Writeups]
+        History[Analysis History]
+    end
+
+    Search --> Docs
+    Search --> Tactics
+    Search --> Patterns
+    Search --> Expert
+    Search --> History
+
+    Docs --> RRF[RRF Re-Ranking Engine]
+    Tactics --> RRF
+    Patterns --> RRF
+    Expert --> RRF
+    History --> RRF
+
+    RRF --> Context[Aggregated Context]
+    Decompiler[Ghidra Decompiler Context] --> Context
+    Context --> LLM[Local LLM / Qwen 2.5]
+    LLM --> Response[Expert Analysis]
+```
+
+**Why RRF?**  
+Standard vector search can be biased towards a single database's embedding space. RRF calculates a consolidated score using `1 / (k + rank)`, naturally promoting results that are "universally" relevant across multiple expert domains.
 
 ---
 
-## 📦 2. Component Deep-Dive
+## �️ 2. UI Walkthrough & Component Guide
 
-### 2.1 re-web2: The Modern Analyst Cockpit
-The frontend provides a state-of-the-art workspace inspired by high-end IDEs and terminal environments.
-- **Technology**: Next.js 14, Tailwind CSS, Lucide Icons, and custom glassmorphic UI tokens.
-- **Port**: `3000` (HTTP access).
-- **Core Features**:
-    - **Floating Window Manager**: Rearrange Decompiler, Hex Viewer, and Symbol Tree windows to fit your workflow.
-    - **Contextual Chat**: A persistent AI analyst with breadcrumb navigation back to code addresses.
-    - **Real-time Interaction**: Clickable function links and memory addresses that synchronize across all open viewers.
+The re-Brain interface is a highly customizable, window-based environment designed for complex forensic tasks.
 
-### 2.2 re-api2: The Orchestration Brain
-This container manages the complex interactions between Ghidra scripts and AI inference.
-- **Technology**: FastAPI (Python 3.10+), integrated Subprocess management.
-- **Port**: `8005` (Host mapping to 8000 internally).
-- **Responsibilities**:
-    - **RAG Orchestration**: Executes the RRF search engine to compile multi-source context.
-    - **Python Runtime**: Implements the `POST /run` endpoint for the chat-integrated Python console.
-    - **Concurrency**: Manages an internal threading lock to ensure project integrity during simultaneous analysis requests.
+### 2.1 Workspace Overview
+Observe the clean, transparent-blended desktop. All components are **floating windows** that can be moved, resized, or grouped.
 
-### 2.3 re-ghidra2: The Analysis Engine
-The heavy lifter of the ecosystem, providing both headless script execution and full GUI access.
-- **Technology**: customized Ghidra build with X11/VNC and noVNC support.
-- **Ports**: `6080` (noVNC Browser Access), `5900` (Direct VNC).
+![UI Layout](pictures/ui_layout.png)
+
+### 2.2 Component Directory
+- **🐚 AI Docked Chat**: Your primary interface with the "Brain." It features reasoning transparency (Show/Hide Reasoning), inline link rendering for addresses/functions, and a direct Python execution console.
+- **🌳 Symbol Tree**: A fully searchable index of all functions, imports, exports, and labels discovered during analysis. It supports real-time filtering to locate specific logic instantly.
+- **📜 Decompiler View**: High-fidelity C-style translation of assembly. Integrated with the AI, it allows for one-click navigation and synchronization with the AI's analysis.
+- **🔢 Hex Viewer**: A precision byte viewer for low-level inspection. It supports "Goto" synchronization, automatically jumping to addresses mentioned in the AI chat.
+- **🧵 Strings Viewer**: Extracts and indexes all strings. Crucially, it provides the **Hexadecimal Memory Offset** for every string, allowing for immediate cross-referencing in the Hex or Decompiler views.
+- **🖥️ Ghidra VNC**: For tasks requiring standard Ghidra GUI interaction, a full instance is accessible via an embedded noVNC window, sharing the same project state as the AI.
 
 ---
 
-## 🚀 3. Feature Deep-Dive
-
-### 🤖 Intelligent AI Analyst
-re-Brain's AI is deeply integrated with the binary state. It doesn't just "talk" about code; it understands the program counter and the stack.
-
-![AI Analyst Interface](pictures/ai_analysis.png)
-
-#### **Advanced Tool Calling**
-The AI can emit structured actions that the frontend executes on your behalf:
-| Action | Description | Result |
-| :--- | :--- | :--- |
-| `rename` | Suggests meaningful names for stripped functions | GHIDRA DB Update |
-| `comment` | Documents complex logic in the decompiler | Permanent Analyst Notes |
-| `goto` | Synchronizes the UI to a specific memory offset | Global Window Movement |
-
-### � Feature Highlight: Python Execution
+## 🐍 3. Feature Highlight: Python Execution
 Integrated directly into the chat interface, re-Brain enables on-the-fly Python script execution. Researchers can perform rapid data manipulation, decoding (Base64/XOR), or custom hash calculations without leaving the research environment.
 
 <video src="https://github.com/Sagz9000/re_brain/raw/main/pictures/runpythoncode.mp4" width="600" controls></video>
@@ -104,29 +110,23 @@ Integrated directly into the chat interface, re-Brain enables on-the-fly Python 
 
 ---
 
-### 📷 Desktop Environment & AI Context
-Observe the clean desktop feel of the application and how the AI interacts within the workspace.
+## �️ 4. Advanced Component technicals
 
-![UI Layout](pictures/ui_layout.png)
-![AI UI Context](pictures/ui_ai.png)
+### 4.1 re-api2: The Orchestration Brain
+Manages the complex interactions between Ghidra scripts and AI inference.
+- **Integrated Subprocess Management**: Handles headless Ghidra execution with project locking.
+- **Prompt Engineering**: Dynamically constructs context-rich prompts including decompiled code, function signatures, and RAG-retrieved neighbors.
+
+### 4.2 re-ai2: Local Inference Node
+A high-performance inference server that runs completely locally, ensuring your sensitive binaries are never transmitted to third-party APIs. Supporting **NVIDIA GPU Acceleration**.
 
 ---
 
-## ⚡ 4. Deployment Guide
+## ⚡ 5. Deployment Guide
 
-### **Prerequisites**
-- **NVIDIA Container Toolkit** (for GPU acceleration).
-- Linux or WSL2 environment (for Docker networking compatibility).
-
-### **Installation**
-1.  **Build the Infrastructure**:
-    ```bash
-    docker-compose up --build -d
-    ```
-2.  **Verify Health**:
-    Check `http://localhost:8005/health` to confirm the API is ready.
-3.  **Bootstrap Models**:
-    The system will automatically attempt to pull `qwen2.5-coder:14b`. Verify progress with `docker logs re-ai2`.
+1.  **Build the Infrastructure**: `docker-compose up --build -d`
+2.  **Verify Health**: Check `http://localhost:8005/health`
+3.  **Bootstrap Models**: The system will automatically pull `qwen2.5-coder:14b`.
 
 ---
 *Designed for the elite reverse engineering community. re-Brain 2026.*
