@@ -5,7 +5,7 @@
 ### 📽️ Analysis Workflow Demonstration
 Watch re-Brain in action as it disassembles a target, identifies core logic, and uses AI context to solve a reverse engineering challenge.
 
-<video src="pictures/simplecrack.mp4" controls width="100%" alt="Analysis Workflow Demo"></video>
+[Watch Analysis Workflow Demo](https://youtu.be/Ihdp65vhp9k)
 
 ---
 
@@ -85,7 +85,7 @@ The **Strings Viewer** captures every sequence of characters, mapping them to th
 #### **Python Execution Runtime**
 Integrated directly into the chat, you can execute arbitrary Python scripts to aid analysis. Use it for XORing a buffer, calculating a custom hash, or parsing an proprietary struct.
 
-<video src="pictures/runpythoncode.mp4" controls width="100%" alt="Python Execution Demo"></video>
+[Watch Python Execution Demo](https://youtu.be/wIv-ikj12NI)
 
 ---
 
