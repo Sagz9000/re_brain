@@ -2,7 +2,12 @@
 
 **re-Brain** is a professional-grade, multi-modal reverse engineering platform that synthesizes the precision of **Ghidra** with the reasoning power of **Local Large Language Models (LLMs)**. Designed for the modern malware researcher, it implements a highly optimized **Retrieval-Augmented Generation (RAG)** pipeline to bridge the gap between static disassembly and high-level AI analysis.
 
-### 📽️ Analysis Workflow Demonstration
+### � Workspace Overview
+![re-Brain Fullscreen Workspace](pictures/fullscreen.png)
+![re-Brain Workspace](pictures/workspace.png)
+![re-Brain Clear Workspace](pictures/workspaceclear.png)
+
+### �📽️ Analysis Workflow Demonstration
 Watch re-Brain in action as it disassembles a target, identifies core logic, and uses AI context to solve a reverse engineering challenge.
 
 <video src="https://github.com/Sagz9000/re_brain/raw/main/pictures/simplecrack.mp4" width="600" controls></video>
@@ -15,7 +20,10 @@ Watch re-Brain in action as it disassembles a target, identifies core logic, and
 
 re-Brain adheres to a distributed micro-service architecture, ensuring that heavy computational tasks (Ghidra analysis) and intensive inference (LLM) operate in isolation to maximize stability and performance.
 
-### 🔄 1.1 Data & Process Orchestration
+### �️ 1.1 Ingestion & Project Management
+![Analyze Binary & Create Project](pictures/analyzebinarycreateproject.png)
+
+### �🔄 1.2 Data & Process Orchestration
 The **re-api2** "Brain" container acts as the central hub, orchestrating the flow between the VNC-enabled analysis engine, the vector memory, and the local inference node.
 
 ```mermaid
@@ -44,7 +52,7 @@ sequenceDiagram
     W->>U: Update UI & Persistence
 ```
 
-### 🧠 1.2 RAG Architecture: Reciprocal Rank Fusion (RRF)
+### 🧠 1.3 RAG Architecture: Reciprocal Rank Fusion (RRF)
 re-Brain implements a custom **Multi-Source RAG** strategy that uses **Reciprocal Rank Fusion (RRF)** to synthesize intelligence from five distinct knowledge streams. This ensures the LLM receives the most relevant context regardless of which database contains the answer.
 
 ```mermaid
@@ -104,7 +112,26 @@ The re-Brain frontend reimagines the reverse engineering workspace as a **Dynami
 
 ---
 
-## 🐍 3. Feature Highlight: Python Execution
+## � 3. Feature Deep-Dive
+
+### 🤖 Intelligent AI Analyst
+re-Brain's AI is deeply integrated with the binary state. It doesn't just "talk" about code; it understands the program counter and the stack.
+
+![AI Analyst Interface](pictures/ai_analysis.png)
+![AI Chat View](pictures/aichat.png)
+
+#### **Advanced Tool Calling**
+The AI can emit structured actions that the frontend executes on your behalf:
+| Action | Description | Result |
+| :--- | :--- | :--- |
+| `rename` | Suggests meaningful names for stripped functions | GHIDRA DB Update |
+| `comment` | Documents complex logic in the decompiler | Permanent Analyst Notes |
+| `goto` | Synchronizes the UI to a specific memory offset | Global Window Movement |
+
+### 🔍 Forensic Capabilities
+![Example Function Analysis](pictures/examplefunctionalysis.png)
+
+### 🐍 Feature Highlight: Python Execution
 Integrated directly into the chat interface, re-Brain enables on-the-fly Python script execution. Researchers can perform rapid data manipulation, decoding (Base64/XOR), or custom hash calculations without leaving the research environment.
 
 <video src="https://github.com/Sagz9000/re_brain/raw/main/pictures/runpythoncode.mp4" width="600" controls></video>
@@ -113,7 +140,7 @@ Integrated directly into the chat interface, re-Brain enables on-the-fly Python 
 
 ---
 
-## 🛠️ 4. Advanced Component technicals
+## 🛠️ 4. Advanced Component Technicals
 
 ### 4.1 re-api2: The Orchestration Brain
 Manages the complex interactions between Ghidra scripts and AI inference.
