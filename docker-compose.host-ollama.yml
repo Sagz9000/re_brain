@@ -1,41 +1,45 @@
 services:
   # 1. Frontend: The "Cockpit"
-  re-web:
+  re-web2:
     build: ./web
-    container_name: re-web
+    container_name: re-web2
     ports:
       - "3000:3000"
     volumes:
       - ./web:/app
       - /app/node_modules
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8005 # Updated port
+      - NEXT_PUBLIC_API_URL=http://localhost:8005
     depends_on:
-      re-api:
+      re-api2:
         condition: service_healthy
     networks:
       - re-net
 
   # 2. RAG Backend: The "Brain" (FastAPI + RAG Logic)
-  re-api:
+  re-api2:
     build: ./backend
-    container_name: re-api
+    container_name: re-api2
     ports:
-      - "8005:8000" # Changed host port to 8005
+      - "8005:8000"
     volumes:
       - ./backend:/app
       - ./data:/data
+      - ./data/projects:/data/projects
+      - ./data/jobs:/data/jobs
       - ./ghidra_scripts:/ghidra_scripts
+      - ghidra-dist:/ghidra
     environment:
-      - CHROMA_HOST=re-memory
+      - CHROMA_HOST=re-memory2
       - CHROMA_PORT=8000
-      - OLLAMA_HOST=http://host.docker.internal:11434 # Connect to host Ollama
-      - GHIDRA_HOST=re-ghidra
+      # Connect to Ollama running in another container via host gateway
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - GHIDRA_HOST=re-ghidra2
     depends_on:
-      re-memory:
+      re-memory2:
         condition: service_healthy
     extra_hosts:
-      - "host.docker.internal:host-gateway" # Enable host access
+      - "host.docker.internal:host-gateway" # Enable host access for external Ollama
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
       interval: 10s
@@ -45,25 +49,27 @@ services:
       - re-net
 
   # 3. Ghidra: The "Analysis Engine"
-  re-ghidra:
-    build: ./docker/ghidra # Custom build with X11/VNC
-    container_name: re-ghidra
+  re-ghidra2:
+    build: ./docker/ghidra
+    container_name: re-ghidra2
     ports:
-      - "5900:5900" # VNC
-      - "6080:6080" # noVNC (Web Access)
+      - "5900:5900"
+      - "6080:6080"
     environment:
       - VNC_PASSWORD=ghidra
     volumes:
       - ./data/binaries:/ghidra/binaries
+      - ./data/projects:/ghidra/projects
+      - ./data/jobs:/ghidra/jobs
       - ./ghidra_scripts:/ghidra/scripts
-    entrypoint: [ "/bin/bash", "-c", "echo 'Starting Ghidra VNC...'; /entrypoint.sh" ]
+      - ghidra-dist:/ghidra
     networks:
       - re-net
 
   # 5. Connective Memory: ChromaDB
-  re-memory:
-    image: chromadb/chroma:latest
-    container_name: re-memory
+  re-memory2:
+    image: chromadb/chroma:0.5.0
+    container_name: re-memory2
     ports:
       - "8001:8000"
     volumes:
@@ -72,11 +78,11 @@ services:
       - ANONYMIZED_TELEMETRY=False
       - CHROMA_SERVER_HTTP_PORT=8000
     healthcheck:
-      test: [ "CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/heartbeat')\" || exit 1" ]
+      test: [ "CMD", "/bin/bash", "-c", "echo > /dev/tcp/127.0.0.1/8000" ]
       interval: 10s
       timeout: 5s
-      retries: 15
-      start_period: 60s
+      retries: 10
+      start_period: 30s
     networks:
       - re-net
 
@@ -86,3 +92,4 @@ networks:
 
 volumes:
   chroma-data-v2:
+  ghidra-dist:
