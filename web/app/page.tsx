@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import WindowFrame from './components/WindowFrame';
 import ProjectExplorer from './components/ProjectExplorer';
 import DockedChat from './components/DockedChat';
@@ -18,6 +18,7 @@ import CallTree from './components/CallTree';
 import ScriptManager from './components/ScriptManager';
 import BookmarkManager from './components/BookmarkManager';
 import ProjectManager from './components/ProjectManager';
+import { API_URL } from './utils';
 
 import {
   Code, Sparkles, Terminal, Files, Search, Settings, Box,
@@ -46,35 +47,70 @@ export default function Home() {
 
   // Window Z-Index Tracker
   const [topZ, setTopZ] = useState(10);
+  const [viewport, setViewport] = useState({ w: 1200, h: 800 });
+  const lastViewport = useRef({ w: 1200, h: 800 });
 
-  // Initial Window States
-  const [windows, setWindows] = useState<WindowState[]>([
-    // Core Management
-    { id: 'project', title: 'File Explorer', type: 'project', isOpen: true, zIndex: 1, initialPos: { x: 20, y: 20 }, initialSize: { w: 260, h: 600 }, icon: Files },
-    { id: 'dashboard', title: 'System Overview', type: 'dashboard', isOpen: true, zIndex: 0, initialPos: { x: 300, y: 20 }, initialSize: { w: 800, h: 500 }, icon: LayoutDashboard },
+  // Define windows without initializing state yet to use viewport values
+  const getInitialWindows = (vw: number, vh: number): WindowState[] => [
+    { id: 'project', title: 'File Explorer', type: 'project', isOpen: true, zIndex: 1, initialPos: { x: 60, y: 20 }, initialSize: { w: Math.min(260, vw * 0.2), h: vh * 0.7 }, icon: Files },
+    { id: 'dashboard', title: 'System Overview', type: 'dashboard', isOpen: true, zIndex: 0, initialPos: { x: vw * 0.28, y: 20 }, initialSize: { w: Math.min(800, vw * 0.6), h: vh * 0.6 }, icon: LayoutDashboard },
+    { id: 'listing', title: 'Listing View', type: 'listing', isOpen: false, zIndex: 2, initialPos: { x: vw * 0.28, y: vh * 0.65 }, initialSize: { w: Math.min(800, vw * 0.6), h: vh * 0.3 }, icon: AlignLeft },
+    { id: 'symbol_tree', title: 'Symbol Tree', type: 'symbol_tree', isOpen: false, zIndex: 3, initialPos: { x: vw - 340, y: 20 }, initialSize: { w: 300, h: vh * 0.45 }, icon: ListTree },
+    { id: 'datatypes', title: 'Data Type Manager', type: 'datatypes', isOpen: false, zIndex: 3, initialPos: { x: vw - 340, y: vh * 0.5 }, initialSize: { w: 300, h: vh * 0.45 }, icon: Database },
+    { id: 'tree', title: 'Program Tree', type: 'tree', isOpen: false, zIndex: 3, initialPos: { x: vw * 0.28, y: 20 }, initialSize: { w: 300, h: vh * 0.45 }, icon: FolderTree },
+    { id: 'decompile', title: 'Decompiler', type: 'decompile', isOpen: false, zIndex: 4, initialPos: { x: vw * 0.4, y: 20 }, initialSize: { w: vw * 0.4, h: vh * 0.6 }, icon: Code },
+    { id: 'graph', title: 'Function Graph', type: 'graph', isOpen: false, zIndex: 4, initialPos: { x: vw * 0.35, y: vh * 0.1 }, initialSize: { w: vw * 0.5, h: vh * 0.6 }, icon: GitGraph },
+    { id: 'call_tree', title: 'Function Call Tree', type: 'call_tree', isOpen: false, zIndex: 4, initialPos: { x: vw * 0.38, y: vh * 0.15 }, initialSize: { w: vw * 0.3, h: vh * 0.6 }, icon: GitCommit },
+    { id: 'hex', title: 'Bytes', type: 'hex', isOpen: false, zIndex: 3, initialPos: { x: vw * 0.35, y: vh * 0.6 }, initialSize: { w: vw * 0.5, h: vh * 0.35 }, icon: Binary },
+    { id: 'strings', title: 'Defined Strings', type: 'strings', isOpen: false, zIndex: 3, initialPos: { x: vw * 0.4, y: vh * 0.2 }, initialSize: { w: vw * 0.4, h: vh * 0.5 }, icon: Type },
+    { id: 'scripts', title: 'Script Manager', type: 'scripts', isOpen: false, zIndex: 5, initialPos: { x: vw * 0.45, y: vh * 0.1 }, initialSize: { w: 400, h: 300 }, icon: Play },
+    { id: 'bookmarks', title: 'Bookmarks', type: 'bookmarks', isOpen: false, zIndex: 5, initialPos: { x: vw * 0.5, y: vh * 0.15 }, initialSize: { w: 300, h: 400 }, icon: Bookmark },
+    { id: 'projects', title: 'Project Manager', type: 'projects', isOpen: false, zIndex: 5, initialPos: { x: vw * 0.55, y: vh * 0.2 }, initialSize: { w: 500, h: 400 }, icon: FolderTree },
+    { id: 'output', title: 'Console Output', type: 'output', isOpen: true, zIndex: 2, initialPos: { x: vw * 0.28, y: vh - 220 }, initialSize: { w: vw * 0.6, h: 200 }, icon: Terminal },
+    { id: 'chat', title: 're-Brain-AI', type: 'chat', isOpen: true, zIndex: 10, initialPos: { x: vw - 360, y: 20 }, initialSize: { w: 320, h: vh - 40 }, icon: Sparkles },
+  ];
 
-    // Core Analysis
-    { id: 'listing', title: 'Listing View', type: 'listing', isOpen: false, zIndex: 2, initialPos: { x: 300, y: 540 }, initialSize: { w: 800, h: 400 }, icon: AlignLeft },
-    { id: 'symbol_tree', title: 'Symbol Tree', type: 'symbol_tree', isOpen: false, zIndex: 3, initialPos: { x: 1120, y: 20 }, initialSize: { w: 300, h: 400 }, icon: ListTree },
-    { id: 'datatypes', title: 'Data Type Manager', type: 'datatypes', isOpen: false, zIndex: 3, initialPos: { x: 1120, y: 440 }, initialSize: { w: 300, h: 400 }, icon: Database },
-    { id: 'tree', title: 'Program Tree', type: 'tree', isOpen: false, zIndex: 3, initialPos: { x: 300, y: 20 }, initialSize: { w: 300, h: 400 }, icon: FolderTree },
+  const [windows, setWindows] = useState<WindowState[]>([]);
 
-    // Views
-    { id: 'decompile', title: 'Decompiler', type: 'decompile', isOpen: false, zIndex: 4, initialPos: { x: 620, y: 20 }, initialSize: { w: 500, h: 500 }, icon: Code },
-    { id: 'graph', title: 'Function Graph', type: 'graph', isOpen: false, zIndex: 4, initialPos: { x: 400, y: 100 }, initialSize: { w: 600, h: 500 }, icon: GitGraph },
-    { id: 'call_tree', title: 'Function Call Tree', type: 'call_tree', isOpen: false, zIndex: 4, initialPos: { x: 450, y: 150 }, initialSize: { w: 400, h: 500 }, icon: GitCommit },
-    { id: 'hex', title: 'Bytes', type: 'hex', isOpen: false, zIndex: 3, initialPos: { x: 400, y: 400 }, initialSize: { w: 600, h: 300 }, icon: Binary },
-    { id: 'strings', title: 'Defined Strings', type: 'strings', isOpen: false, zIndex: 3, initialPos: { x: 500, y: 200 }, initialSize: { w: 500, h: 400 }, icon: Type },
+  // Initialize and handle resize
+  useEffect(() => {
+    const nw = window.innerWidth;
+    const nh = window.innerHeight;
+    lastViewport.current = { w: nw, h: nh };
+    setViewport({ w: nw, h: nh });
+    setWindows(getInitialWindows(nw, nh));
 
-    // Tools
-    { id: 'scripts', title: 'Script Manager', type: 'scripts', isOpen: false, zIndex: 5, initialPos: { x: 500, y: 50 }, initialSize: { w: 400, h: 300 }, icon: Play },
-    { id: 'bookmarks', title: 'Bookmarks', type: 'bookmarks', isOpen: false, zIndex: 5, initialPos: { x: 550, y: 80 }, initialSize: { w: 300, h: 400 }, icon: Bookmark },
-    { id: 'projects', title: 'Project Manager', type: 'projects', isOpen: false, zIndex: 5, initialPos: { x: 600, y: 100 }, initialSize: { w: 500, h: 400 }, icon: FolderTree },
+    const handleResize = () => {
+      const vnw = window.innerWidth;
+      const vnh = window.innerHeight;
 
-    // Misc
-    { id: 'output', title: 'Console Output', type: 'output', isOpen: true, zIndex: 2, initialPos: { x: 300, y: 800 }, initialSize: { w: 800, h: 200 }, icon: Terminal },
-    { id: 'chat', title: 're-Brain-AI', type: 'chat', isOpen: true, zIndex: 10, initialPos: { x: 1100, y: 20 }, initialSize: { w: 320, h: 800 }, icon: Sparkles },
-  ]);
+      setWindows(prev => {
+        if (prev.length === 0) return getInitialWindows(vnw, vnh);
+
+        // Scale existing windows relative to the LAST viewport
+        const rw = vnw / lastViewport.current.w;
+        const rh = vnh / lastViewport.current.h;
+
+        return prev.map(w => ({
+          ...w,
+          initialPos: {
+            x: Math.max(48, Math.min(w.initialPos.x * rw, vnw - 100)),
+            y: Math.max(0, Math.min(w.initialPos.y * rh, vnh - 50))
+          },
+          initialSize: {
+            w: Math.max(300, Math.min(w.initialSize.w * rw, vnw - 48)),
+            h: Math.max(200, Math.min(w.initialSize.h * rh, vnh))
+          }
+        }));
+      });
+
+      lastViewport.current = { w: vnw, h: vnh };
+      setViewport({ w: vnw, h: vnh });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchFiles();
@@ -82,9 +118,11 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // const API_URL = ... (removed local declaration)
+
   const fetchFiles = async () => {
     try {
-      const res = await fetch('http://localhost:8005/binaries');
+      const res = await fetch(`${API_URL}/binaries`);
       const data = await res.json();
       setFiles(data);
     } catch (e) { console.error(e); }
@@ -152,7 +190,7 @@ export default function Home() {
   const handleDeleteFile = async (file: string) => {
     if (confirm(`Delete ${file}? This cannot be undone.`)) {
       try {
-        await fetch(`http://localhost:8005/binary/${file}`, { method: 'DELETE' });
+        await fetch(`${API_URL}/binary/${file}`, { method: 'DELETE' });
         if (activeFile === file) {
           setActiveFile(null);
           setSelectedFunction(null);
@@ -328,7 +366,7 @@ function Dashboard({ apiStatus, fileCount }: { apiStatus: string, fileCount: num
         <LayoutDashboard size={20} className="text-indigo-400" />
         Project Dashboard
       </h2>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-[#252526] p-4 rounded-lg border border-[#3e3e42]">
           <span className="text-[10px] text-zinc-500 uppercase">Binaries</span>
           <p className="text-2xl font-mono text-zinc-200">{fileCount}</p>

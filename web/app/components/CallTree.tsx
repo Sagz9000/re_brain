@@ -2,6 +2,7 @@
 
 import { GitCommit, RefreshCw, ArrowUpRight, ArrowDownLeft, Crosshair, CircleDot } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { API_URL } from '../utils';
 
 interface FuncNode {
     name: string;
@@ -24,12 +25,13 @@ export default function CallTree({ file, onSelectFunction }: CallTreeProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+
     const fetchGraph = async () => {
         if (!file) return;
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`http://localhost:8005/binary/${file}/calltree`);
+            const res = await fetch(`${API_URL}/binary/${file}/calltree`);
             if (!res.ok) throw new Error("Failed to fetch call graph");
             const jsonData = await res.json();
             if (jsonData.error) throw new Error(jsonData.error);

@@ -2,8 +2,7 @@
 
 import { ListTree, FunctionSquare, Globe, ArrowDownToLine, RefreshCw, Box, Edit2, Search, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8005';
+import { API_URL } from '../utils';
 
 interface SymbolData {
     functions: { name: string; address: string; size: number }[];
@@ -25,9 +24,9 @@ export default function SymbolTree({ file, onSelectFunction, selectedAddress }: 
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredData = data ? {
-        functions: data.functions.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()) || f.address.toLowerCase().includes(searchQuery.toLowerCase())),
-        imports: data.imports.filter(i => i.name.toLowerCase().includes(searchQuery.toLowerCase()) || i.address.toLowerCase().includes(searchQuery.toLowerCase())),
-        exports: data.exports.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase()) || e.address.toLowerCase().includes(searchQuery.toLowerCase()))
+        functions: data.functions.filter((f: { name: string; address: string; size: number }) => f.name.toLowerCase().includes(searchQuery.toLowerCase()) || f.address.toLowerCase().includes(searchQuery.toLowerCase())),
+        imports: data.imports.filter((i: { name: string; address: string }) => i.name.toLowerCase().includes(searchQuery.toLowerCase()) || i.address.toLowerCase().includes(searchQuery.toLowerCase())),
+        exports: data.exports.filter((e: { name: string; address: string }) => e.name.toLowerCase().includes(searchQuery.toLowerCase()) || e.address.toLowerCase().includes(searchQuery.toLowerCase()))
     } : null;
 
     useEffect(() => {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { GitGraph, ZoomIn, ZoomOut, Move, ArrowRight } from 'lucide-react';
+import { API_URL } from '../utils';
 
 interface FunctionGraphProps {
     file: string | null;
@@ -33,6 +34,7 @@ export default function FunctionGraph({ file, functionAddress }: FunctionGraphPr
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+
     useEffect(() => {
         if (!file || !functionAddress) {
             setData(null);
@@ -44,7 +46,7 @@ export default function FunctionGraph({ file, functionAddress }: FunctionGraphPr
             setError(null);
             try {
                 // Encode address if needed, though usually hex string is safe
-                const res = await fetch(`http://localhost:8005/binary/${file}/function/${functionAddress}/cfg`);
+                const res = await fetch(`${API_URL}/binary/${file}/function/${functionAddress}/cfg`);
                 const json = await res.json();
 
                 if (json.error) {

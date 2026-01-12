@@ -2,16 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { FolderTree, Trash2, RefreshCw, AlertTriangle } from 'lucide-react';
+import { API_URL } from '../utils';
 
 export default function ProjectManager() {
     const [projects, setProjects] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
+
     const fetchProjects = async () => {
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:8005/projects');
+            const res = await fetch(`${API_URL}/projects`);
             const data = await res.json();
             setProjects(data);
         } catch (e) {
@@ -27,7 +29,7 @@ export default function ProjectManager() {
 
     const handleDelete = async (projectName: string) => {
         try {
-            const res = await fetch(`http://localhost:8005/projects/${projectName}`, {
+            const res = await fetch(`${API_URL}/projects/${projectName}`, {
                 method: 'DELETE'
             });
             const result = await res.json();

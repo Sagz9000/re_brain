@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Upload, FileCode, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { API_URL } from '../utils';
 
 interface FileUploadProps {
     onUploadComplete: () => void;
@@ -15,8 +16,6 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
     const [projects, setProjects] = useState<string[]>([]);
     const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
-
-    const API_URL = 'http://localhost:8005';
 
     useEffect(() => {
         // Fetch existing projects

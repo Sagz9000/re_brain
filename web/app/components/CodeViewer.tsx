@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Code, Copy, RefreshCw, AlertCircle, MessageSquare } from 'lucide-react';
+import { API_URL } from '../utils';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8005';
 
 interface CodeViewerProps {
     file: string;

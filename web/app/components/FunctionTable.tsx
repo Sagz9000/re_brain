@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FileCode, Search, RefreshCw } from 'lucide-react';
+import { API_URL } from '../utils';
 
 interface FunctionData {
     name: string;
@@ -23,7 +24,7 @@ export default function FunctionTable({ file, onSelectFunction }: FunctionTableP
         if (!file) return;
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8005/binary/${file}/symbols`);
+            const res = await fetch(`${API_URL}/binary/${file}/symbols`);
             const data = await res.json();
             if (data.functions && Array.isArray(data.functions)) {
                 setFunctions(data.functions);

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Activity, Terminal, Shield, Cpu, RefreshCw } from 'lucide-react';
+import { API_URL } from '../utils';
 
 interface LogEvent {
     time: string;
@@ -13,9 +14,10 @@ export default function ActivityLog() {
     const [logs, setLogs] = useState<LogEvent[]>([]);
     const [isExpanded, setIsExpanded] = useState(true);
 
+
     const fetchLogs = async () => {
         try {
-            const res = await fetch('http://localhost:8005/activity');
+            const res = await fetch(`${API_URL}/activity`);
             if (res.ok) {
                 const data = await res.json();
                 setLogs(data.reverse()); // Show newest first

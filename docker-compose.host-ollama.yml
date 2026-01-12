@@ -9,7 +9,8 @@ services:
       - ./web:/app
       - /app/node_modules
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8005
+      - INTERNAL_API_URL=http://re-api2:8000
+      - NEXT_PUBLIC_API_URL=
     depends_on:
       re-api2:
         condition: service_healthy
@@ -25,10 +26,10 @@ services:
     volumes:
       - ./backend:/app
       - ./data:/data
-      - ./data/projects:/data/projects
-      - ./data/jobs:/data/jobs
+      - ./data/projects:/data/projects # Shared Projects
+      - ./data/jobs:/data/jobs # Shared Job Queue
       - ./ghidra_scripts:/ghidra_scripts
-      - ghidra-dist:/ghidra
+      - ghidra-dist:/ghidra # Shared Ghidra installation
     environment:
       - CHROMA_HOST=re-memory2
       - CHROMA_PORT=8000
@@ -67,7 +68,8 @@ services:
       - ./data/projects:/ghidra/projects
       - ./data/jobs:/ghidra/jobs
       - ./ghidra_scripts:/ghidra/scripts
-      - ghidra-dist:/ghidra
+      - ghidra-dist:/ghidra # Shared Ghidra installation
+    entrypoint: [ "/bin/bash", "-c", "echo 'Starting Ghidra VNC...'; /entrypoint.sh" ]
     networks:
       - re-net
 

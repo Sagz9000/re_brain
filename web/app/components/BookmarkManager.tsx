@@ -2,6 +2,7 @@
 
 import { Bookmark, RefreshCw, MessageSquare, Tag, Crosshair } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { API_URL } from '../utils';
 
 interface BookmarkItem {
     address: string;
@@ -20,12 +21,13 @@ export default function BookmarkManager({ file, onSelectAddress }: BookmarkManag
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+
     const fetchBookmarks = async () => {
         if (!file) return;
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`http://localhost:8005/binary/${file}/bookmarks`);
+            const res = await fetch(`${API_URL}/binary/${file}/bookmarks`);
             if (!res.ok) throw new Error("Failed to fetch bookmarks");
             const jsonData = await res.json();
             if (jsonData.error) throw new Error(jsonData.error);

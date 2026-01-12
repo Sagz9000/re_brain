@@ -2,6 +2,7 @@
 
 import { FolderTree, MemoryStick, Box, FileCode, RefreshCw } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { API_URL } from '../utils';
 
 interface TreeData {
     blocks: MemoryBlock[];
@@ -29,12 +30,13 @@ export default function ProgramTree({ file }: ProgramTreeProps) {
 
     const [expanded, setExpanded] = useState({ blocks: true, headers: false, types: false });
 
+
     const fetchTree = async () => {
         if (!file) return;
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`http://localhost:8005/binary/${file}/tree`);
+            const res = await fetch(`${API_URL}/binary/${file}/tree`);
             if (!res.ok) throw new Error("Failed to fetch tree");
             const jsonData = await res.json();
             if (jsonData.error) throw new Error(jsonData.error);

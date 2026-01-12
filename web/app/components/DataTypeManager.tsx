@@ -2,6 +2,7 @@
 
 import { Database, RefreshCw, Folder, FileType, ChevronRight, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { API_URL } from '../utils';
 
 interface CategoryData {
     name: string;
@@ -52,12 +53,13 @@ export default function DataTypeManager({ file }: DataTypeManagerProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+
     const fetchTypes = async () => {
         if (!file) return;
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`http://localhost:8005/binary/${file}/datatypes`);
+            const res = await fetch(`${API_URL}/binary/${file}/datatypes`);
             if (!res.ok) throw new Error("Failed to fetch datatypes");
             const jsonData = await res.json();
             if (jsonData.error) throw new Error(jsonData.error);

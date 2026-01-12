@@ -80,6 +80,10 @@ def log_event(message, source="System"):
 def read_root():
     return {"status": "online", "service": "reAIghidra Backend"}
 
+@app.get("/health")
+def health_check():
+    return {"status": "online"}
+
 @app.get("/activity")
 def get_activity():
     return activity_logs

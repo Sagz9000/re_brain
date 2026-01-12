@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Send, Sparkles, MessageSquare, Trash2, Crosshair, Code, Copy, Check, Play } from 'lucide-react';
+import { API_URL } from '../utils';
 
 // ... (keep interfaces)
 
@@ -45,7 +46,7 @@ const CodeBlock = ({ code, language }: { code: string, language: string }) => {
         setOutput(null);
         setError(null);
         try {
-            const res = await fetch('http://localhost:8005/run', {
+            const res = await fetch(`${API_URL}/run`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
@@ -269,7 +270,6 @@ export default function DockedChat({
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
     // Load history
     useEffect(() => {

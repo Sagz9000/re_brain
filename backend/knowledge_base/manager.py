@@ -21,7 +21,7 @@ class KnowledgeManager:
         print("Starting Knowledge Graph Ingestion...")
         
         # 1. Ghidra Docs (Web)
-        # self.ghidra.ingest() # Uncomment to run web scrape
+        self.ghidra.ingest() # Uncomment to run web scrape
         
         # 2. Malware Tactics
         self.malware.ingest(os.path.join(data_root, "malware"))

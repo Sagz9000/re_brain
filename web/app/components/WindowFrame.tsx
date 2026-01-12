@@ -30,19 +30,35 @@ export default function WindowFrame({
     const frameRef = useRef<HTMLDivElement>(null);
     const dragOffset = useRef({ x: 0, y: 0 });
 
+    // Sync state with props when they change (e.g. on window resize)
+    useEffect(() => {
+        setPos(initialPos);
+        setSize(initialSize);
+    }, [initialPos.x, initialPos.y, initialSize.w, initialSize.h]);
+
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
             if (isDragging) {
+                const maxX = window.innerWidth - size.w;
+                const maxY = window.innerHeight - size.h;
+
+                // Allow some wiggle room or strict clamping
+                // Clamping to 48px from left (Launch Bar width) and 0 from top/bottom/right
+                const launchBarWidth = 48;
+
                 setPos({
-                    x: e.clientX - dragOffset.current.x,
-                    y: e.clientY - dragOffset.current.y
+                    x: Math.max(launchBarWidth, Math.min(e.clientX - dragOffset.current.x, window.innerWidth - 50)),
+                    y: Math.max(0, Math.min(e.clientY - dragOffset.current.y, window.innerHeight - 36))
                 });
             }
             if (isResizing && frameRef.current) {
                 const rect = frameRef.current.getBoundingClientRect();
+                const newW = Math.max(300, Math.min(e.clientX - rect.left, window.innerWidth - rect.left));
+                const newH = Math.max(200, Math.min(e.clientY - rect.top, window.innerHeight - rect.top));
+
                 setSize({
-                    w: Math.max(300, e.clientX - rect.left),
-                    h: Math.max(200, e.clientY - rect.top)
+                    w: newW,
+                    h: newH
                 });
             }
         };

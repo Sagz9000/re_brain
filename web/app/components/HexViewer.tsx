@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
+import { API_URL } from '../utils';
 
 interface HexViewerProps {
     file: string;
@@ -15,7 +16,6 @@ export default function HexViewer({ file, address }: HexViewerProps) {
     const [totalSize, setTotalSize] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const API_URL = 'http://localhost:8005';
 
     // sync address prop to offset
     useEffect(() => {

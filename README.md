@@ -3,7 +3,7 @@
 **re-Brain** is a professional-grade, multi-modal reverse engineering platform that synthesizes the precision of **Ghidra** with the reasoning power of **Local Large Language Models (LLMs)**. Designed for the modern malware researcher, it implements a highly optimized **Retrieval-Augmented Generation (RAG)** pipeline to bridge the gap between static disassembly and high-level AI analysis.
 
 > [!NOTE]
-> **re-Brain 2.0** is technically influenced by and adapts core logic from [GhidraMCP](https://github.com/LaurieWired/GhidraMCP) by LaurieWired. While the **Ghidra Analysis Scripts** (CFG, XRefs, Renaming) leverage the robust implementation patterns found in GhidraMCP, the **orchestration layer, JSON protocol, and full-stack integration** are custom-built for the re-Brain ecosystem.
+> **re-Brain 2.0** is technically influenced by and adapts core logic from [GhidraMCP](https://github.com/LaurieWired/GhidraMCP) by LaurieWired. While the **Ghidra Analysis Scripts** (CFG, XRefs, Renaming) leverage the implementation patterns found in GhidraMCP, the **orchestration layer, JSON protocol, and full-stack integration** are custom-built for the re-Brain ecosystem.
 
 ### � Workspace Overview
 ![re-Brain Fullscreen Workspace](pictures/fullscreen.png)
@@ -160,8 +160,14 @@ A high-performance inference server that runs completely locally, ensuring your 
 ## ⚡ 5. Deployment Guide
 
 1.  **Build the Infrastructure**: `docker-compose up --build -d`
-2.  **Verify Health**: Check `http://localhost:8005/health`
+2.  **Verify Health**: Check `http://localhost:8005/health` (Backend) or `http://localhost:3000` (Frontend).
 3.  **Bootstrap Models**: The system will automatically pull `qwen2.5-coder:14b`.
+
+### 🌐 Remote Access (IP Address Support)
+re-Brain is designed to be accessible across your network.
+- **Accessing the UI**: Simply navigate to `http://<your-server-ip>:3000`.
+- **Automatic Proxying**: The system automatically proxies API requests through the web server. You do **not** need to open port 8005 on your server's firewall—only port 3000 is required for full functionality.
+- **Custom Configuration**: If you wish to use a different API URL, modify `NEXT_PUBLIC_API_URL` in `docker-compose.yml`.
 
 ---
 ![re-Brain Workspace](pictures/workspace.png)

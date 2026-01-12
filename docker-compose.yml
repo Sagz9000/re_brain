@@ -9,7 +9,11 @@ services:
       - ./web:/app
       - /app/node_modules
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8005 # Updated port
+      # INTERNAL_API_URL allows the Next.js server to proxy requests to the backend container
+      - INTERNAL_API_URL=http://re-api2:8000
+      # NEXT_PUBLIC_API_URL can be left blank to use the proxy (best for remote access via IP).
+      # Set this only if you want to bypass the proxy and talk to the API directly.
+      - NEXT_PUBLIC_API_URL=
     depends_on:
       re-api2:
         condition: service_healthy

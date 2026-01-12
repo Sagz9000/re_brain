@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Type, Search, RefreshCw, Filter } from 'lucide-react';
+import { API_URL } from '../utils';
 
 interface StringsViewerProps {
     file: string;
@@ -17,11 +18,12 @@ export default function StringsViewer({ file }: StringsViewerProps) {
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState('');
 
+
     const fetchStrings = async () => {
         if (!file) return;
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8005/binary/${file}/strings`);
+            const res = await fetch(`${API_URL}/binary/${file}/strings`);
             const data = await res.json();
             if (Array.isArray(data)) setStrings(data);
         } catch (e) {
