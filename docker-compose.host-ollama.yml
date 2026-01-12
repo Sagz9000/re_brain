@@ -35,6 +35,11 @@ services:
       # Connect to Ollama running in another container via host gateway
       - OLLAMA_HOST=http://host.docker.internal:11434
       - GHIDRA_HOST=re-ghidra2
+      # AMD GPU Overrides for RX 7800 XT (Navi 32 / gfx1101)
+      - HSA_OVERRIDE_GFX_VERSION=11.0.0
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
     depends_on:
       re-memory2:
         condition: service_healthy
