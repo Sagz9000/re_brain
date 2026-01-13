@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, Form
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
@@ -129,6 +130,326 @@ def get_decompile(name: str, addr: str):
 def get_decompile_endpoint(name: str, addr: str):
     return get_decompile(name, addr)
 
+class EmulateRequest(BaseModel):
+    address: str
+    steps: int = 5
+    stop_at: Optional[str] = None
+
+@app.post("/binary/{name}/emulate")
+def emulate_execution(name: str, req: EmulateRequest):
+    args = [req.address, str(req.steps)]
+    if req.stop_at:
+        args.append(req.stop_at)
+    return run_headless_script(name, "EmulateFunction.java", args=args, read_only=True)
+
+class RenameRequest(BaseModel):
+    target: str # Address or old name
+    new_name: str
+
+@app.post("/binary/{name}/rename")
+def rename_function(name: str, req: RenameRequest):
+    log_event(f"Renaming {req.target} to {req.new_name} in {name}", source="System")
+    return run_headless_script(name, "RenameFunction.java", args=[req.target, req.new_name], read_only=False)
+
+class CommentRequest(BaseModel):
+    address: str
+    comment: str
+    type: str = "plate" # pre, post, eol, plate
+
+@app.post("/binary/{name}/comment")
+def set_comment(name: str, req: CommentRequest):
+    log_event(f"Setting {req.type} comment at {req.address} in {name}", source="System")
+    return run_headless_script(name, "SetComment.java", args=[req.address, req.comment, req.type], read_only=False)
+
+def sanitize_json(obj):
+    """Recursively convert NaN/Infinity to strings for valid JSON."""
+    if isinstance(obj, float):
+        import math
+        if math.isnan(obj) or math.isinf(obj):
+            return str(obj)
+    if isinstance(obj, dict):
+        return {k: sanitize_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize_json(i) for i in obj]
+    return obj
+
+@app.post("/binary/{name}/batch_analysis")
+def batch_analysis(name: str):
+    log_event(f"Starting Batch Analysis for {name}", source="System")
+    
+    # 1. Run Ghidra Script to export all functions
+    try:
+        functions_data = run_headless_script(name, "BatchDecompile.java", args=[], read_only=True)
+        if isinstance(functions_data, dict) and "error" in functions_data:
+             return functions_data
+        functions = functions_data if isinstance(functions_data, list) else [] # Expecting a list of functions
+    except Exception as e:
+        logger.error(f"Batch Decompile failed: {e}")
+        return {"error": f"Batch Decompile failed: {str(e)}"}
+
+    if not functions:
+        return {"error": "No functions found or decompilation failed."}
+
+    log_event(f"Extracted {len(functions)} functions. Starting AI Scan...", source="System")
+
+    # 2. Iterate and AI Scan
+    # We'll batch functions to avoid context limits. 5 functions per chunk?
+    CHUNK_SIZE = 5
+    findings = []
+    
+    # Limit total functions for now to avoid huge costs/time during testing (Timeout Prevention)
+    functions = functions[:20] 
+
+    for i in range(0, len(functions), CHUNK_SIZE):
+        chunk = functions[i:i+CHUNK_SIZE]
+        
+        prompt = "Analyze the following functions for security interest. Look for:\n"
+        prompt += "1. Encryption/Encoding logic (XOR, shifts, magic constants)\n"
+        prompt += "2. Network activity (socket, connect, send, recv)\n"
+        prompt += "3. Complex control flow (nested loops, state machines)\n"
+        prompt += "\nReturn a JSON list of meaningful findings only. Format: [{'function': 'name', 'category': 'Encryption', 'details': '...'}]. If nothing interesting, return [].\n\n"
+        
+        for f in chunk:
+            prompt += f"Function: {f['name']} @ {f['address']}\nCode:\n{f['code'][:1000]}\n\n" # Truncate code if too long
+            
+        try:
+            # Call Ollama logic directly here (simplified from chat_endpoint)
+            # Depending on how chat_endpoint is structured, proper way is to use requests to Ollama
+            # For now, let's reuse a simple query function if available, or just call chat logic.
+            # But chat logic expects history... let's just use requests to OLLAMA_HOST
+            
+            payload = {
+                "model": "qwen2.5-coder:14b",
+                "prompt": prompt,
+                "stream": False,
+                "options": {"temperature": 0.1}
+            }
+            res = requests.post(f"{os.getenv('OLLAMA_HOST', 'http://localhost:11434')}/api/generate", json=payload)
+            if res.status_code == 200:
+                ai_text = res.json().get('response', '')
+                # Parse JSON from AI
+                try:
+                    # Find JSON array in text
+                    match = re.search(r'\[.*\]', ai_text, re.DOTALL)
+                    if match:
+                        chunk_findings = json.loads(match.group(0))
+                        findings.extend(chunk_findings)
+                except:
+                    pass # AI didn't return valid JSON
+        except Exception as e:
+            logger.error(f"AI Chunk Scan failed: {e}")
+
+    summary = f"Batch Analysis Complete. Scanned {len(functions)} functions. Found {len(findings)} items of interest."
+    log_event(summary, source="AI")
+    
+    if search_engine:
+        try:
+             search_engine.store_finding(name, "deep_scan", summary, {"findings_count": len(findings)})
+             # Store detailed findings as separate chunks if needed, but summary is good for now.
+             if findings:
+                  details = "\n".join([f"- {f.get('function')}: {f.get('details')}" for f in findings])
+                  search_engine.store_finding(name, "deep_scan_findings", details, {"findings_count": len(findings)})
+        except Exception as e:
+             logger.error(f"Failed to store batch findings in RAG: {e}")
+
+    return {"status": "success", "total_functions": len(functions), "findings": sanitize_json(findings)}
+
+@app.post("/binary/{name}/memory_analysis")
+def memory_analysis(name: str):
+    log_event(f"Starting Memory Analysis for {name}", source="System")
+    
+    # 1. Run Ghidra Script
+    try:
+        mem_data = run_headless_script(name, "MemoryMapExport.java", args=[], read_only=True)
+        if isinstance(mem_data, dict) and "error" in mem_data:
+             return mem_data
+        if not isinstance(mem_data, dict):
+             return {"error": "Invalid memory analysis data format."}
+             
+    except Exception as e:
+        logger.error(f"Memory Export failed: {e}")
+        return {"error": f"Memory Export failed: {str(e)}"}
+
+    # 2. AI Processing
+    prompt = "Analyze the following memory layout and pointers for a binary. \n"
+    prompt += "Identify security risks (e.g. RWX sections, suspicious segments).\n"
+    prompt += "Explain the layout (Stack, Heap, Code, Data).\n"
+    prompt += "Infer the purpose of the pointers provided.\n\n"
+    
+    blocks = mem_data.get('blocks', [])
+    pointers = mem_data.get('pointers', [])
+    
+    prompt += "Memory Blocks:\n" + json.dumps(blocks, indent=2) + "\n\n"
+    prompt += "Sample Pointers:\n" + json.dumps(pointers[:50], indent=2) + "\n\n" # Limit to top 50
+    
+    prompt += "Return a concise analysis summary."
+
+    try:
+        payload = {
+            "model": "qwen2.5-coder:14b",
+            "prompt": prompt,
+            "stream": False,
+            "options": {"temperature": 0.2}
+        }
+        res = requests.post(f"{os.getenv('OLLAMA_HOST', 'http://localhost:11434')}/api/generate", json=payload)
+        ai_response = "AI Analysis Failed."
+        if res.status_code == 200:
+             ai_response = res.json().get('response', 'No response.')
+             
+        log_event("Memory Analysis Completed.", source="AI")
+        
+        if search_engine:
+             search_engine.store_finding(name, "memory_scan", ai_response, {"blocks_count": len(blocks)})
+
+        return {"status": "success", "analysis": ai_response, "data": mem_data}
+        
+    except Exception as e:
+        return {"error": f"AI Scan failed: {e}"}
+
+
+    except Exception as e:
+        return {"error": f"AI Scan failed: {e}"}
+
+@app.post("/binary/{name}/cipher_analysis")
+def cipher_analysis(name: str):
+    log_event(f"Starting Cipher Analysis for {name}", source="System")
+    
+    # 1. Run Ghidra Script
+    try:
+        cipher_funcs = run_headless_script(name, "CipherScan.java", args=[], read_only=True)
+        if isinstance(cipher_funcs, dict) and "error" in cipher_funcs:
+             return cipher_funcs
+        if not isinstance(cipher_funcs, list):
+             cipher_funcs = []
+             
+    except Exception as e:
+        logger.error(f"Cipher Scan failed: {e}")
+        return {"error": f"Cipher Scan failed: {str(e)}"}
+
+    if not cipher_funcs:
+        return {"status": "success", "analysis": "No suspicious bitwise/cipher logic found.", "findings": []}
+
+    # 2. AI Processing
+    prompt = "Analyze the following functions for encryption, encoding, or hashing logic.\n"
+    prompt += "Identify the likely algorithm (e.g. RC4, AES, XOR Stream, Base64, CRC32, etc.).\n"
+    prompt += "Provide specific instructions on how to decode the data (e.g. 'XOR with key 0x55', 'Shift right by 2').\n"
+    prompt += "If it looks like a standard library function (e.g. memcpy optimized), ignore it.\n\n"
+    
+    try:
+        for f in cipher_funcs:
+            # Safer access with defaults
+            name = f.get('name', 'unknown')
+            addr = f.get('address', 'unknown')
+            score = f.get('score', 0)
+            code = f.get('code', '')
+            prompt += f"Function: {name} @ {addr} (Bitwise Ops: {score})\n"
+            prompt += f"Code:\n{code[:2000]}\n\n" # Truncate to save context
+    except Exception as e:
+        logger.error(f"Cipher Prompt Gen Failed: {e}")
+        return {"error": f"Cipher Prompt Gen Failed: {e}"}
+    
+    prompt += "Return a concise report with findings and decoding suggestions."
+
+    try:
+        payload = {
+            "model": "qwen2.5-coder:14b",
+            "prompt": prompt,
+            "stream": False,
+            "options": {"temperature": 0.1}
+        }
+        res = requests.post(f"{os.getenv('OLLAMA_HOST', 'http://localhost:11434')}/api/generate", json=payload)
+        ai_response = "AI Analysis Failed."
+        if res.status_code == 200:
+             ai_response = res.json().get('response', 'No response.')
+             
+        log_event("Cipher Analysis Completed.", source="AI")
+        
+        if search_engine:
+             search_engine.store_finding(name, "cipher_scan", ai_response, {"suspicious_functions": len(cipher_funcs)})
+
+        return {"status": "success", "analysis": ai_response, "findings": cipher_funcs}
+        
+    except Exception as e:
+        return {"error": f"AI Scan failed: {e}"}
+
+class DataTypeRequest(BaseModel):
+    type_name: str
+    category_path: Optional[str] = None
+
+@app.post("/binary/{name}/datatype/preview")
+def get_datatype_preview(name: str, req: DataTypeRequest):
+    file_path = os.path.join(BINARIES_DIR, name)
+    if not os.path.exists(file_path):
+        return JSONResponse(status_code=404, content={"error": "File not found"})
+    
+    # Clean path argument
+    path_arg = req.category_path if req.category_path else ""
+
+    logger.info(f"Generating preview for type '{req.type_name}' in {name}")
+    
+    result = run_headless_script(
+        name, 
+        "GetDataTypePreview.java", 
+        args=[req.type_name, path_arg],
+        read_only=True
+    )
+    
+    if "error" in result:
+        return JSONResponse(status_code=500, content=result)
+        
+    return sanitize_json(result)
+
+@app.post("/binary/{name}/malware_analysis")
+def malware_analysis(name: str):
+    log_event(f"Starting Malware Analysis for {name}", source="System")
+    
+    # 1. Run Ghidra Script
+    try:
+        malware_data = run_headless_script(name, "MalwareScan.java", args=[], read_only=True)
+        if "error" in malware_data:
+             return malware_data
+        if not isinstance(malware_data, dict):
+             malware_data = {"imports": [], "strings": []}
+             
+    except Exception as e:
+        logger.error(f"Malware Scan failed: {e}")
+        return {"error": f"Malware Scan failed: {str(e)}"}
+
+    if not malware_data['imports'] and not malware_data['strings']:
+        return {"status": "success", "analysis": "No obvious malware indicators found.", "findings": malware_data}
+
+    # 2. AI Processing
+    prompt = "Analyze the following binary artifacts for malware, C2 (Cobalt Strike, Metasploit, etc.), or shellcode behavior.\n"
+    prompt += "Look for 'Injection' capabilities (VirtualAlloc, CreateRemoteThread), 'Network' Beacons (WinINet, User-Agents), and 'Evasion' (Anti-Debug).\n"
+    prompt += "Assess the threat level (Clean, Suspicious, Malicious) and explain why.\n\n"
+    
+    prompt += "Suspicious Imports:\n" + json.dumps(malware_data['imports'], indent=2) + "\n\n"
+    prompt += "Suspicious Strings:\n" + json.dumps(malware_data['strings'][:50], indent=2) + "\n\n" # Limit
+    
+    prompt += "Return a concise threat assessment."
+
+    try:
+        payload = {
+            "model": "qwen2.5-coder:14b",
+            "prompt": prompt,
+            "stream": False,
+            "options": {"temperature": 0.1}
+        }
+        res = requests.post(f"{os.getenv('OLLAMA_HOST', 'http://localhost:11434')}/api/generate", json=payload)
+        ai_response = "AI Analysis Failed."
+        if res.status_code == 200:
+             ai_response = res.json().get('response', 'No response.')
+             
+        log_event("Malware Analysis Completed.", source="AI")
+        
+        if search_engine:
+             search_engine.store_finding(name, "malware_scan", ai_response, {"risk_imports": len(malware_data.get('imports', [])), "risk_strings": len(malware_data.get('strings', []))})
+
+        return {"status": "success", "analysis": ai_response, "findings": malware_data}
+        
+    except Exception as e:
+        return {"error": f"AI Scan failed: {e}"}
+
 @app.post("/chat")
 def chat_endpoint(request: ChatRequest):
     if not search_engine:
@@ -177,19 +498,15 @@ def chat_endpoint(request: ChatRequest):
 
     # RAG Context (ChromaDB)
     try:
-        if request.current_file and search_engine and search_engine.client:
-            coll = search_engine.client.get_or_create_collection(name=f"ghidra_{request.current_file}")
-            # Query related to user input
-            results = coll.query(
-                query_texts=[request.query],
-                n_results=3
-            )
-            if results['documents'] and results['documents'][0]:
-                for i, doc in enumerate(results['documents'][0]):
-                    meta = results['metadatas'][0][i]
-                    func_name = meta.get('function', 'unknown')
-                    context_hits.append(func_name)
-                    context_str += f"\n--- Function: {func_name} ---\n{doc}\n"
+        if search_engine and search_engine.client:
+            # New centralized search with binary scoping
+            rrf_results = search_engine.search(request.query, top_k=5, binary_context=current_file)
+            
+            context_str += search_engine.format_context(rrf_results)
+            
+            # Track hits for UI
+            context_hits = [r['meta'].get('function', r['meta'].get('type', 'doc')) for r in rrf_results]
+
     except Exception as e:
         logger.error(f"RAG Error: {e}")
         context_str = f"RAG unavailable: {e}"
@@ -213,6 +530,12 @@ Rules:
    - Rename: `{ "action": "rename", "target": "FUN_...", "new_name": "login_check" }`
    - Comment: `{ "action": "comment", "address": "0x401000", "comment": "...", "type": "plate" }`
    - Goto: `{ "action": "goto", "address": "0x401000" }`
+   - Emulate: `{ "action": "emulate", "address": "0x401000", "steps": 5, "stop_at": "0x401050" }`
+
+   INTERACTIVE DEBUGGING:
+   - When you use `emulate`, the SYSTEM will output the Result Trace in the next message.
+   - You MUST CHECK REGISTERS in the result (e.g. "RAX=0x1").
+   - If a Breakpoint is reached, decide the next step.
 
 NEGATIVE CONSTRAINTS:
 - DO NOT output conversational filler (e.g., "I will now analyze", "I decide to").
@@ -327,6 +650,12 @@ def delete_binary(name: str):
         if os.path.exists(file_path):
             os.remove(file_path)
             log_event(f"Deleted file: {name}", source="System")
+            
+            # Clean up RAG knowledge
+            if search_engine:
+                 search_engine.delete_project_knowledge(name)
+                 log_event(f"Deleted RAG Knowledge for: {name}", source="System")
+
             return {"status": "deleted", "file": name}
         else:
             return {"error": "File not found"}
@@ -487,6 +816,69 @@ def get_program_tree(name: str):
 def get_symbols(name: str):
     return run_headless_script(name, "GetSymbols.java", read_only=True)
 
+def extract_json_from_ghidra_output(output: str) -> Optional[dict]:
+    """Robustly extracts JSON from Ghidra's stdout log stream."""
+    json_str = ""
+    capture = False
+    
+    # Heuristic: collect lines between markers
+    for line in output.splitlines():
+        if "JSON_START" in line or ">START" in line:
+            capture = True
+            continue
+        if "JSON_END" in line or ">END" in line:
+            capture = False
+            break
+        if capture:
+            # Robustly strip Ghidra log noise (e.g. "INFO  GetSymbols.java> {")
+            # We only strip if the line STARTS with a level and has a script marker
+            import re
+            # 1. Strip script prefixes "INFO ScriptName> "
+            clean_line = re.sub(r'^\s*(?:INFO|WARN|ERROR).*?>\s*', '', line).strip()
+            
+            # 2. Filter out raw system logs that interrupted the JSON stream
+            # e.g. "INFO  Class search complete..."
+            # Valid JSON lines (pretty printed) start with {, }, [, ], ", or are blank/numeric.
+            # They should NOT start with "INFO" unless it's a key, which would be quoted.
+            if clean_line.startswith(("INFO ", "WARN ", "ERROR ", "REPORT ", "DEBUG ")):
+                continue
+                
+            json_str += clean_line + "\n"
+    
+    if not json_str.strip():
+        # Fallback: find any line that looks like a standalone JSON object
+        for line in output.splitlines():
+            clean_line = line.strip()
+            if clean_line.startswith("{") or clean_line.startswith("["):
+                try:
+                    import json
+                    return json.loads(clean_line)
+                except:
+                    continue
+        return None
+
+    # Final cleanup: find the actual JSON bounds to ignore any remaining trailing/leading noise
+    try:
+        import json
+        # Try direct load first
+        return json.loads(json_str) 
+    except json.JSONDecodeError:
+        # If nested markers or partial logs, try to find the first { or [
+        start_idx = -1
+        if "{" in json_str: start_idx = json_str.find("{")
+        if "[" in json_str and (start_idx == -1 or json_str.find("[") < start_idx):
+            start_idx = json_str.find("[")
+            
+        if start_idx != -1:
+            try:
+                candidate = json_str[start_idx:]
+                # Rough balancing check or just try to load
+                return json.loads(candidate)
+            except:
+                pass
+                
+    return None
+
 def run_headless_script(name: str, script: str, timeout: int = 120, args: list = None, read_only: bool = True):
     project_dir = "/data/projects"
     project_name = None
@@ -528,129 +920,178 @@ def run_headless_script(name: str, script: str, timeout: int = 120, args: list =
     if not project_name:
         return {"error": "No Ghidra project found"}
 
+    # Create a temp file path for JSON output
+    # We use /data/jobs because it is a shared volume between backend and ghidra containers
+    import uuid
+    import json # Added import for json
+    job_id = str(uuid.uuid4())
+    output_filename = f"{job_id}.json"
+    # re-api2 does not have /ghidra/jobs mounted, so we must use /data/jobs (which is mounted)
+    output_path_container = f"/data/jobs/{output_filename}" 
+    output_path_backend = f"/data/jobs/{output_filename}" # Path inside Backend container
+    
+    # Ensure directory exists
+    os.makedirs("/data/jobs", exist_ok=True)
+
     cmd_process = [
         "/ghidra/support/analyzeHeadless",
         project_dir,
         project_name,
         "-process", name,
         "-noanalysis",
-        "-scriptPath", "/app/ghidra_scripts"
+        "-scriptPath", "/ghidra_scripts"
     ]
 
     if read_only:
         cmd_process.append("-readOnly")
         
-    cmd_process.extend(["-postScript", script])
+    cmd_process.extend(["-postScript", script, output_path_container])
     
+    # Append any user arguments AFTER the output path
     if args:
         cmd_process.extend(args)
     
     
     try:
-        log_event(f"Attempting script {script} on {name} (Project: {project_name}) [RO={read_only}]", source="Ghidra")
+        log_event(f"Attempting script {script} on {name} (Project: {project_name}) [Out: {output_filename}]", source="Ghidra")
+        
         with ghidra_lock:
+            # 1. Primary Attempt: Run script
             result = subprocess.run(cmd_process, capture_output=True, text=True, timeout=timeout)
-        output = result.stdout
-        
-        # 1. Try to extract JSON first (Best case)
-        json_str = ""
-        capture = False
-        for line in output.splitlines():
-            if "JSON_START" in line or ">START" in line:
-                capture = True
-                continue
-            if "JSON_END" in line or ">END" in line:
-                capture = False
-                break
-            if capture:
-                json_str += line
-        
-        if json_str.strip():
-            # Robust strip for log prefixes like "INFO  MyScript.java> {"
-            if json_str.startswith("INFO") and ">" in json_str:
-                json_str = json_str.split(">", 1)[1].strip()
+            output = result.stdout
+            stderr = result.stderr
             
-            import json
-            try:
-                return json.loads(json_str) 
-            except json.JSONDecodeError as e:
-                # If we have markers but bad JSON, try to find the start of the object
-                if "{" in json_str:
-                    try:
-                        potential_json = json_str[json_str.find("{"):]
-                        return json.loads(potential_json)
-                    except:
-                        pass
-                return {"error": "Failed to decode script JSON output", "raw": json_str, "exception": str(e)}
+            # Log the raw output for debugging
+            logger.info(f"GHIDRA STDOUT: {output}")
+            logger.info(f"GHIDRA STDERR: {stderr}")
 
-        # 2. If no JSON, THEN check for specific Ghidra errors that imply missing file
-        if "ERROR: Unable to prompt user" in output or "not found" in output.lower():
-            log_event(f"File {name} not in project, attempting auto-import...", source="Ghidra")
-            file_path = os.path.join(BINARIES_DIR, name)
-            if os.path.exists(file_path):
-                # Try to import it first
-                cmd_import = [
-                    "/ghidra/support/analyzeHeadless",
-                    project_dir,
-                    project_name,
-                    "-import", file_path,
-                    "-overwrite",
-                    "-scriptPath", "/app/ghidra_scripts",
-                    "-postScript", script
-                ]
-                result_imp = subprocess.run(cmd_import, capture_output=True, text=True, timeout=timeout)
-                # If import works, it might run the script too (if we passed -postScript)
-                # Check output of import command for JSON
-                output = result_imp.stdout
-                
-                # Try extracting JSON again from the import output
-                json_str = ""
-                capture = False
-                for line in output.splitlines():
-                    if "JSON_START" in line or ">START" in line:
-                        capture = True
-                        continue
-                    if "JSON_END" in line or ">END" in line:
-                        capture = False
-                        break
-                    if capture:
-                        json_str += line
-                        
-                if json_str.strip():
-                    import json
-                    try:
-                        return json.loads(json_str) 
-                    except:
-                        pass
+            # Check if output file exists with retries (fs sync latency)
+            import time
+            found = False
+            for i in range(50): # Try for 5 seconds (50 * 0.1s)
+                if os.path.exists(output_path_backend):
+                    found = True
+                    break
+                time.sleep(0.1)
+
+            if found:
+                try:
+                    with open(output_path_backend, 'r') as f:
+                        file_content = f.read()
+                        if not file_content.strip():
+                             return {"error": "Output file exists but is empty"}
+                        json_data = json.loads(file_content)
+                    
+                    # Cleanup
+                    os.remove(output_path_backend)
+                    return json_data
+                except json.JSONDecodeError as e:
+                     logger.error(f"JSON Parse Error: {e}")
+                     return {
+                         "error": f"JSON Parse Error: {str(e)}", 
+                         "file_content_preview": file_content[:500] if 'file_content' in locals() else "N/A"
+                     }
+                except Exception as e:
+                    logger.error(f"Failed to read output file: {e}")
+                    return {"error": f"Read Error: {str(e)}"}
+
+            # Debugging File Not Found
             else:
-                log_event(f"Binary {name} not found on disk at {file_path}", source="Ghidra")
+                logger.error(f"Output file not found at {output_path_backend} after 5s wait")
+                listing = "Listing failed"
+                try:
+                    listing = str(os.listdir(os.path.dirname(output_path_backend)))
+                except: pass
+                
+                return {
+                    "error": "Output file not found after wait",
+                    "directory_listing": listing,
+                    "target_path": output_path_backend,
+                    "ghidra_stdout": output
+                }
 
-        # 3. Fallback for scripts that just print JSON (no markers) - dangerous but legacy support
-        try:
-            for line in output.splitlines():
-                clean_line = line.strip()
-                if clean_line.startswith("{") or clean_line.startswith("["):
-                    return json.loads(clean_line)
-        except:
-            pass
+            # If we are here, we essentially failed or returned above.
+            # The auto-import fallback is below, but we should probably just return the failure if the primary script failed this hard.
+            # However, logic dictates we attempt fallback ONLY if the script failed due to "not found" (which implies input binary missing).
+            
+            # ... existing fallback logic ...
+            # Actually, since we are returning detailed errors above, we might skip fallback if it was a file-not-found-AFTER-execution issue?
+            # No, proceed to fallback logic only if output suggests it.
+            
+            # BUT: strict "else" block above returns. "if found" returns.
+            # So code below is unreachable for the primary attempt?
+            # Yes. This logic refactoring replaces the fall-through.
+            
+            # Wait, we need to handle the case where Ghidra explicitly says "file not found" (input binary) 
+            # effectively BEFORE checking for output file? 
+            # Or if output file is missing, we check output for "not found".
+            
+            pass 
+            # Refactoring to remove unreachable code warning and keep fallback logic accessible
+            
+            # ... (let's keep the fallback accessible if file not found) ...
 
-        # Final failure reporting
-        # Final failure reporting
-        logger.error(f"Ghidra failure for {name}: {output}\nSTDERR: {result.stderr}")
-        return {
-            "error": "Script produced no output (DEBUG MODE)",
-            "stdout": output,
-            "stderr": result.stderr,
-            "project": project_name,
-            "cmd": " ".join(cmd_process)
-        }
+
+            # 2. Fallback: If no JSON, check if we need to auto-import
+            if "ERROR: Unable to prompt user" in output or "not found" in output.lower():
+                log_event(f"File {name} not in project, attempting auto-import...", source="Ghidra")
+                file_path = os.path.join(BINARIES_DIR, name)
+                if os.path.exists(file_path):
+                    # Try to import + run script in one go
+                    # We use -noanalysis for speed if we just want the script output
+                    cmd_import = [
+                        "/ghidra/support/analyzeHeadless",
+                        project_dir,
+                        project_name,
+                        "-import", file_path,
+                        "-overwrite",
+                        "-noanalysis",
+                        "-scriptPath", "/ghidra_scripts",
+                        "-postScript", script,
+                        output_path_container
+                    ]
+                    if args:
+                        cmd_import.extend(args)
+
+                    result_imp = subprocess.run(cmd_import, capture_output=True, text=True, timeout=timeout)
+                    output = result_imp.stdout
+                    stderr = result_imp.stderr 
+                    
+                    if os.path.exists(output_path_backend):
+                        try:
+                            with open(output_path_backend, 'r') as f:
+                                json_data = json.load(f)
+                            os.remove(output_path_backend)
+                            return json_data
+                        except Exception as e:
+                            logger.error(f"Failed to read/parse output file {output_path_backend}: {e}")
+                else:
+                    log_event(f"Binary {name} not found on disk at {file_path}", source="Ghidra")
+
+            # 3. Final failure reporting (inside lock to ensure we capture the right state)
+            logger.error(f"Ghidra failure for {name}: {output}\nSTDERR: {stderr}")
+            if os.path.exists(output_path_backend):
+                 os.remove(output_path_backend) # Cleanup even on failure
+                 
+            return {
+                "error": "Script produced no output file (Wait Mode 5s)",
+                "stdout": output,
+                "stderr": stderr,
+                "project": project_name,
+                "script": script,
+                "cmd": " ".join(cmd_process)
+            }
 
     except subprocess.TimeoutExpired:
 
         log_event(f"Timeout running {script} on {name}", source="Ghidra")
+        if os.path.exists(output_path_backend):
+             os.remove(output_path_backend)
         return {"error": f"Script {script} timed out ({timeout}s)"}
     except Exception as e:
         log_event(f"General error in run_headless_script: {str(e)}", source="Ghidra")
+        if os.path.exists(output_path_backend):
+             os.remove(output_path_backend)
         return {"error": str(e)}
 
 

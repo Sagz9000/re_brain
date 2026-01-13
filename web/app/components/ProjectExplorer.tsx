@@ -1,7 +1,14 @@
 'use client';
 
-import { File, Trash2, Upload, Box, Code2, Layers, FolderKanban as FolderIcon, Activity, FolderOpen, Binary as BinaryIcon, ChevronRight, ChevronDown } from 'lucide-react';
+import { File, Trash2, Upload, Box, Code2, Layers, FolderKanban as FolderIcon, Activity, FolderOpen, Binary as BinaryIcon, ChevronRight, ChevronDown, Play } from 'lucide-react';
 import { useState } from 'react';
+
+interface Tool {
+    name: string;
+    action: string;
+    icon: any;
+    color: string;
+}
 
 interface ProjectExplorerProps {
     files: string[];
@@ -9,9 +16,10 @@ interface ProjectExplorerProps {
     setActiveFile: (file: string | null) => void;
     onUploadClick: () => void;
     onDeleteFile: (file: string) => void;
+    onRunTool: (tool: Tool) => void;
 }
 
-export default function ProjectExplorer({ files, activeFile, setActiveFile, onUploadClick, onDeleteFile }: ProjectExplorerProps) {
+export default function ProjectExplorer({ files, activeFile, setActiveFile, onUploadClick, onDeleteFile, onRunTool }: ProjectExplorerProps) {
     const [hoveredFile, setHoveredFile] = useState<string | null>(null);
     const [isRootOpen, setIsRootOpen] = useState(true);
 
@@ -83,20 +91,33 @@ export default function ProjectExplorer({ files, activeFile, setActiveFile, onUp
                 </div>
             </div>
 
-            {/* Bottom Panel (Scripting/Tools) */}
-            <div className="h-1/3 border-t border-[#3e3e42] flex flex-col bg-[#1e1e1e]">
-                <div className="px-2 py-1 bg-[#252526] border-b border-[#3e3e42] text-[10px] text-zinc-500 font-bold uppercase">
-                    Tool Scripts
+            {/* Bottom Panel (Tools) */}
+            <div className="h-2/5 border-t border-[#3e3e42] flex flex-col bg-[#1e1e1e]">
+                <div className="px-2 py-1 bg-[#252526] border-b border-[#3e3e42] text-[10px] text-zinc-500 font-bold uppercase flex items-center justify-between">
+                    <span>Analysis Tools</span>
+                    <Activity size={10} />
                 </div>
                 <div className="flex-1 overflow-auto p-1 space-y-0.5">
-                    <div className="flex items-center gap-2 px-2 py-1 hover:bg-[#2a2d2e] cursor-pointer text-zinc-400 hover:text-indigo-300">
-                        <Code2 size={12} />
-                        <span>AnalyzeHeadless.java</span>
-                    </div>
-                    <div className="flex items-center gap-2 px-2 py-1 hover:bg-[#2a2d2e] cursor-pointer text-zinc-400 hover:text-indigo-300">
-                        <Layers size={12} />
-                        <span>ExportFunctions.py</span>
-                    </div>
+                    {[
+                        { name: 'Deep Scan', action: 'batch_analysis', icon: Layers, color: 'text-indigo-400' },
+                        { name: 'Memory Scan', action: 'memory_analysis', icon: Box, color: 'text-emerald-400' },
+                        { name: 'Cipher Scan', action: 'cipher_analysis', icon: Code2, color: 'text-purple-400' },
+                        { name: 'Malware Scan', action: 'malware_analysis', icon: Activity, color: 'text-red-400' }
+                    ].map((tool) => (
+                        <div key={tool.name} className="flex items-center justify-between px-2 py-1.5 hover:bg-[#2a2d2e] group rounded transition-colors">
+                            <div className="flex items-center gap-2 text-zinc-300 group-hover:text-white">
+                                <tool.icon size={12} className={tool.color} />
+                                <span>{tool.name}</span>
+                            </div>
+                            <button
+                                onClick={() => onRunTool && onRunTool(tool)}
+                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded-full text-emerald-400 transition-all active:scale-95"
+                                title={`Run ${tool.name}`}
+                            >
+                                <Play size={10} className="hover:animate-pulse fill-current" />
+                            </button>
+                        </div>
+                    ))}
                 </div>
             </div>
 
@@ -105,7 +126,7 @@ export default function ProjectExplorer({ files, activeFile, setActiveFile, onUp
                 <Box size={10} className="mr-1" />
                 <span>ACTIVE PROJECT: RE_BRAIN</span>
                 <span className="mx-2">|</span>
-                <span>{files.length} ITEMS</span>
+                <span>{files.length} FILES</span>
             </div>
         </div>
     );

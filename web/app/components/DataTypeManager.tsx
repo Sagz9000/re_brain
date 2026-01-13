@@ -12,10 +12,17 @@ interface CategoryData {
 
 interface DataTypeManagerProps {
     file: string | null;
+    onSelectType?: (name: string, path: string) => void;
 }
 
-const CategoryNode = ({ category, depth = 0 }: { category: CategoryData, depth?: number }) => {
+const CategoryNode = ({ category, depth = 0, onSelectType }: { category: CategoryData, depth?: number, onSelectType?: (name: string, path: string) => void }) => {
     const [isOpen, setIsOpen] = useState(depth === 0); // Open root by default
+
+    // Construct path for types (heuristic: assuming category.name is part of path loop in recursive calls if needed, 
+    // but actually the backend returns types in this category. We might need to track path. 
+    // However, the current recursive structure doesn't pass full path down. 
+    // Let's assume for now we just pass name and let backend find it, or we improve path tracking later.
+    // Wait, backend supports optional path. 
 
     return (
         <div style={{ paddingLeft: depth * 12 }}>
@@ -33,12 +40,20 @@ const CategoryNode = ({ category, depth = 0 }: { category: CategoryData, depth?:
             {isOpen && (
                 <div className="flex flex-col">
                     {category.subcategories?.map((sub, i) => (
-                        <CategoryNode key={i} category={sub} depth={depth + 1} />
+                        <CategoryNode key={i} category={sub} depth={depth + 1} onSelectType={onSelectType} />
                     ))}
                     {category.types?.map((type, i) => (
-                        <div key={i} className="flex items-center gap-2 py-0.5 hover:bg-white/5 rounded cursor-default pl-4 group" style={{ marginLeft: depth * 12 }}>
-                            <FileType size={10} className="text-zinc-600 group-hover:text-indigo-300 transition-colors" />
-                            <span className="text-zinc-400 text-xs truncate flex-1">{type.name}</span>
+                        <div
+                            key={i}
+                            className="flex items-center gap-2 py-0.5 hover:bg-white/5 hover:text-indigo-300 rounded cursor-pointer pl-4 group transition-colors"
+                            style={{ marginLeft: depth * 12 }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (onSelectType) onSelectType(type.name, category.name); // passing category name as path hint (shallow)
+                            }}
+                        >
+                            <FileType size={10} className="text-zinc-600 group-hover:text-indigo-400 transition-colors" />
+                            <span className="text-zinc-400 group-hover:text-zinc-200 text-xs truncate flex-1">{type.name}</span>
                             <span className="text-[9px] text-zinc-600 mr-2">{type.size}b</span>
                         </div>
                     ))}
@@ -48,7 +63,7 @@ const CategoryNode = ({ category, depth = 0 }: { category: CategoryData, depth?:
     );
 };
 
-export default function DataTypeManager({ file }: DataTypeManagerProps) {
+export default function DataTypeManager({ file, onSelectType }: DataTypeManagerProps) {
     const [data, setData] = useState<CategoryData | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -98,7 +113,7 @@ export default function DataTypeManager({ file }: DataTypeManagerProps) {
 
             {error && <div className="text-red-400 text-xs px-2 py-1">{error}</div>}
 
-            {data && <CategoryNode category={data} />}
+            {data && <CategoryNode category={data} onSelectType={onSelectType} />}
         </div>
     );
 }

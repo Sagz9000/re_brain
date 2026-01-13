@@ -1,6 +1,7 @@
 import os
 import requests
 import io
+import hashlib
 from bs4 import BeautifulSoup
 from pdfminer.high_level import extract_text
 from .ingestor import KnowledgeIngestor
@@ -14,7 +15,8 @@ class GhidraIngestor(KnowledgeIngestor):
     START_URLS = [
         "https://ghidra.re/ghidra_docs/api/index.html",
         "https://ghidra.re/ghidra_docs/api/help-doc.html",
-        "https://ghidra.re/ghidra_docs/api/overview-tree.html"
+        "https://ghidra.re/ghidra_docs/api/overview-tree.html",
+        "https://ghidra.re/ghidra_docs/GhidraClass/Debugger/B2-Emulation.html"
     ]
     COLLECTION_NAME = "ghidra_docs"
 
@@ -22,10 +24,16 @@ class GhidraIngestor(KnowledgeIngestor):
         """Scrapes the Ghidra docs site with crawling."""
         collection = self.client.get_or_create_collection(name=self.COLLECTION_NAME)
         
-        visited = set()
+        # Pull existing URLs to avoid re-ingesting
+        existing = collection.get(include=['metadatas'])
+        processed_urls = set()
+        if existing and 'metadatas' in existing:
+            processed_urls = {m['url'] for m in existing['metadatas'] if m and 'url' in m}
+        
+        visited = processed_urls.copy()
         to_visit = [source_url] if source_url else self.START_URLS.copy()
         
-        max_docs = 2000 # Increased limit
+        max_docs = 2000 
         count = 0
         
         ids, docs, metas = [], [], []
@@ -58,8 +66,9 @@ class GhidraIngestor(KnowledgeIngestor):
 
                 if content and len(content.strip()) > 100:
                     chunks = self.chunk_content(content)
+                    url_hash = hashlib.md5(url.encode()).hexdigest()[:12]
                     for i, chunk in enumerate(chunks):
-                        ids.append(f"ghidra_{count}_{i}")
+                        ids.append(f"ghidra_{url_hash}_{i}")
                         docs.append(chunk)
                         metas.append({
                             "source": "ghidra_docs",
@@ -69,7 +78,7 @@ class GhidraIngestor(KnowledgeIngestor):
                     count += 1
                     
                     if len(ids) >= 50:
-                        collection.add(ids=ids, documents=docs, metadatas=metas)
+                        collection.upsert(ids=ids, documents=docs, metadatas=metas)
                         ids, docs, metas = [], [], []
                 else:
                     print(f"No content found for {url}")
@@ -97,7 +106,7 @@ class GhidraIngestor(KnowledgeIngestor):
                 print(f"Error crawling {url}: {e}")
 
         if ids:
-            collection.add(ids=ids, documents=docs, metadatas=metas)
+            collection.upsert(ids=ids, documents=docs, metadatas=metas)
             
         print(f"✅ Ingestion complete. Processed {count} documents.")
 

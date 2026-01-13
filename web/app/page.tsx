@@ -14,22 +14,24 @@ import ProgramTree from './components/ProgramTree';
 import FunctionGraph from './components/FunctionGraph';
 import DisassemblyView from './components/DisassemblyView';
 import DataTypeManager from './components/DataTypeManager';
+import DataTypeViewer from './components/DataTypeViewer';
 import CallTree from './components/CallTree';
 import ScriptManager from './components/ScriptManager';
 import BookmarkManager from './components/BookmarkManager';
 import ProjectManager from './components/ProjectManager';
+import EmulatorWindow from './components/EmulatorWindow';
 import { API_URL } from './utils';
 
 import {
   Code, Sparkles, Terminal, Files, Search, Settings, Box,
   FolderTree, GitGraph, ListTree, LayoutDashboard, Binary, FileCode, Type, Upload, X,
-  AlignLeft, Database, GitCommit, Play, Bookmark
+  AlignLeft, Database, GitCommit, Play, Bookmark, Cpu
 } from 'lucide-react';
 
 interface WindowState {
   id: string;
   title: string;
-  type: 'project' | 'chat' | 'hex' | 'symbol_tree' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph' | 'listing' | 'datatypes' | 'call_tree' | 'scripts' | 'bookmarks' | 'projects';
+  type: 'project' | 'chat' | 'hex' | 'symbol_tree' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph' | 'listing' | 'datatypes' | 'call_tree' | 'scripts' | 'bookmarks' | 'projects' | 'emulator' | 'datatype_preview';
   isOpen: boolean;
   zIndex: number;
   initialPos: { x: number, y: number };
@@ -44,6 +46,8 @@ export default function Home() {
   const [selectedFunction, setSelectedFunction] = useState<{ name: string, address: string } | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [showUpload, setShowUpload] = useState(false);
+  const [chatMessage, setChatMessage] = useState<{ role: 'user' | 'assistant' | 'system', content: string } | null>(null);
+  const [selectedDataType, setSelectedDataType] = useState<{ name: string, path: string } | null>(null);
 
   // Window Z-Index Tracker
   const [topZ, setTopZ] = useState(10);
@@ -57,10 +61,12 @@ export default function Home() {
     { id: 'listing', title: 'Listing View', type: 'listing', isOpen: false, zIndex: 2, initialPos: { x: vw * 0.28, y: vh * 0.65 }, initialSize: { w: Math.min(800, vw * 0.6), h: vh * 0.3 }, icon: AlignLeft },
     { id: 'symbol_tree', title: 'Symbol Tree', type: 'symbol_tree', isOpen: false, zIndex: 3, initialPos: { x: vw - 340, y: 20 }, initialSize: { w: 300, h: vh * 0.45 }, icon: ListTree },
     { id: 'datatypes', title: 'Data Type Manager', type: 'datatypes', isOpen: false, zIndex: 3, initialPos: { x: vw - 340, y: vh * 0.5 }, initialSize: { w: 300, h: vh * 0.45 }, icon: Database },
+    { id: 'datatype_preview', title: 'Data Type Preview', type: 'datatype_preview', isOpen: false, zIndex: 6, initialPos: { x: vw * 0.45, y: vh * 0.25 }, initialSize: { w: 500, h: 400 }, icon: FileCode },
     { id: 'tree', title: 'Program Tree', type: 'tree', isOpen: false, zIndex: 3, initialPos: { x: vw * 0.28, y: 20 }, initialSize: { w: 300, h: vh * 0.45 }, icon: FolderTree },
     { id: 'decompile', title: 'Decompiler', type: 'decompile', isOpen: false, zIndex: 4, initialPos: { x: vw * 0.4, y: 20 }, initialSize: { w: vw * 0.4, h: vh * 0.6 }, icon: Code },
     { id: 'graph', title: 'Function Graph', type: 'graph', isOpen: false, zIndex: 4, initialPos: { x: vw * 0.35, y: vh * 0.1 }, initialSize: { w: vw * 0.5, h: vh * 0.6 }, icon: GitGraph },
     { id: 'call_tree', title: 'Function Call Tree', type: 'call_tree', isOpen: false, zIndex: 4, initialPos: { x: vw * 0.38, y: vh * 0.15 }, initialSize: { w: vw * 0.3, h: vh * 0.6 }, icon: GitCommit },
+    { id: 'emulator', title: 'P-Code Emulator', type: 'emulator', isOpen: false, zIndex: 5, initialPos: { x: vw * 0.4, y: vh * 0.6 }, initialSize: { w: 500, h: 400 }, icon: Cpu },
     { id: 'hex', title: 'Bytes', type: 'hex', isOpen: false, zIndex: 3, initialPos: { x: vw * 0.35, y: vh * 0.6 }, initialSize: { w: vw * 0.5, h: vh * 0.35 }, icon: Binary },
     { id: 'strings', title: 'Defined Strings', type: 'strings', isOpen: false, zIndex: 3, initialPos: { x: vw * 0.4, y: vh * 0.2 }, initialSize: { w: vw * 0.4, h: vh * 0.5 }, icon: Type },
     { id: 'scripts', title: 'Script Manager', type: 'scripts', isOpen: false, zIndex: 5, initialPos: { x: vw * 0.45, y: vh * 0.1 }, initialSize: { w: 400, h: 300 }, icon: Play },
@@ -152,6 +158,20 @@ export default function Home() {
     setTopZ(prev => prev + 2);
   };
 
+
+
+  const handleSelectType = (name: string, path: string) => {
+    setSelectedDataType({ name, path });
+    // Open preview window
+    const win = windows.find(w => w.id === 'datatype_preview');
+    if (win && !win.isOpen) {
+      toggleWindow('datatype_preview');
+      focusWindow('datatype_preview');
+    } else {
+      focusWindow('datatype_preview');
+    }
+  };
+
   const handleUiCommand = (cmd: any) => {
     if (cmd.action === 'SWITCH_TAB') {
       const targetId = cmd.tab;
@@ -184,6 +204,204 @@ export default function Home() {
         return w;
       }));
       setTopZ(prev => prev + 1);
+    }
+
+    if (cmd.action === 'emulate') {
+      if (!activeFile) return;
+
+      // 1. Open Window (User Feedback)
+      setWindows(prev => prev.map(w => {
+        if (w.id === 'emulator') return { ...w, isOpen: true, zIndex: topZ + 1 };
+        return w;
+      }));
+      setTopZ(prev => prev + 1);
+      if (cmd.address) setSelectedAddress(cmd.address);
+
+      // 2. Run Emulation (AI Feedback Loop)
+      return new Promise<string>((resolve) => {
+        fetch(`${API_URL}/binary/${activeFile}/emulate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            address: cmd.address,
+            steps: cmd.steps || 5,
+            stop_at: cmd.stop_at
+          })
+        }).then(r => r.json()).then(data => {
+          // Construct feedback string for AI
+          let feedback = `Emulation Results for ${cmd.steps} steps at ${cmd.address}:\n`;
+          if (Array.isArray(data)) {
+            const lastStep = data[data.length - 1];
+            const registers = lastStep.registers || {};
+            const regStr = Object.entries(registers).map(([k, v]) => `${k}=${v}`).join(", ");
+
+            if (lastStep.error && lastStep.error.includes("Breakpoint")) {
+              feedback += `BREAKPOINT HIT at ${lastStep.address} (${lastStep.instruction}).\nRegisters: ${regStr}`;
+            } else {
+              feedback += `Stopped at ${lastStep.address} (${lastStep.instruction}).\nRegisters: ${regStr}`;
+            }
+          } else if (data.error) {
+            feedback += `Error: ${data.error}`;
+          }
+          resolve(feedback);
+        }).catch(e => {
+          resolve(`Emulation failed: ${e}`);
+        });
+      });
+    }
+
+    if (cmd.action === 'batch_analysis') {
+      if (!activeFile) return "No active file selected.";
+
+      // Notify user via chat feedback that it started
+      return new Promise<string>((resolve) => {
+        fetch(`${API_URL}/binary/${activeFile}/batch_analysis`, {
+          method: 'POST'
+        }).then(r => r.json()).then(data => {
+          if (data.error) {
+            resolve(`Batch Analysis Failed: ${data.error}`);
+          } else {
+            const findingsCount = data.findings ? data.findings.length : 0;
+            let report = `Batch Analysis Complete.\nScanned ${data.total_functions} functions.\nFound ${findingsCount} items of interest.\n\n`;
+            if (data.findings && data.findings.length > 0) {
+              data.findings.forEach((f: any) => {
+                report += `- [${f.category}] ${f.function}: ${f.details}\n`;
+              });
+            }
+            resolve(report);
+          }
+        }).catch(e => {
+          resolve(`Batch Analysis Request Failed: ${e}`);
+        });
+      });
+    }
+
+    if (cmd.action === 'memory_analysis') {
+      if (!activeFile) return "No active file selected.";
+
+      return new Promise<string>((resolve) => {
+        fetch(`${API_URL}/binary/${activeFile}/memory_analysis`, {
+          method: 'POST'
+        }).then(r => r.json()).then(data => {
+          if (data.error) {
+            resolve(`Memory Analysis Failed: ${data.error}`);
+          } else {
+            resolve(`Memory Analysis Complete.\n\n${data.analysis}`);
+          }
+        }).catch(e => {
+          resolve(`Memory Analysis Request Failed: ${e}`);
+        });
+      });
+    }
+
+    if (cmd.action === 'cipher_analysis') {
+      if (!activeFile) return "No active file selected.";
+
+      return new Promise<string>((resolve) => {
+        fetch(`${API_URL}/binary/${activeFile}/cipher_analysis`, {
+          method: 'POST'
+        }).then(r => r.json()).then(data => {
+          if (data.error) {
+            resolve(`Cipher Analysis Failed: ${data.error}`);
+          } else {
+            const findingsCount = data.findings ? data.findings.length : 0;
+            let report = `Cipher Analysis Complete.\nFound ${findingsCount} suspicious functions.\n\nAI Analysis:\n${data.analysis}\n\n`;
+            if (data.findings && data.findings.length > 0) {
+              report += "Top Suspicious Functions:\n";
+              data.findings.forEach((f: any) => {
+                report += `- ${f.name} (${f.address}): Score ${f.score} (Bitwise Ratio: ${(f.ratio * 100).toFixed(1)}%)\n`;
+              });
+            }
+            resolve(report);
+          }
+        }).catch(e => {
+          resolve(`Cipher Analysis Request Failed: ${e}`);
+        });
+      });
+    }
+
+    if (cmd.action === 'malware_analysis') {
+      if (!activeFile) return "No active file selected.";
+
+      return new Promise<string>((resolve) => {
+        fetch(`${API_URL}/binary/${activeFile}/malware_analysis`, { method: 'POST' })
+          .then(r => r.json())
+          .then(data => {
+            if (data.error) {
+              resolve(`Malware Scan Failed: ${data.error}`);
+            } else {
+              let report = `Malware Scan Complete.\nAnalysis: ${data.analysis}\n`;
+              if (data.findings) {
+                const impCount = data.findings.imports ? data.findings.imports.length : 0;
+                const strCount = data.findings.strings ? data.findings.strings.length : 0;
+                if (impCount > 0 || strCount > 0) {
+                  report += `\nSuspicious Imports: ${impCount}\nSuspicious Strings: ${strCount}`;
+                }
+              }
+              resolve(report);
+            }
+          })
+          .catch(e => resolve(`Malware Scan Request Failed: ${e}`));
+      });
+    }
+
+    if (cmd.action === 'rename') {
+      if (!activeFile) return;
+      return new Promise<string>((resolve) => {
+        fetch(`${API_URL}/binary/${activeFile}/rename`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target: cmd.target, new_name: cmd.new_name })
+        }).then(r => r.json()).then(data => {
+          if (data.status === 'success') {
+            resolve(`SUCCESS: Renamed ${data.old_name} to ${data.new_name}.\nRefresh the Symbol Tree to see changes.`);
+          } else {
+            resolve(`RENAME FAILED: ${data.error}`);
+          }
+        }).catch(e => resolve(`Rename Request Failed: ${e}`));
+      });
+    }
+
+    if (cmd.action === 'comment') {
+      if (!activeFile) return;
+      return new Promise<string>((resolve) => {
+        fetch(`${API_URL}/binary/${activeFile}/comment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address: cmd.address, comment: cmd.comment, type: cmd.type })
+        }).then(r => r.json()).then(data => {
+          if (data.status === 'success') {
+            resolve(`SUCCESS: Set ${cmd.type || 'plate'} comment at ${cmd.address}.`);
+          } else {
+            resolve(`COMMENT FAILED: ${data.error}`);
+          }
+        }).catch(e => resolve(`Comment Request Failed: ${e}`));
+      });
+    }
+  };
+
+  // Analysis Tools Integration
+  interface Tool {
+    name: string;
+    action: string;
+    icon: any;
+    color: string;
+  }
+  const [confirmTool, setConfirmTool] = useState<Tool | null>(null);
+
+  const handleRunTool = (tool: Tool) => {
+    console.log("handleRunTool called with:", tool);
+    setConfirmTool(tool);
+  };
+
+  const executeTool = async () => {
+    if (!confirmTool) return;
+    console.log("executeTool called for:", confirmTool);
+    const action = confirmTool.action;
+    setConfirmTool(null);
+    const result = await handleUiCommand({ action: action });
+    if (result && typeof result === 'string') {
+      setChatMessage({ role: 'system', content: result });
     }
   };
 
@@ -230,25 +448,20 @@ export default function Home() {
 
         {/* Tools Group */}
         <div className="flex flex-col gap-2 w-full items-center">
-          {windows.filter(w => ['scripts', 'bookmarks', 'projects', 'chat', 'output', 'dashboard'].includes(w.type)).map(w => (
+          {windows.filter(w => ['scripts', 'bookmarks', 'projects', 'emulator', 'chat', 'output', 'dashboard'].includes(w.type)).map(w => (
             <LaunchIcon key={w.id} w={w} toggleWindow={toggleWindow} />
           ))}
-        </div>
-
-        <div className="mt-auto flex flex-col gap-4">
-          <button onClick={() => setShowUpload(true)} className="w-10 h-10 text-zinc-500 hover:text-indigo-400 flex items-center justify-center"><Upload size={20} /></button>
-          <button className="w-10 h-10 text-zinc-500 hover:text-zinc-300 flex items-center justify-center"><Settings size={20} /></button>
         </div>
       </div>
 
       <main className="flex-1 relative overflow-hidden z-10 bg-[#1e1e1e]">
-        {/* Workspace Wallpaper */}
+        {/* Wallpaper */}
         <div
           className="absolute inset-0 z-0 opacity-10 pointer-events-none bg-center bg-no-repeat grayscale"
           style={{ backgroundImage: 'url(/logoicon.png)', backgroundSize: '85%' }}
         />
 
-        {windows.map((win: WindowState) => win.isOpen && (
+        {windows.map((win) => win.isOpen && (
           <WindowFrame
             key={win.id}
             id={win.id}
@@ -259,6 +472,7 @@ export default function Home() {
             zIndex={win.zIndex}
             onClose={() => closeWindow(win.id)}
             onFocus={() => focusWindow(win.id)}
+            onClick={() => focusWindow(win.id)}
           >
             {win.type === 'project' && (
               <ProjectExplorer
@@ -266,12 +480,13 @@ export default function Home() {
                 setActiveFile={(f) => { setActiveFile(f); setSelectedFunction(null); }}
                 onUploadClick={() => setShowUpload(true)}
                 onDeleteFile={handleDeleteFile}
+                onRunTool={handleRunTool}
               />
             )}
-            {win.type === 'listing' && <DisassemblyView file={activeFile} />}
-            {win.type === 'symbol_tree' && <SymbolTree file={activeFile} onSelectFunction={onSelectFunction} selectedAddress={selectedAddress} />}
-            {win.type === 'datatypes' && <DataTypeManager file={activeFile} />}
-            {win.type === 'tree' && <ProgramTree file={activeFile} />}
+            {win.type === 'listing' && <DisassemblyView file={activeFile || ''} address={selectedAddress} />}
+            {win.type === 'symbol_tree' && <SymbolTree file={activeFile || ''} onSelectFunction={onSelectFunction} selectedAddress={selectedAddress} />}
+            {win.type === 'datatypes' && <DataTypeManager file={activeFile || ''} onSelectType={handleSelectType} />}
+            {win.type === 'tree' && <ProgramTree file={activeFile || ''} />}
 
             {win.type === 'decompile' && activeFile && (selectedFunction || selectedAddress) && (
               <CodeViewer
@@ -280,21 +495,31 @@ export default function Home() {
                 functionName={selectedFunction?.name ?? `Loc_${selectedAddress}`}
               />
             )}
-            {win.type === 'decompile' && (!activeFile || (!selectedFunction && !selectedAddress)) && <NoFunctionSelected />}
+            {win.type === 'decompile' && (!activeFile || (!selectedFunction && !selectedAddress)) && (
+              <div className="flex-1 flex flex-col items-center justify-center text-zinc-600">
+                <Code size={48} className="mb-4 opacity-20" />
+                <p>Select a function to decompile</p>
+              </div>
+            )}
 
-            {win.type === 'graph' && <FunctionGraph file={activeFile} functionAddress={selectedFunction?.address ?? selectedAddress ?? null} />}
-            {win.type === 'call_tree' && <CallTree file={activeFile} onSelectFunction={onSelectFunction} />}
+            {win.type === 'datatype_preview' && activeFile && selectedDataType && (
+              <DataTypeViewer file={activeFile} typeName={selectedDataType.name} typePath={selectedDataType.path} />
+            )}
+
+            {win.type === 'graph' && <FunctionGraph file={activeFile || ''} functionAddress={selectedFunction?.address || null} />}
+            {win.type === 'call_tree' && <CallTree file={activeFile || ''} functionName={selectedFunction?.name} />}
             {win.type === 'hex' && activeFile && <HexViewer file={activeFile} address={selectedAddress} />}
             {win.type === 'hex' && !activeFile && <NoFileSelected />}
-            {win.type === 'strings' && activeFile && <StringsViewer file={activeFile} />}
+            {win.type === 'strings' && activeFile && <StringsViewer file={activeFile} onAddressClick={(addr) => handleUiCommand({ action: 'goto', target: addr })} />}
             {win.type === 'strings' && !activeFile && <NoFileSelected />}
 
             {win.type === 'scripts' && <ScriptManager />}
-            {win.type === 'bookmarks' && <BookmarkManager file={activeFile} />}
-            {win.type === 'projects' && <ProjectManager />}
+            {win.type === 'bookmarks' && <BookmarkManager file={activeFile || ''} onNavigate={(addr) => handleUiCommand({ action: 'goto', target: addr })} />}
+            {win.type === 'projects' && <ProjectManager activeProject="re-Brain" onProjectChange={() => { }} />}
+            {win.type === 'emulator' && <EmulatorWindow file={activeFile || ''} address={selectedAddress || ''} onStop={() => { }} />}
 
-            {win.type === 'dashboard' && <Dashboard apiStatus={apiStatus} fileCount={files.length} />}
-            {win.type === 'output' && <ActivityLog />}
+            {win.type === 'dashboard' && <ActivityLog logs={[]} />}
+            {win.type === 'output' && <ActivityLog logs={[]} />}
 
             {win.type === 'chat' && (
               <DockedChat
@@ -304,24 +529,57 @@ export default function Home() {
                 currentFile={activeFile}
                 currentFunction={selectedFunction?.name ?? null}
                 currentAddress={selectedFunction?.address ?? null}
+                incomingMessage={chatMessage}
+                onMessageConsumed={() => setChatMessage(null)}
               />
             )}
           </WindowFrame>
         ))}
-      </main>
 
-      {showUpload && (
-        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md bg-[#09090b] border border-white/10 rounded-xl p-6 shadow-2xl overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-indigo-500" />
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-sm font-bold text-zinc-200 uppercase tracking-widest">Import Content</h3>
-              <button onClick={() => setShowUpload(false)} className="text-zinc-500 hover:text-white"><X size={16} /></button>
-            </div>
-            <FileUpload onUploadComplete={() => { setShowUpload(false); fetchFiles(); }} />
+        {/* Upload Modal */}
+        {showUpload && (
+          <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+            <FileUpload onClose={() => setShowUpload(false)} onUploadComplete={() => { setShowUpload(false); fetchFiles(); }} />
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Confirmation Modal */}
+        {confirmTool && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-[#1e1e20] border border-white/10 rounded-lg shadow-2xl w-96 p-6 transform scale-100 animate-in zoom-in-95 duration-200">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className={`p-3 rounded-full bg-opacity-10 ${confirmTool.color.replace('text-', 'bg-')}`}>
+                  <confirmTool.icon size={32} className={confirmTool.color} />
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-bold text-white">Run {confirmTool.name}?</h3>
+                  <p className="text-sm text-zinc-400 mt-2">
+                    This process uses AI to analyze the binary and may take a few minutes.
+                    Results will be saved to the Knowledge Base.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 w-full mt-2">
+                  <button
+                    onClick={() => setConfirmTool(null)}
+                    className="flex-1 px-4 py-2 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={executeTool}
+                    className="flex-1 px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-500 text-white transition-colors text-sm font-bold flex items-center justify-center gap-2"
+                  >
+                    <Play size={14} className="fill-current" />
+                    Run Analysis
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

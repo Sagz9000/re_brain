@@ -5,6 +5,19 @@ import { Send, Sparkles, MessageSquare, Trash2, Crosshair, Code, Copy, Check, Pl
 import { API_URL } from '../utils';
 
 // ... (keep interfaces)
+interface Message {
+    role: 'user' | 'assistant' | 'system';
+    content: string;
+}
+
+interface DockedChatProps {
+    apiStatus: 'online' | 'offline';
+    onApiStatusChange: (status: 'online' | 'offline') => void;
+    onCommand?: (cmd: any) => Promise<string | void> | void;
+    currentFile: string | null;
+    currentFunction: { name: string, address: string } | null;
+    currentAddress: string | null;
+}
 
 const ThoughtBlock = ({ thought }: { thought: string }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -263,13 +276,22 @@ export default function DockedChat({
     onCommand,
     currentFile,
     currentFunction,
-    currentAddress
+    currentAddress,
+    incomingMessage,
+    onMessageConsumed
 }: DockedChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+    // Handle incoming messages from parent (e.g. Analysis Tool results)
+    useEffect(() => {
+        if (incomingMessage) {
+            setMessages(prev => [...prev, incomingMessage]);
+            if (onMessageConsumed) onMessageConsumed();
+        }
+    }, [incomingMessage, onMessageConsumed]);
 
     // Load history
     useEffect(() => {
@@ -388,9 +410,19 @@ export default function DockedChat({
 
                                 // Execute
                                 if (Array.isArray(cmd)) {
-                                    cmd.forEach(c => onCommand && onCommand(c));
+                                    for (const c of cmd) {
+                                        if (onCommand) {
+                                            const feedback = await onCommand(c);
+                                            if (feedback && typeof feedback === 'string') {
+                                                setMessages(prev => [...prev, { role: 'system', content: feedback }]);
+                                            }
+                                        }
+                                    }
                                 } else if (onCommand) {
-                                    onCommand(cmd);
+                                    const feedback = await onCommand(cmd);
+                                    if (feedback && typeof feedback === 'string') {
+                                        setMessages(prev => [...prev, { role: 'system', content: feedback }]);
+                                    }
                                 }
                             }
                         } catch (e) { /* Not a valid command JSON, ignore */ }
@@ -417,20 +449,24 @@ export default function DockedChat({
                     <Sparkles size={14} className="text-indigo-400" />
                     <span className="text-xs font-bold text-zinc-300">re-Brain-AI</span>
                 </div>
-                <button onClick={handleClear} className="text-zinc-500 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-colors" title="Clear Chat">
-                    <Trash2 size={14} />
-                </button>
+                <div className="flex items-center gap-2">
+                    <button onClick={handleClear} className="text-zinc-500 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-colors" title="Clear Chat">
+                        <Trash2 size={14} />
+                    </button>
+                </div>
             </div>
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-zinc-800">
                 {messages.map((m, i) => (
-                    <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : m.role === 'system' ? 'justify-center' : 'justify-start'}`}>
                         <div className={`
                             max-w-[90%] px-4 py-3 text-sm leading-relaxed shadow-sm break-words
                             ${m.role === 'user'
                                 ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-sm'
-                                : 'bg-[#27272a] text-zinc-200 rounded-2xl rounded-tl-sm border border-white/5'}
+                                : m.role === 'system'
+                                    ? 'bg-zinc-800 text-zinc-400 text-xs font-mono border border-white/5 rounded-lg py-2'
+                                    : 'bg-[#27272a] text-zinc-200 rounded-2xl rounded-tl-sm border border-white/5'}
                         `}>
                             {m.role === 'user' ? m.content : <FormattedMessage content={m.content} onLinkClick={handleLinkClick} onFunctionClick={handleFunctionClick} />}
                         </div>

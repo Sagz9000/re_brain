@@ -1,50 +1,64 @@
-// Decompile a function at a specific address and print to stdout
-// @author
-// @category Analysis
-// @keybinding
-// @menupath
-// @toolbar
-
 import ghidra.app.script.GhidraScript;
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileResults;
-import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
+import ghidra.program.model.address.Address;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DecompileFunction extends GhidraScript {
 
     @Override
     public void run() throws Exception {
         String[] args = getScriptArgs();
-        if (args.length < 1) {
-            println("Usage: DecompileFunction <address>");
+        if (args.length < 2) {
+            println("Usage: DecompileFunction <output_file> <address>");
             return;
         }
+        String outputPath = args[0];
+        String addressStr = args[1];
 
-        String addressStr = args[0];
-        Address address = currentProgram.getAddressFactory().getAddress(addressStr);
-        Function function = getFunctionAt(address);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try {
+            Address funcAddr = currentProgram.getAddressFactory().getAddress(addressStr);
+            Function func = currentProgram.getFunctionManager().getFunctionContaining(funcAddr);
 
-        if (function == null) {
-            // Try entry point if not at head
-            function = getFunctionContaining(address);
+            if (func == null) {
+                Map<String, String> err = new HashMap<>();
+                err.put("error", "Function not found at " + addressStr);
+                try (java.io.FileWriter writer = new java.io.FileWriter(outputPath)) {
+                    gson.toJson(err, writer);
+                }
+                return;
+            }
+
+            DecompInterface decomplib = new DecompInterface();
+            decomplib.openProgram(currentProgram);
+
+            DecompileResults res = decomplib.decompileFunction(func, 60, monitor);
+
+            Map<String, String> root = new HashMap<>();
+            if (res.decompileCompleted()) {
+                root.put("name", func.getName());
+                root.put("code", res.getDecompiledFunction().getC());
+            } else {
+                root.put("error", "Decompilation Failed: " + res.getErrorMessage());
+            }
+
+            try (java.io.FileWriter writer = new java.io.FileWriter(outputPath)) {
+                gson.toJson(root, writer);
+            }
+            println("JSON written to " + outputPath);
+
+            decomplib.dispose();
+        } catch (Exception e) {
+            Map<String, String> err = new HashMap<>();
+            err.put("error", e.toString());
+            try (java.io.FileWriter writer = new java.io.FileWriter(outputPath)) {
+                 gson.toJson(err, writer);
+            }
         }
-
-        if (function == null) {
-            println("No function found at " + addressStr);
-            return;
-        }
-
-        DecompInterface iface = new DecompInterface();
-        iface.openProgram(currentProgram);
-
-        DecompileResults results = iface.decompileFunction(function, 60, monitor);
-        if (results.decompileCompleted()) {
-            println(results.getDecompiledFunction().getC());
-        } else {
-            println("Decompilation failed: " + results.getErrorMessage());
-        }
-        
-        iface.dispose();
     }
 }

@@ -111,30 +111,30 @@ The re-Brain frontend reimagines the reverse engineering workspace as a **Dynami
 | **🐚 AI Docked Chat** | The command center. Features real-time reasoning visualization and a direct Python execution runtime. | Intercepts `goto` and `rename` JSON payloads. |
 | **🌳 Symbol Tree** | A hierarchical index of program structure. Supports fuzzy search and filtering for Functions, Imports, and Labels. | Syncs with Decompiler and Hex views on selection. |
 | **📜 Decompiler** | C-style high-level representation of assembly logic. Augmented with AI-driven comments and automatic variable renaming. | Receives `comment` and `rename` updates from AI. |
+| **🧬 Data Type Manager** | Hierarchical view of all program data types (structs, unions, enums). | Click a type to open the **Data Type Viewer**. |
+| **📄 Data Type Viewer** | Generates real-time C-style definitions for complex types. | Interactive preview of Ghidra's internal type model. |
+| **🕸️ Call Tree** | Visualizes function relationships (callers/callees) in a nested, navigable structure. | Direct "Goto" support on any node. |
+| **📈 Function Graph** | High-fidelity Control Flow Graph (CFG) showing code blocks and branching logic. | Visualizes logical flow in real-time. |
 | **🔢 Hex Viewer** | Precision memory inspector. Bridges the gap between raw data and high-level code. | Direct sync with `goto` commands. |
 | **🧵 Strings Viewer** | Deep-indexes binary strings. Includes **Hexadecimal Memory Offsets** for every entry. | Clicking an offset triggers a global `goto` event. |
+| **🕹️ P-Code Emulator** | Step-through logic emulator with AI integration. | Feeds register states back to the Analyst. |
 | **🖥️ Ghidra VNC** | A full-featured Ghidra GUI instance accessible via browser (noVNC). | Shared project state with the AI-powered headless backend. |
 
 ---
 
-## � 3. Feature Deep-Dive
+## 🔍 3. Advanced Forensic Analysis Modules
 
-### 🤖 Intelligent AI Analyst
-re-Brain's AI is integrated with the binary state. It doesn't just "talk" about code; it understands the program counter and the stack.
+re-Brain 2.0 introduces a suite of specialized analysis tools that leverage heuristics and AI to solve specific reverse engineering problems.
 
-![AI Analyst Interface](pictures/ai_analysis.png)
-![AI Chat View](pictures/aichat.png)
+### ☣️ 3.1 Specialist Scans
+re-Brain includes a variety of specialized scans to help identify malware behaviors, suspicious logic, and more.
 
-#### **Advanced Tool Calling**
-The AI can emit structured actions that the frontend executes on your behalf:
-| Action | Description | Result |
+| Module | Description | AI Contextualization |
 | :--- | :--- | :--- |
-| `rename` | Suggests meaningful names for stripped functions | GHIDRA DB Update |
-| `comment` | Documents complex logic in the decompiler | Permanent Analyst Notes |
-| `goto` | Synchronizes the UI to a specific memory offset | Global Window Movement |
-
-### 🔍 Forensic Capabilities
-![Example Function Analysis](pictures/examplefunctionalysis.png)
+| **Batch Analysis** | Scans all functions in the binary for logic patterns. | Summarizes high-level program intent and critical sub-systems. |
+| **Cipher Scan** | Heuristically identifies bitwise operations and arithmetic common in crypto/obfuscation. | Suggests potential algorithms (Base64, RC4, etc.) based on constant/logic analysis. |
+| **Malware Scan** | Analyzes imports and string patterns for C2 behavior, anti-debugging, and persistence. | Provides a risk-based threat assessment of the binary's objectives. |
+| **Memory Analysis** | Inspects the PE/ELF memory map for unconventional segment permissions or hidden sections. | Identifies potential packing or code injection techniques. |
 
 ### 🐍 Feature Highlight: Python Execution
 Integrated directly into the chat interface, re-Brain enables on-the-fly Python script execution. Researchers can perform rapid data manipulation, decoding (Base64/XOR), or custom hash calculations without leaving the research environment.
