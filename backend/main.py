@@ -12,8 +12,10 @@ import uuid
 import shutil
 import subprocess
 import requests
+import socket
 import threading
 import re
+import google.generativeai as genai
 
 ghidra_lock = threading.Lock()
 
@@ -62,6 +64,7 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     query: str
     model: str = "qwen2.5-coder:14b"
+    provider: str = "ollama" # ollama or gemini
     history: Optional[List[dict]] = None
     current_file: Optional[str] = None
     current_function: Optional[str] = None
@@ -95,9 +98,98 @@ def read_root():
 def health_check():
     return {"status": "online"}
 
+# --- Settings API ---
+SETTINGS_FILE = "/data/settings.json"
+
+class Settings(BaseModel):
+    gemini_api_key: Optional[str] = ""
+    ollama_host: Optional[str] = "http://re-ai2:11434"
+
+
+def load_settings() -> Settings:
+    if os.path.exists(SETTINGS_FILE):
+        try:
+            with open(SETTINGS_FILE, "r") as f:
+                data = json.load(f)
+                return Settings(**data)
+        except Exception as e:
+            logger.error(f"Failed to load settings: {e}")
+    return Settings()
+
+def save_settings(settings: Settings):
+    try:
+        with open(SETTINGS_FILE, "w") as f:
+            json.dump(settings.dict(), f, indent=2)
+    except Exception as e:
+        logger.error(f"Failed to save settings: {e}")
+        raise e
+
+# Initial Load
+current_settings = load_settings()
+if current_settings.gemini_api_key:
+    try:
+         genai.configure(api_key=current_settings.gemini_api_key)
+         logger.info("Gemini configured with saved API key.")
+    except Exception as e:
+         logger.error(f"Failed to configure Gemini: {e}")
+
+@app.get("/settings")
+def get_settings():
+    return load_settings()
+
+@app.post("/settings")
+def update_settings(settings: Settings):
+    save_settings(settings)
+    
+    # Reconfigure services
+    if settings.gemini_api_key:
+        try:
+            genai.configure(api_key=settings.gemini_api_key)
+            logger.info("Gemini re-configured with new API key.")
+        except Exception as e:
+             logger.error(f"Failed to re-configure Gemini: {e}")
+             return JSONResponse(status_code=500, content={"error": str(e)})
+             
+    return {"status": "ok", "settings": settings}
+
 @app.get("/activity")
 def get_activity():
     return activity_logs
+
+# CONFIG API
+# Config API removed in favor of Settings API
+# ...but kept as wrapper for compatibility
+class ConfigRequest(BaseModel):
+    gemini_key: Optional[str] = None
+    ollama_host: Optional[str] = None
+
+@app.get("/config")
+def get_config_wrapper():
+    s = load_settings()
+    # Map new Settings to old Config format
+    return {
+        "gemini_key": "********" + s.gemini_api_key[-4:] if s.gemini_api_key else None,
+        "ollama_host": s.ollama_host
+    }
+
+@app.post("/config")
+def set_config_wrapper(req: ConfigRequest):
+    s = load_settings()
+    if req.gemini_key:
+        s.gemini_api_key = req.gemini_key
+    if req.ollama_host:
+        s.ollama_host = req.ollama_host
+    save_settings(s)
+    
+    # Trigger reconfigure
+    if s.gemini_api_key:
+        try:
+            genai.configure(api_key=s.gemini_api_key)
+        except: pass
+        
+    log_event("Configuration updated (via Legacy Config API)", source="System")
+    return {"status": "updated"}
+
 
 @app.post("/ingest/binary")
 def ingest_binary(data: dict):
@@ -130,6 +222,9 @@ def ingest_binary(data: dict):
     if ids:
         collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
         log_event(f"Ingested {len(ids)} functions from {binary_name}", source="AI")
+    
+    # Auto-Sync to Live GUI if bridge is available
+    send_bridge_command({"action": "open_binary", "binary": binary_name})
     
     return {"status": "success", "count": len(ids)}
 
@@ -178,7 +273,15 @@ class RenameRequest(BaseModel):
 def rename_function(name: str, req: RenameRequest):
     # Use address if provided, otherwise target (which could be the old name)
     target = req.address if req.address else req.target
-    log_event(f"Renaming {target} to {req.new_name} in {name}", source="System")
+    
+    # Try Live Bridge first
+    bridge_cmd = {"action": "rename", "address": target, "name": req.new_name}
+    bridge_res = send_bridge_command(bridge_cmd)
+    if bridge_res["status"] == "success":
+         log_event(f"Live Rename: {target} -> {req.new_name}", source="System")
+         return {"status": "success", "mode": "live", "details": bridge_res["response"]}
+
+    log_event(f"Renaming {target} to {req.new_name} in {name} (Headless)", source="System")
     return run_headless_script(name, "RenameFunction.java", args=[target, req.new_name], read_only=False)
 
 class CommentRequest(BaseModel):
@@ -188,8 +291,74 @@ class CommentRequest(BaseModel):
 
 @app.post("/binary/{name}/comment")
 def set_comment(name: str, req: CommentRequest):
-    log_event(f"Setting {req.type} comment at {req.address} in {name}", source="System")
+    # Try Live Bridge first
+    bridge_cmd = {"action": "comment", "address": req.address, "comment": req.comment, "type": req.type}
+    bridge_res = send_bridge_command(bridge_cmd)
+    if bridge_res["status"] == "success":
+         log_event(f"Live Comment at {req.address}", source="System")
+         return {"status": "success", "mode": "live", "details": bridge_res["response"]}
+
+    log_event(f"Setting {req.type} comment at {req.address} in {name} (Headless)", source="System")
     return run_headless_script(name, "SetComment.java", args=[req.address, req.comment, req.type], read_only=False)
+
+class BridgeCommand(BaseModel):
+    action: str
+    address: Optional[str] = None
+    name: Optional[str] = None
+    comment: Optional[str] = None
+    type: Optional[str] = "plate"
+
+def send_bridge_command(cmd_dict):
+    GHIDRA_HOST = os.getenv("GHIDRA_HOST", "re-ghidra2")
+    PORT = 9999
+    try:
+        with socket.create_connection((GHIDRA_HOST, PORT), timeout=5) as sock:
+            # Append newline because LiveBridge.java readLine() expects it
+            message = json.dumps(cmd_dict) + "\n"
+            sock.sendall(message.encode('utf-8'))
+            response = sock.recv(1024).decode('utf-8')
+            return {"status": "success", "response": response}
+    except Exception as e:
+        logger.error(f"Bridge Command Failed: {e}")
+        if "Connection refused" in str(e) or isinstance(e, ConnectionRefusedError) or "[Errno 111]" in str(e):
+             return {"status": "error", "message": "Bridge disconnected. Please run LiveBridge.py in Ghidra Script Manager."}
+        return {"status": "error", "message": str(e)}
+
+@app.post("/ghidra/bridge/command")
+def bridge_command(cmd: BridgeCommand):
+    return send_bridge_command(cmd.dict())
+
+@app.post("/binary/{name}/bridge/trigger")
+def trigger_bridge(name: str):
+    try:
+        # Instead of running xdotool locally (which fails on backend),
+        # we write a job file for the Ghidra container to pick up.
+        job = {
+            "type": "trigger",
+            "action": "bridge",
+            "timestamp": time.time()
+        }
+        job_file = f"trigger_bridge_{int(time.time())}.json"
+        job_path = os.path.join("/data/jobs/pending", job_file)
+        
+        with open(job_path, "w") as f:
+            json.dump(job, f)
+            
+        return {"status": "success", "message": f"Bridge trigger job created: {job_file}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.post("/binary/{name}/sync")
+def sync_binary(name: str):
+    """Tell the live Ghidra GUI to open this binary."""
+    log_event(f"Syncing {name} to Live Ghidra GUI", source="System")
+    return send_bridge_command({"action": "open_binary", "binary": name})
+
+@app.post("/binary/{name}/debug")
+def debug_binary_gui(name: str):
+    """Tell the live Ghidra GUI to open this binary in the Debugger tool."""
+    log_event(f"Sending {name} to Ghidra Debugger", source="System")
+    return send_bridge_command({"action": "debug_binary", "binary": name})
 
 def sanitize_json(obj):
     """Recursively convert NaN/Infinity to strings for valid JSON."""
@@ -563,7 +732,11 @@ Rules:
    - Emulate: `{ "action": "emulate", "address": "0x401000", "steps": 5, "stop_at": "0x401050" }`
    - Batch Analysis: `{ "action": "batch_analysis" }` (Check all functions for security interest)
    - Memory Analysis: `{ "action": "memory_analysis" }` (Analyze layout and RWX sections)
-   - Cipher Analysis: `{ "action": "cipher_analysis" }` (Find and analyze crypto logic)
+    - Hex View: `{ "action": "get_hex", "address": "0x..." }` (View hex at address)
+    - Search Strings: `{ "action": "search_strings", "query": "..." }` (Search binary for strings)
+    - Start Bridge: `{ "action": "trigger_bridge" }` (Auto-trigger LiveBridge in VNC)
+    - Send to Debugger: `{ "action": "debug_in_ghidra" }` (Open current binary in Ghidra's Debugger tool)
+    - Cipher Analysis: `{ "action": "cipher_analysis" }` (Find and analyze crypto logic)
    - Malware Scan: `{ "action": "malware_analysis" }` (Check imports/strings for threats)
    - Switch View: `{ "action": "SWITCH_TAB", "tab": "listing" }` (Tabs: listing, symbol_tree, hex, strings, decompile, graph, call_tree, scripts)
 
@@ -605,22 +778,63 @@ Respond using the schema:
 """
 
     try:
-        ollama_base = os.getenv("OLLAMA_HOST", "http://re-ai:11434")
-        ollama_res = requests.post(
-            f"{ollama_base}/api/generate",
-            json={
-                "model": request.model,
-                "system": system_prompt,
-                "prompt": context_prompt,
-                "stream": False,
-                "options": {
-                    "num_ctx": 8192,
-                    "temperature": 0.2 # Lower temperature for structural stability
-                }
-            },
-            timeout=120 # Give it 2 minutes for deep analysis, but the frontend will likely abort at 90
-        )
-        response_text = ollama_res.json().get('response', "I couldn't generate a response.")
+        # Provider Selection Logic
+        response_text = "I couldn't generate a response."
+        
+        # Check Config
+        settings = load_settings()
+
+        if hasattr(request, 'provider') and request.provider == "gemini":
+            api_key = settings.gemini_api_key
+            if not api_key:
+                return {"response": "Error: Gemini API Key not configured. Please go to Settings."}
+            
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel(request.model)
+            
+            # Construct History for Gemini (User/Model roles)
+            gemini_history = []
+            if request.history:
+                for msg in request.history:
+                    role = "user" if msg.get("role") == "user" else "model"
+                    gemini_history.append({"role": role, "parts": [msg.get("content", "")]})
+            
+            chat = model.start_chat(history=gemini_history)
+            
+            # Additional context management
+            full_prompt = f"{system_prompt}\n\n{context_prompt}"
+            
+            response = chat.send_message(full_prompt)
+            response_text = response.text
+            
+            log_event(f"AI Replied via Gemini ({len(context_hits)} context blocks)", source="AI")
+
+        else:
+            # Fallback to OLLAMA
+            ollama_host_env = os.getenv("OLLAMA_HOST", "http://re-ai2:11434")
+            # Use settings if available, else env
+            ollama_base = settings.ollama_host if settings.ollama_host else ollama_host_env
+            
+            # Ensure protocol
+            if not ollama_base.startswith("http"):
+                ollama_base = f"http://{ollama_base}"
+                
+            ollama_res = requests.post(
+                f"{ollama_base}/api/generate",
+                json={
+                    "model": request.model,
+                    "system": system_prompt,
+                    "prompt": context_prompt,
+                    "stream": False,
+                    "options": {
+                        "num_ctx": 8192,
+                        "temperature": 0.2 
+                    }
+                },
+                timeout=120 
+            )
+            response_text = ollama_res.json().get('response', "I couldn't generate a response.")
+            log_event(f"AI Replied via Ollama ({len(context_hits)} context blocks)", source="AI")
         
         # Extract thinking process for console output
         think_match = re.search(r'<think>([\s\S]*?)</think>', response_text, re.IGNORECASE)
@@ -629,7 +843,6 @@ Respond using the schema:
             if thought:
                 log_event(f"Reasoning: {thought}", source="AI")
 
-        log_event(f"AI Replied using {len(context_hits)} context blocks", source="AI")
         return {
             "response": response_text,
             "context_used": context_hits
@@ -761,7 +974,6 @@ def get_strings(name: str):
         
         output_data = []
         # Output format is "  offset string"
-        # We need to parse this
         lines = result.stdout.splitlines()
         for line in lines:
             parts = line.strip().split(" ", 1)
@@ -771,9 +983,44 @@ def get_strings(name: str):
                     "value": parts[1]
                 })
                 
-        return output_data[:2000] # Increased limit slightly, frontend can handle it
+        return output_data[:2000]
     except Exception as e:
         return {"error": str(e)}
+
+class StringSearchRequest(BaseModel):
+    query: str
+    regex: bool = False
+
+@app.post("/binary/{name}/strings/search")
+def search_strings(name: str, req: StringSearchRequest):
+    file_path = os.path.join(BINARIES_DIR, name)
+    if not os.path.exists(file_path):
+        return {"error": "File not found"}
+    
+    try:
+        # We manually filter the get_strings result or run grep
+        # Using grep is faster for large files
+        if req.regex:
+            cmd = ['strings', '-n', '6', '-t', 'x', file_path, '|', 'grep', '-E', req.query]
+        else:
+            cmd = ['strings', '-n', '6', '-t', 'x', file_path, '|', 'grep', '-i', req.query]
+            
+        # subprocess.run with shell=True for piping
+        res = subprocess.run(" ".join(cmd), shell=True, capture_output=True, text=True)
+        lines = res.stdout.splitlines()
+        
+        output_data = []
+        for line in lines:
+            parts = line.strip().split(" ", 1)
+            if len(parts) == 2:
+                output_data.append({
+                    "offset": f"0x{parts[0]}", 
+                    "value": parts[1]
+                })
+        return output_data[:100] # Limit search results
+    except Exception as e:
+        return {"error": str(e)}
+
 
 @app.get("/projects")
 def list_projects():
@@ -1033,17 +1280,25 @@ def run_headless_script(name: str, script: str, timeout: int = 120, args: list =
             # Debugging File Not Found
             else:
                 logger.error(f"Output file not found at {output_path_backend} after 5s wait")
-                listing = "Listing failed"
-                try:
-                    listing = str(os.listdir(os.path.dirname(output_path_backend)))
-                except: pass
                 
-                return {
-                    "error": "Output file not found after wait",
-                    "directory_listing": listing,
-                    "target_path": output_path_backend,
-                    "ghidra_stdout": output
-                }
+                # CHECK FOR IMPORT ERROR BEFORE GIVING UP
+                # If we detect "not found", we PASS so the fallback logic (line 1209+) can run.
+                if "not found" in output.lower() or "not found" in stderr.lower() or "unable to prompt user" in output.lower():
+                    logger.info("Detected missing file error in output/stderr. Falling through to auto-import.")
+                    pass 
+                else:
+                    listing = "Listing failed"
+                    try:
+                        listing = str(os.listdir(os.path.dirname(output_path_backend)))
+                    except: pass
+                    
+                    return {
+                        "error": "Output file not found after wait",
+                        "directory_listing": listing,
+                        "target_path": output_path_backend,
+                        "ghidra_stdout": output,
+                        "ghidra_stderr": stderr
+                    }
 
             # If we are here, we essentially failed or returned above.
             # The auto-import fallback is below, but we should probably just return the failure if the primary script failed this hard.
@@ -1068,7 +1323,8 @@ def run_headless_script(name: str, script: str, timeout: int = 120, args: list =
 
 
             # 2. Fallback: If no JSON, check if we need to auto-import
-            if "ERROR: Unable to prompt user" in output or "not found" in output.lower():
+            # Ghidra often puts the "Abort due to..." error in STDERR, not STDOUT
+            if "not found" in output.lower() or "not found" in stderr.lower() or "unable to prompt user" in output.lower():
                 log_event(f"File {name} not in project, attempting auto-import...", source="Ghidra")
                 file_path = os.path.join(BINARIES_DIR, name)
                 if os.path.exists(file_path):

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, MessageSquare, Trash2, Crosshair, Code, Copy, Check, Play } from 'lucide-react';
+import { Send, Sparkles, MessageSquare, Trash2, Crosshair, Code, Copy, Check, Play, Settings } from 'lucide-react';
 import { API_URL } from '../utils';
+import SettingsModal from './SettingsModal';
 
 // ... (keep interfaces)
 interface Message {
@@ -315,6 +316,16 @@ export default function DockedChat({
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+    // Settings & Provider State
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [provider, setProvider] = useState('ollama');
+    const [model, setModel] = useState('qwen2.5-coder:14b');
+
+    const MODELS = {
+        ollama: ['qwen2.5-coder:14b', 'llama3:8b', 'phind-codellama:34b'],
+        gemini: ['gemini-flash-latest', 'gemini-pro-latest', 'gemini-2.5-flash', 'gemini-2.0-flash']
+    };
+
     // Handle incoming messages from parent (e.g. Analysis Tool results)
     useEffect(() => {
         if (incomingMessage) {
@@ -402,12 +413,15 @@ export default function DockedChat({
         const timeoutId = setTimeout(() => controller.abort(), 90000); // 90s timeout
 
         try {
-            const response = await fetch(`${API_URL}/chat`, {
+            // Use local /api/chat route to ensure we hit our custom proxy with extended timeout support
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 signal: controller.signal,
                 body: JSON.stringify({
                     query: input,
+                    model: model,
+                    provider: provider,
                     history: newHistory,
                     current_file: currentFile,
                     current_function: currentFunction,
@@ -465,11 +479,43 @@ export default function DockedChat({
         <div className="flex flex-col h-full bg-[#09090b] flex-1">
             {/* Header with Clear Button */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-[#121214]">
+                <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
                 <div className="flex items-center gap-2">
                     <Sparkles size={14} className="text-indigo-400" />
                     <span className="text-xs font-bold text-zinc-300">re-Brain-AI</span>
                 </div>
+
                 <div className="flex items-center gap-2">
+                    {/* Provider Selector */}
+                    <div className="flex items-center gap-1 bg-black/20 rounded p-0.5 border border-white/5">
+                        <select
+                            value={provider}
+                            onChange={(e) => {
+                                const newProvider = e.target.value;
+                                setProvider(newProvider);
+                                setModel(MODELS[newProvider as keyof typeof MODELS][0]);
+                            }}
+                            className="bg-transparent text-[10px] text-zinc-400 outline-none border-r border-white/10 px-1"
+                        >
+                            <option value="ollama">Ollama</option>
+                            <option value="gemini">Gemini</option>
+                        </select>
+                        <select
+                            value={model}
+                            onChange={(e) => setModel(e.target.value)}
+                            className="bg-transparent text-[10px] text-indigo-400 outline-none max-w-[80px]"
+                        >
+                            {MODELS[provider as keyof typeof MODELS].map(m => (
+                                <option key={m} value={m}>{m}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <button onClick={() => setIsSettingsOpen(true)} className="text-zinc-500 hover:text-white p-1 rounded hover:bg-white/5 transition-colors" title="Settings">
+                        <Settings size={14} />
+                    </button>
+
                     <button onClick={handleClear} className="text-zinc-500 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-colors" title="Clear Chat">
                         <Trash2 size={14} />
                     </button>

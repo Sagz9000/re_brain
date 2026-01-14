@@ -21,18 +21,19 @@ import BookmarkManager from './components/BookmarkManager';
 import ProjectManager from './components/ProjectManager';
 import EmulatorWindow from './components/EmulatorWindow';
 import Debugger from './components/Debugger';
+import GhidraView from './components/GhidraView';
 import { API_URL } from './utils';
 
 import {
   Code, Sparkles, Terminal, Files, Search, Settings, Box,
   FolderTree, GitGraph, ListTree, LayoutDashboard, Binary, FileCode, Type, Upload, X,
-  AlignLeft, Database, GitCommit, Play, Bookmark, Cpu, Bug
+  AlignLeft, Database, GitCommit, Play, Bookmark, Cpu, Bug, Monitor
 } from 'lucide-react';
 
 interface WindowState {
   id: string;
   title: string;
-  type: 'project' | 'chat' | 'hex' | 'symbol_tree' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph' | 'listing' | 'datatypes' | 'call_tree' | 'scripts' | 'bookmarks' | 'projects' | 'emulator' | 'datatype_preview' | 'debugger';
+  type: 'project' | 'chat' | 'hex' | 'symbol_tree' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph' | 'listing' | 'datatypes' | 'call_tree' | 'scripts' | 'bookmarks' | 'projects' | 'emulator' | 'datatype_preview' | 'debugger' | 'ghidra_vnc';
   isOpen: boolean;
   zIndex: number;
   initialPos: { x: number, y: number };
@@ -46,6 +47,7 @@ export default function Home() {
   const [activeFile, setActiveFile] = useState<string | null>(null);
   const [selectedFunction, setSelectedFunction] = useState<{ name: string, address: string } | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+  const [stringSearchQuery, setStringSearchQuery] = useState<string>('');
   const [showUpload, setShowUpload] = useState(false);
   const [chatMessage, setChatMessage] = useState<{ role: 'user' | 'assistant' | 'system', content: string } | null>(null);
   const [selectedDataType, setSelectedDataType] = useState<{ name: string, path: string } | null>(null);
@@ -75,6 +77,7 @@ export default function Home() {
     { id: 'projects', title: 'Project Manager', type: 'projects', isOpen: false, zIndex: 5, initialPos: { x: vw * 0.55, y: vh * 0.2 }, initialSize: { w: 500, h: 400 }, icon: FolderTree },
     { id: 'output', title: 'Console Output', type: 'output', isOpen: true, zIndex: 2, initialPos: { x: vw * 0.28, y: vh - 220 }, initialSize: { w: vw * 0.6, h: 200 }, icon: Terminal },
     { id: 'chat', title: 're-Brain-AI', type: 'chat', isOpen: true, zIndex: 10, initialPos: { x: vw - 360, y: 20 }, initialSize: { w: 320, h: vh - 40 }, icon: Sparkles },
+    { id: 'ghidra_vnc', title: 'Ghidra GUI (Live)', type: 'ghidra_vnc', isOpen: false, zIndex: 5, initialPos: { x: 100, y: 50 }, initialSize: { w: vw * 0.8, h: vh * 0.8 }, icon: Monitor },
   ];
 
   const [windows, setWindows] = useState<WindowState[]>([]);
@@ -199,12 +202,43 @@ export default function Home() {
 
       // Open all relevant analysis views
       setWindows(prev => prev.map(w => {
-        if (['hex', 'decompile', 'graph', 'symbol_tree'].includes(w.id)) {
+        if (['hex', 'decompile', 'graph', 'symbol_tree', 'listing'].includes(w.id)) {
           return { ...w, isOpen: true, zIndex: topZ + 1 };
         }
         return w;
       }));
       setTopZ(prev => prev + 1);
+    }
+
+    if (cmd.action === 'get_hex') {
+      const addr = cmd.address;
+      setSelectedAddress(addr);
+      setWindows(prev => prev.map(w => {
+        if (w.id === 'hex') return { ...w, isOpen: true, zIndex: topZ + 1 };
+        return w;
+      }));
+      setTopZ(prev => prev + 1);
+    }
+
+    if (cmd.action === 'search_strings') {
+      setStringSearchQuery(cmd.query);
+      setWindows(prev => prev.map(w => {
+        if (w.id === 'strings') return { ...w, isOpen: true, zIndex: topZ + 1 };
+        return w;
+      }));
+      setTopZ(prev => prev + 1);
+    }
+
+    if (cmd.action === 'trigger_bridge') {
+      if (!activeFile) return "No active file selected.";
+      fetch(`${API_URL}/binary/${activeFile}/bridge/trigger`, { method: 'POST' });
+      return "Triggering LiveBridge via hotkey...";
+    }
+
+    if (cmd.action === 'debug_in_ghidra') {
+      if (!activeFile) return "No active file selected.";
+      fetch(`${API_URL}/binary/${activeFile}/debug`, { method: 'POST' });
+      return "Requested Ghidra to open the Debugger tool.";
     }
 
     if (cmd.action === 'emulate') {
@@ -445,6 +479,10 @@ export default function Home() {
           {windows.filter(w => ['decompile', 'graph', 'call_tree', 'hex', 'strings'].includes(w.type)).map(w => (
             <LaunchIcon key={w.id} w={w} toggleWindow={toggleWindow} />
           ))}
+          {/* External Tools */}
+          {windows.filter(w => ['ghidra_vnc'].includes(w.type)).map(w => (
+            <LaunchIcon key={w.id} w={w} toggleWindow={toggleWindow} />
+          ))}
         </div>
 
         {/* Tools Group */}
@@ -510,7 +548,7 @@ export default function Home() {
             {win.type === 'call_tree' && <CallTree file={activeFile || ''} functionName={selectedFunction?.name} />}
             {win.type === 'hex' && activeFile && <HexViewer file={activeFile} address={selectedAddress} />}
             {win.type === 'hex' && !activeFile && <NoFileSelected />}
-            {win.type === 'strings' && activeFile && <StringsViewer file={activeFile} onAddressClick={(addr) => handleUiCommand({ action: 'goto', target: addr })} />}
+            {win.type === 'strings' && activeFile && <StringsViewer file={activeFile} initialFilter={stringSearchQuery} onAddressClick={(addr) => handleUiCommand({ action: 'goto', target: addr })} />}
             {win.type === 'strings' && !activeFile && <NoFileSelected />}
 
             {win.type === 'scripts' && <ScriptManager />}
@@ -518,6 +556,7 @@ export default function Home() {
             {win.type === 'projects' && <ProjectManager onUploadComplete={() => { }} />}
             {win.type === 'emulator' && <EmulatorWindow file={activeFile || ''} address={selectedAddress || ''} onStop={() => { }} />}
             {win.type === 'debugger' && <Debugger binaryName={activeFile || ''} isActive={!!activeFile} />}
+            {win.type === 'ghidra_vnc' && <GhidraView activeFile={activeFile} />}
 
             {win.type === 'output' && <ActivityLog />}
 

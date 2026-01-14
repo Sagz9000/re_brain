@@ -16,3 +16,4 @@ numpy<2.0.0
 markdown
 pygdbmi
 qiling
+google-generativeai

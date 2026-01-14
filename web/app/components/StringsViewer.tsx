@@ -7,6 +7,7 @@ import { API_URL } from '../utils';
 interface StringsViewerProps {
     file: string | null;
     onAddressClick?: (addr: string) => void;
+    initialFilter?: string;
 }
 
 interface StringEntry {
@@ -14,10 +15,14 @@ interface StringEntry {
     value: string;
 }
 
-export default function StringsViewer({ file, onAddressClick }: StringsViewerProps) {
+export default function StringsViewer({ file, onAddressClick, initialFilter }: StringsViewerProps) {
     const [strings, setStrings] = useState<StringEntry[]>([]);
     const [loading, setLoading] = useState(false);
-    const [filter, setFilter] = useState('');
+    const [filter, setFilter] = useState(initialFilter || '');
+
+    useEffect(() => {
+        if (initialFilter) setFilter(initialFilter);
+    }, [initialFilter]);
 
 
     const fetchStrings = async () => {

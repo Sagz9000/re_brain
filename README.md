@@ -56,9 +56,9 @@ sequenceDiagram
     participant U as Analyst (Browser)
     participant W as re-web2 (Next.js)
     participant A as re-api2 (FastAPI)
-    participant G as re-ghidra2 (Headless)
+    participant G as re-ghidra2 (GUI/Headless)
     participant M as re-memory2 (ChromaDB)
-    participant L as re-ai2 (Ollama/GPU)
+    participant L as AI Node (Ollama/Gemini)
 
     U->>W: Uploads Binary
     W->>A: POST /upload
@@ -68,13 +68,15 @@ sequenceDiagram
     G-->>A: Extracted Functions (JSON)
     A->>M: Upsert Embeddings
     U->>W: "What does this function do?"
-    W->>A: POST /chat (Query + Func Context)
+    W->>A: POST /chat (Provider Selector)
     A->>M: Query Semantic Similarities
     M-->>A: Relevant Code Blocks
     A->>L: Inference (Code + Context + Prompt)
     L-->>A: Technical Analysis + Tool Commands
+    A->>G: "Send to Debugger" (LiveBridge.java)
+    G-->>U: Tool Opens in VNC with GDB Ready
     A->>W: JSON Actions (Rename/Comment)
-    W->>U: Update UI & Persistence
+    W->>U: Update UI & VNC Sync
 ```
 
 ### 🧠 1.3 RAG Architecture: Reciprocal Rank Fusion (RRF)
@@ -106,7 +108,7 @@ graph LR
 
     RRF --> Context[Aggregated Context]
     Decompiler[Ghidra Decompiler Context] --> Context
-    Context --> LLM[Local LLM / Qwen 2.5]
+    Context --> LLM[Local LLM / Gemini 2.0]
     LLM --> Response[Expert Analysis]
 ```
 
@@ -136,9 +138,10 @@ The re-Brain frontend reimagines the reverse engineering workspace as a **Dynami
 | **🕸️ Call Tree** | Visualizes function relationships (callers/callees) in a nested, navigable structure. | Direct "Goto" support on any node. |
 | **📈 Function Graph** | High-fidelity Control Flow Graph (CFG) showing code blocks and branching logic. | Visualizes logical flow in real-time. |
 | **🔢 Hex Viewer** | Precision memory inspector. Bridges the gap between raw data and high-level code. | Direct sync with `goto` commands. |
-| **🧵 Strings Viewer** | Deep-indexes binary strings. Includes **Hexadecimal Memory Offsets** for every entry. | Clicking an offset triggers a global `goto` event. |
+| **🧵 Strings Viewer** | Deep-indexes binary strings. Includes **Hexadecimal Memory Offsets** and AI Filtering. | Clicking an offset triggers a global `goto` event. |
 | **🕹️ P-Code Emulator** | Step-through logic emulator with AI integration. | Feeds register states back to the Analyst. |
-| **🖥️ Ghidra VNC** | A full-featured Ghidra GUI instance accessible via browser (noVNC). | Shared project state with the AI-powered headless backend. |
+| **🖥️ Ghidra VNC** | A full-featured Ghidra GUI instance via browser (noVNC). Optimized with `fluxbox` for minimize/restore support. | Shared project state via **LiveBridge.java**. |
+| **🪲 Ghidra Debugger** | Integrated GDB/GDBServer workflow. Launchable via the "Send to Debugger" action. | Automatically imports binaries and sets up targets in the VNC GUI. |
 
 ---
 
@@ -172,8 +175,17 @@ Manages the complex interactions between Ghidra scripts and AI inference.
 - **Integrated Subprocess Management**: Handles headless Ghidra execution with project locking.
 - **Prompt Engineering**: Dynamically constructs context-rich prompts including decompiled code, function signatures, and RAG-retrieved neighbors.
 
-### 4.2 re-ai2: Local Inference Node
-A high-performance inference server that runs completely locally, ensuring your sensitive binaries are never transmitted to third-party APIs. Supporting **NVIDIA GPU Acceleration**.
+### 4.2 AI Nodes: Local & Cloud
+re-Brain's inference layer is now modular. 
+- **Ollama**: For 100% private, locally accelerated inference (NVIDIA GPU required).
+- **Gemini 2.0 Flash**: Integrated via the secure Settings UI for high-speed, cost-effective cloud scaling with deeper reasoning capabilities.
+
+### 4.3 LiveBridge.java: Two-Channel Control
+A high-priority communication script written in native Java.
+- **Port 9999**: Listens for commands from the re-api2 brain.
+- **Context-Aware**: Tracks cursor location and active functions in the VNC GUI to keep the web view in sync.
+- **Auto-Import**: Seamlessly imports missing binaries from `/data/binaries` into the Ghidra project.
+- **Tool Automation**: Programmatically launches and attaches the Debugger tool.
 
 ---
 

@@ -30,6 +30,7 @@ out/
 Thumbs.db
 
 # Data
+data/settings.json
 data/binaries/*
 data/malware/*
 data/compiler_patterns/*

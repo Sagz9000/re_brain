@@ -25,6 +25,16 @@ def ensure_dirs():
         if not os.path.exists(d):
             os.makedirs(d)
 
+def process_trigger(job):
+    log_to_file(f"Processing Trigger: {job}")
+    action = job.get('action')
+    if action == 'bridge':
+        # Send Ctrl+Shift+L to any Ghidra window
+        # We try both "Ghidra" and "Code Browser"
+        cmd = "export DISPLAY=:0 && WID=$(xdotool search --name 'Ghidra' | head -n 1) && [ ! -z \"$WID\" ] || WID=$(xdotool search --name 'Code Browser' | head -n 1) && if [ ! -z \"$WID\" ]; then xdotool windowactivate --sync $WID && xdotool key ctrl+shift+l; fi"
+        log_to_file(f"Executing Trigger Command: {cmd}")
+        subprocess.run(cmd, shell=True)
+
 def process_job(job_file):
     job_path = os.path.join(PENDING_DIR, job_file)
     processing_path = os.path.join(PROCESSING_DIR, job_file)
@@ -35,10 +45,15 @@ def process_job(job_file):
     try:
         with open(processing_path, 'r') as f:
             job = json.load(f)
+
+        if job.get('type') == 'trigger':
+            process_trigger(job)
+            shutil.move(processing_path, os.path.join(COMPLETED_DIR, job_file))
+            return
             
         log_to_file(f"Processing Job: {job}")
         
-        project_name = job.get('project_name')
+        project_name = job.get('project_name') or 'reBrain'
         file_path = job.get('file_path') 
         is_new = job.get('is_new', False)
         
