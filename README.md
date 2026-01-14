@@ -25,14 +25,15 @@
 - [⚡ 5. Deployment Guide](#-5-deployment-guide)
   - [🌐 Remote Access (IP Address Support)](#-remote-access-ip-address-support)
 
-### � Workspace Overview
+### 🖥️ Workspace Overview
+![re-Brain New Desktop](pictures/newdesktop.png)
 ![re-Brain Fullscreen Workspace](pictures/fullscreen.png)
 
 
 
 ![re-Brain Clear Workspace](pictures/workspaceclear.png)
 
-### �📽️ Analysis Workflow Demonstration
+### 📽️ Analysis Workflow Demonstration
 Watch re-Brain in action as it disassembles a target, identifies core logic, and uses AI context to solve a reverse engineering challenge.
 
 <video src="https://github.com/Sagz9000/re_brain/raw/main/pictures/simplecrack.mp4" width="600" controls></video>
@@ -130,7 +131,7 @@ The re-Brain frontend reimagines the reverse engineering workspace as a **Dynami
 ### 🧩 2.2 Component Directory & Functionality
 | Component | Description | Deep-Link Integration |
 | :--- | :--- | :--- |
-| **🐚 AI Docked Chat** | The command center. Features real-time reasoning visualization and a direct Python execution runtime. | Intercepts `goto` and `rename` JSON payloads. |
+| **🐚 AI Docked Chat** | The command centre. Features real-time reasoning visualization and a direct Python execution runtime. ![AI Analysis](pictures/analysisai.png) | Intercepts `goto` and `rename` JSON payloads. |
 | **🌳 Symbol Tree** | A hierarchical index of program structure. Supports fuzzy search and filtering for Functions, Imports, and Labels. | Syncs with Decompiler and Hex views on selection. |
 | **📜 Decompiler** | C-style high-level representation of assembly logic. Augmented with AI-driven comments and automatic variable renaming. | Receives `comment` and `rename` updates from AI. |
 | **🧬 Data Type Manager** | Hierarchical view of all program data types (structs, unions, enums). | Click a type to open the **Data Type Viewer**. |
@@ -140,7 +141,7 @@ The re-Brain frontend reimagines the reverse engineering workspace as a **Dynami
 | **🔢 Hex Viewer** | Precision memory inspector. Bridges the gap between raw data and high-level code. | Direct sync with `goto` commands. |
 | **🧵 Strings Viewer** | Deep-indexes binary strings. Includes **Hexadecimal Memory Offsets** and AI Filtering. | Clicking an offset triggers a global `goto` event. |
 | **🕹️ P-Code Emulator** | Step-through logic emulator with AI integration. | Feeds register states back to the Analyst. |
-| **🖥️ Ghidra VNC** | A full-featured Ghidra GUI instance via browser (noVNC). Optimized with `fluxbox` for minimize/restore support. | Shared project state via **LiveBridge.java**. |
+| **🖥️ Ghidra VNC** | A full-featured Ghidra GUI instance via browser (noVNC). Optimized with `fluxbox` for minimize/restore support. ![VNC Sync](pictures/vncwithautosynching.png) | Shared project state via **LiveBridge.java**. |
 | **🪲 Ghidra Debugger** | Integrated GDB/GDBServer workflow. Launchable via the "Send to Debugger" action. | Automatically imports binaries and sets up targets in the VNC GUI. |
 
 ---
@@ -176,12 +177,19 @@ Manages the complex interactions between Ghidra scripts and AI inference.
 - **Prompt Engineering**: Dynamically constructs context-rich prompts including decompiled code, function signatures, and RAG-retrieved neighbors.
 
 ### 4.2 AI Nodes: Local & Cloud
-re-Brain's inference layer is now modular. 
+re-Brain's inference layer is now modular, allowing seamless transitions between speed and privacy.
+
+![AI Settings](pictures/aiseting.png)
+![AI Options](pictures/aioption.png)
+
 - **Ollama**: For 100% private, locally accelerated inference (NVIDIA GPU required).
 - **Gemini 2.0 Flash**: Integrated via the secure Settings UI for high-speed, cost-effective cloud scaling with deeper reasoning capabilities.
 
 ### 4.3 LiveBridge.java: Two-Channel Control
 A high-priority communication script written in native Java.
+
+![LiveBridge Interface](pictures/livebridge.png)
+
 - **Port 9999**: Listens for commands from the re-api2 brain.
 - **Context-Aware**: Tracks cursor location and active functions in the VNC GUI to keep the web view in sync.
 - **Auto-Import**: Seamlessly imports missing binaries from `/data/binaries` into the Ghidra project.
