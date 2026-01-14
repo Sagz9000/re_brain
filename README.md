@@ -5,6 +5,26 @@
 > [!NOTE]
 > **re-Brain 2.0** is technically influenced by and adapts core logic from [GhidraMCP](https://github.com/LaurieWired/GhidraMCP) by LaurieWired. While the **Ghidra Analysis Scripts** (CFG, XRefs, Renaming) leverage the implementation patterns found in GhidraMCP, the **orchestration layer, JSON protocol, and full-stack integration** are custom-built for the re-Brain ecosystem.
 
+## 📑 Table of Contents
+- [re-Brain: AI-Augmented Binary Analysis Ecosystem](#re-brain-ai-augmented-binary-analysis-ecosystem-%EF%B8%8F)
+  - [🪡 Workspace Overview](#%EF%B8%8F-workspace-overview)
+  - [🎞️📽️ Analysis Workflow Demonstration](#%EF%B8%8F%EF%B8%8F-analysis-workflow-demonstration)
+- [🏛️ 1. Technical Architecture & System Design](#%EF%B8%8F-1-technical-architecture--system-design)
+  - [🦾 1.1 Ingestion & Project Management](#%EF%B8%8F-11-ingestion--project-management)
+  - [🔄 1.2 Data & Process Orchestration](#%EF%B8%8F%EF%B8%8F-12-data--process-orchestration)
+  - [🧠 1.3 RAG Architecture: Reciprocal Rank Fusion (RRF)](#-13-rag-architecture-reciprocal-rank-fusion-rrf)
+- [🖥️ 2. UI Walkthrough & Component Guide](#%EF%B8%8F-2-ui-walkthrough--component-guide)
+  - [🧬 2.1 The "Floating UI" Design Philosophy](#-21-the-floating-ui-design-philosophy)
+  - [🧩 2.2 Component Directory & Functionality](#-22-component-directory--functionality)
+- [🔍 3. Advanced Forensic Analysis Modules](#-3-advanced-forensic-analysis-modules)
+  - [☣️ 3.1 Specialist Scans](#%EF%B8%8F-31-specialist-scans)
+  - [🐍 Feature Highlight: Python Execution](#-feature-highlight-python-execution)
+- [🛠️ 4. Advanced Component Technicals](#%EF%B8%8F-4-advanced-component-technicals)
+  - [4.1 re-api2: The Orchestration Brain](#41-re-api2-the-orchestration-brain)
+  - [4.2 re-ai2: Local Inference Node](#42-re-ai2-local-inference-node)
+- [⚡ 5. Deployment Guide](#-5-deployment-guide)
+  - [🌐 Remote Access (IP Address Support)](#-remote-access-ip-address-support)
+
 ### � Workspace Overview
 ![re-Brain Fullscreen Workspace](pictures/fullscreen.png)
 
