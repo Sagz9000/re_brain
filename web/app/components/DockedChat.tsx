@@ -8,15 +8,18 @@ import { API_URL } from '../utils';
 interface Message {
     role: 'user' | 'assistant' | 'system';
     content: string;
+    actions?: any[];
 }
 
 interface DockedChatProps {
-    apiStatus: 'online' | 'offline';
-    onApiStatusChange: (status: 'online' | 'offline') => void;
-    onCommand?: (cmd: any) => Promise<string | void> | void;
+    apiStatus: 'online' | 'offline' | 'checking';
+    onApiStatusChange: (status: 'online' | 'offline' | 'checking') => void;
+    onCommand?: (cmd: any) => any;
     currentFile: string | null;
-    currentFunction: { name: string, address: string } | null;
+    currentFunction: string | null;
     currentAddress: string | null;
+    incomingMessage?: Message | null;
+    onMessageConsumed?: () => void;
 }
 
 const ThoughtBlock = ({ thought }: { thought: string }) => {
@@ -129,7 +132,19 @@ const CodeBlock = ({ code, language }: { code: string, language: string }) => {
     );
 };
 
-const FormattedMessage = ({ content, onLinkClick, onFunctionClick }: { content: string, onLinkClick?: (addr: string) => void, onFunctionClick?: (name: string, addr: string) => void }) => {
+const FormattedMessage = ({
+    content,
+    actions,
+    onLinkClick,
+    onFunctionClick,
+    onExecuteAction
+}: {
+    content: string,
+    actions?: any[],
+    onLinkClick?: (addr: string) => void,
+    onFunctionClick?: (name: string, addr: string) => void,
+    onExecuteAction?: (action: any) => void
+}) => {
     // 1. Extract thinking process
     let thought = "";
     let cleanContent = content;
@@ -243,6 +258,21 @@ const FormattedMessage = ({ content, onLinkClick, onFunctionClick }: { content: 
                     </div>
                 );
             })}
+            {actions && actions.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-white/10">
+                    {actions.map((act, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => onExecuteAction && onExecuteAction(act)}
+                            className="text-[10px] px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-lg flex items-center gap-2 transition-all group"
+                        >
+                            <Play size={10} className="group-hover:scale-110 transition-transform" />
+                            Run {act.action?.replace(/_/g, ' ') || 'Action'}
+                            {act.tab ? `: ${act.tab}` : act.target ? `: ${act.target}` : ''}
+                        </button>
+                    ))}
+                </div>
+            )}
             <div className="flex justify-end mt-2 pt-2 border-t border-white/5 items-center gap-2">
                 <CopyButton content={cleanContent} />
             </div>
@@ -390,7 +420,8 @@ export default function DockedChat({
             let fullText = data.response || data.error || "No response from AI.";
             let textToDisplay = fullText;
 
-            // UI Command Logic - Extract ANY JSON with "action" and execute it
+            // UI Command Logic - Extract ANY JSON with "action" and store it
+            const actions: any[] = [];
             try {
                 // Find all JSON blocks (anything between braces)
                 const jsonMatches = fullText.match(/\{[\s\S]*?\}/g);
@@ -400,7 +431,6 @@ export default function DockedChat({
                             const cmd = JSON.parse(matchStr);
                             if (cmd.action || (Array.isArray(cmd) && cmd[0]?.action)) {
                                 // Strip this JSON and any surrounding code block text from display
-                                // Look for the code block that might contain this
                                 const pattern = new RegExp("```json[\\s\\S]*?" + matchStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "[\\s\\S]*?```", "g");
                                 textToDisplay = textToDisplay.replace(pattern, '').trim();
 
@@ -408,21 +438,11 @@ export default function DockedChat({
                                 const labels = [/UI_COMMAND:/gi, /COMMAND_BLOCK:/gi, /COMMANDS:/gi, /Action Required:/gi];
                                 labels.forEach(l => { textToDisplay = textToDisplay.replace(l, '').trim(); });
 
-                                // Execute
+                                // Collect instead of execute
                                 if (Array.isArray(cmd)) {
-                                    for (const c of cmd) {
-                                        if (onCommand) {
-                                            const feedback = await onCommand(c);
-                                            if (feedback && typeof feedback === 'string') {
-                                                setMessages(prev => [...prev, { role: 'system', content: feedback }]);
-                                            }
-                                        }
-                                    }
-                                } else if (onCommand) {
-                                    const feedback = await onCommand(cmd);
-                                    if (feedback && typeof feedback === 'string') {
-                                        setMessages(prev => [...prev, { role: 'system', content: feedback }]);
-                                    }
+                                    actions.push(...cmd);
+                                } else {
+                                    actions.push(cmd);
                                 }
                             }
                         } catch (e) { /* Not a valid command JSON, ignore */ }
@@ -432,7 +452,7 @@ export default function DockedChat({
                 console.error("Failed to parse commands from response", e);
             }
 
-            setMessages(prev => [...prev, { role: 'assistant', content: textToDisplay }]);
+            setMessages(prev => [...prev, { role: 'assistant', content: textToDisplay, actions: actions.length > 0 ? actions : undefined }]);
         } catch (error) {
             setMessages(prev => [...prev, { role: 'assistant', content: `Connection Failed: ${error}` }]);
             onApiStatusChange('offline');
@@ -468,7 +488,22 @@ export default function DockedChat({
                                     ? 'bg-zinc-800 text-zinc-400 text-xs font-mono border border-white/5 rounded-lg py-2'
                                     : 'bg-[#27272a] text-zinc-200 rounded-2xl rounded-tl-sm border border-white/5'}
                         `}>
-                            {m.role === 'user' ? m.content : <FormattedMessage content={m.content} onLinkClick={handleLinkClick} onFunctionClick={handleFunctionClick} />}
+                            {m.role === 'user' ? m.content : (
+                                <FormattedMessage
+                                    content={m.content}
+                                    actions={m.actions}
+                                    onLinkClick={handleLinkClick}
+                                    onFunctionClick={handleFunctionClick}
+                                    onExecuteAction={async (act) => {
+                                        if (onCommand) {
+                                            const feedback = await onCommand(act);
+                                            if (feedback && typeof feedback === 'string') {
+                                                setMessages(prev => [...prev, { role: 'system', content: feedback }]);
+                                            }
+                                        }
+                                    }}
+                                />
+                            )}
                         </div>
                     </div>
                 ))}

@@ -20,18 +20,19 @@ import ScriptManager from './components/ScriptManager';
 import BookmarkManager from './components/BookmarkManager';
 import ProjectManager from './components/ProjectManager';
 import EmulatorWindow from './components/EmulatorWindow';
+import Debugger from './components/Debugger';
 import { API_URL } from './utils';
 
 import {
   Code, Sparkles, Terminal, Files, Search, Settings, Box,
   FolderTree, GitGraph, ListTree, LayoutDashboard, Binary, FileCode, Type, Upload, X,
-  AlignLeft, Database, GitCommit, Play, Bookmark, Cpu
+  AlignLeft, Database, GitCommit, Play, Bookmark, Cpu, Bug
 } from 'lucide-react';
 
 interface WindowState {
   id: string;
   title: string;
-  type: 'project' | 'chat' | 'hex' | 'symbol_tree' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph' | 'listing' | 'datatypes' | 'call_tree' | 'scripts' | 'bookmarks' | 'projects' | 'emulator' | 'datatype_preview';
+  type: 'project' | 'chat' | 'hex' | 'symbol_tree' | 'decompile' | 'strings' | 'dashboard' | 'output' | 'tree' | 'graph' | 'listing' | 'datatypes' | 'call_tree' | 'scripts' | 'bookmarks' | 'projects' | 'emulator' | 'datatype_preview' | 'debugger';
   isOpen: boolean;
   zIndex: number;
   initialPos: { x: number, y: number };
@@ -57,7 +58,6 @@ export default function Home() {
   // Define windows without initializing state yet to use viewport values
   const getInitialWindows = (vw: number, vh: number): WindowState[] => [
     { id: 'project', title: 'File Explorer', type: 'project', isOpen: true, zIndex: 1, initialPos: { x: 60, y: 20 }, initialSize: { w: Math.min(260, vw * 0.2), h: vh * 0.7 }, icon: Files },
-    { id: 'dashboard', title: 'System Overview', type: 'dashboard', isOpen: true, zIndex: 0, initialPos: { x: vw * 0.28, y: 20 }, initialSize: { w: Math.min(800, vw * 0.6), h: vh * 0.6 }, icon: LayoutDashboard },
     { id: 'listing', title: 'Listing View', type: 'listing', isOpen: false, zIndex: 2, initialPos: { x: vw * 0.28, y: vh * 0.65 }, initialSize: { w: Math.min(800, vw * 0.6), h: vh * 0.3 }, icon: AlignLeft },
     { id: 'symbol_tree', title: 'Symbol Tree', type: 'symbol_tree', isOpen: false, zIndex: 3, initialPos: { x: vw - 340, y: 20 }, initialSize: { w: 300, h: vh * 0.45 }, icon: ListTree },
     { id: 'datatypes', title: 'Data Type Manager', type: 'datatypes', isOpen: false, zIndex: 3, initialPos: { x: vw - 340, y: vh * 0.5 }, initialSize: { w: 300, h: vh * 0.45 }, icon: Database },
@@ -67,6 +67,7 @@ export default function Home() {
     { id: 'graph', title: 'Function Graph', type: 'graph', isOpen: false, zIndex: 4, initialPos: { x: vw * 0.35, y: vh * 0.1 }, initialSize: { w: vw * 0.5, h: vh * 0.6 }, icon: GitGraph },
     { id: 'call_tree', title: 'Function Call Tree', type: 'call_tree', isOpen: false, zIndex: 4, initialPos: { x: vw * 0.38, y: vh * 0.15 }, initialSize: { w: vw * 0.3, h: vh * 0.6 }, icon: GitCommit },
     { id: 'emulator', title: 'P-Code Emulator', type: 'emulator', isOpen: false, zIndex: 5, initialPos: { x: vw * 0.4, y: vh * 0.6 }, initialSize: { w: 500, h: 400 }, icon: Cpu },
+    { id: 'debugger', title: 'GDB Debugger', type: 'debugger', isOpen: false, zIndex: 5, initialPos: { x: vw * 0.35, y: vh * 0.5 }, initialSize: { w: 600, h: 450 }, icon: Bug },
     { id: 'hex', title: 'Bytes', type: 'hex', isOpen: false, zIndex: 3, initialPos: { x: vw * 0.35, y: vh * 0.6 }, initialSize: { w: vw * 0.5, h: vh * 0.35 }, icon: Binary },
     { id: 'strings', title: 'Defined Strings', type: 'strings', isOpen: false, zIndex: 3, initialPos: { x: vw * 0.4, y: vh * 0.2 }, initialSize: { w: vw * 0.4, h: vh * 0.5 }, icon: Type },
     { id: 'scripts', title: 'Script Manager', type: 'scripts', isOpen: false, zIndex: 5, initialPos: { x: vw * 0.45, y: vh * 0.1 }, initialSize: { w: 400, h: 300 }, icon: Play },
@@ -448,7 +449,7 @@ export default function Home() {
 
         {/* Tools Group */}
         <div className="flex flex-col gap-2 w-full items-center">
-          {windows.filter(w => ['scripts', 'bookmarks', 'projects', 'emulator', 'chat', 'output', 'dashboard'].includes(w.type)).map(w => (
+          {windows.filter(w => ['scripts', 'bookmarks', 'projects', 'emulator', 'debugger', 'chat', 'output'].includes(w.type)).map(w => (
             <LaunchIcon key={w.id} w={w} toggleWindow={toggleWindow} />
           ))}
         </div>
@@ -472,7 +473,6 @@ export default function Home() {
             zIndex={win.zIndex}
             onClose={() => closeWindow(win.id)}
             onFocus={() => focusWindow(win.id)}
-            onClick={() => focusWindow(win.id)}
           >
             {win.type === 'project' && (
               <ProjectExplorer
@@ -515,11 +515,11 @@ export default function Home() {
 
             {win.type === 'scripts' && <ScriptManager />}
             {win.type === 'bookmarks' && <BookmarkManager file={activeFile || ''} onNavigate={(addr) => handleUiCommand({ action: 'goto', target: addr })} />}
-            {win.type === 'projects' && <ProjectManager activeProject="re-Brain" onProjectChange={() => { }} />}
+            {win.type === 'projects' && <ProjectManager onUploadComplete={() => { }} />}
             {win.type === 'emulator' && <EmulatorWindow file={activeFile || ''} address={selectedAddress || ''} onStop={() => { }} />}
+            {win.type === 'debugger' && <Debugger binaryName={activeFile || ''} isActive={!!activeFile} />}
 
-            {win.type === 'dashboard' && <ActivityLog logs={[]} />}
-            {win.type === 'output' && <ActivityLog logs={[]} />}
+            {win.type === 'output' && <ActivityLog />}
 
             {win.type === 'chat' && (
               <DockedChat
@@ -617,29 +617,6 @@ function NoFunctionSelected() {
   )
 }
 
-function Dashboard({ apiStatus, fileCount }: { apiStatus: string, fileCount: number }) {
-  return (
-    <div className="flex-1 p-6 overflow-auto bg-[#1e1e1e]">
-      <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-200">
-        <LayoutDashboard size={20} className="text-indigo-400" />
-        Project Dashboard
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-[#252526] p-4 rounded-lg border border-[#3e3e42]">
-          <span className="text-[10px] text-zinc-500 uppercase">Binaries</span>
-          <p className="text-2xl font-mono text-zinc-200">{fileCount}</p>
-        </div>
-        <div className="bg-[#252526] p-4 rounded-lg border border-[#3e3e42]">
-          <span className="text-[10px] text-zinc-500 uppercase">Status</span>
-          <p className={`text-sm font-bold ${apiStatus === 'online' ? 'text-emerald-400' : 'text-red-400'}`}>{apiStatus}</p>
-        </div>
-      </div>
-      <div className="mt-8">
-        <h3 className="text-xs font-bold text-zinc-400 mb-4 uppercase tracking-widest">Recent Activity</h3>
-        <ActivityLog />
-      </div>
-    </div>
-  );
-}
+
 
 

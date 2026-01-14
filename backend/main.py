@@ -39,6 +39,16 @@ except ImportError as e:
 
 app = FastAPI(title="reAIghidra API", version="0.1.0")
 
+# Import and Register Debugger Router
+try:
+    from debug_api import router as debug_router
+    app.include_router(debug_router)
+    logger.info("Debugger Router registered.")
+except ImportError as e:
+    logger.error(f"Failed to import Debugger: {e}")
+except Exception as e:
+    logger.error(f"Failed to register Debugger Router: {e}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -135,6 +145,23 @@ class EmulateRequest(BaseModel):
     steps: int = 5
     stop_at: Optional[str] = None
 
+class GhidraDebugRequest(BaseModel):
+    binary_name: str
+    entry_point: Optional[str] = None
+    max_steps: int = 20
+    breakpoints: Optional[List[str]] = []
+
+@app.post("/binary/{name}/ghidra_debug")
+def run_ghidra_debug(name: str, req: GhidraDebugRequest):
+    args = [
+        req.entry_point if req.entry_point else "auto",
+        str(req.max_steps)
+    ]
+    if req.breakpoints:
+        args.extend(req.breakpoints)
+        
+    return run_headless_script(name, "GhidraDebugger.java", args=args, read_only=True)
+
 @app.post("/binary/{name}/emulate")
 def emulate_execution(name: str, req: EmulateRequest):
     args = [req.address, str(req.steps)]
@@ -145,11 +172,14 @@ def emulate_execution(name: str, req: EmulateRequest):
 class RenameRequest(BaseModel):
     target: str # Address or old name
     new_name: str
+    address: Optional[str] = None
 
 @app.post("/binary/{name}/rename")
 def rename_function(name: str, req: RenameRequest):
-    log_event(f"Renaming {req.target} to {req.new_name} in {name}", source="System")
-    return run_headless_script(name, "RenameFunction.java", args=[req.target, req.new_name], read_only=False)
+    # Use address if provided, otherwise target (which could be the old name)
+    target = req.address if req.address else req.target
+    log_event(f"Renaming {target} to {req.new_name} in {name}", source="System")
+    return run_headless_script(name, "RenameFunction.java", args=[target, req.new_name], read_only=False)
 
 class CommentRequest(BaseModel):
     address: str
@@ -529,8 +559,13 @@ Rules:
 6. UI Control: Use standalone JSON blocks for actions.
    - Rename: `{ "action": "rename", "target": "FUN_...", "new_name": "login_check" }`
    - Comment: `{ "action": "comment", "address": "0x401000", "comment": "...", "type": "plate" }`
-   - Goto: `{ "action": "goto", "address": "0x401000" }`
+   - Goto: `{ "action": "goto", "target": "0x401000" }`
    - Emulate: `{ "action": "emulate", "address": "0x401000", "steps": 5, "stop_at": "0x401050" }`
+   - Batch Analysis: `{ "action": "batch_analysis" }` (Check all functions for security interest)
+   - Memory Analysis: `{ "action": "memory_analysis" }` (Analyze layout and RWX sections)
+   - Cipher Analysis: `{ "action": "cipher_analysis" }` (Find and analyze crypto logic)
+   - Malware Scan: `{ "action": "malware_analysis" }` (Check imports/strings for threats)
+   - Switch View: `{ "action": "SWITCH_TAB", "tab": "listing" }` (Tabs: listing, symbol_tree, hex, strings, decompile, graph, call_tree, scripts)
 
    INTERACTIVE DEBUGGING:
    - When you use `emulate`, the SYSTEM will output the Result Trace in the next message.
@@ -1112,7 +1147,7 @@ def get_bookmarks(name: str):
     return run_headless_script(name, "GetBookmarks.java", read_only=True)
 
 @app.get("/binary/{name}/function/{addr}/cfg")
-def get_function_cfg(name: str, addr: str):
+def get_function_cfg_endpoint(name: str, addr: str):
     return run_headless_script(name, "GetFunctionCFG.java", args=[addr], read_only=True)
 
 class RunRequest(BaseModel):
@@ -1138,34 +1173,6 @@ def run_python(req: RunRequest):
         return {"error": "Execution timed out (30s limit)", "output": "", "exit_code": -1}
     except Exception as e:
         return {"error": str(e), "output": "", "exit_code": -1}
-
-@app.get("/binary/{name}/function/{addr}/cfg")
-def get_function_cfg(name: str, addr: str):
-    return run_headless_script(name, "GetFunctionCFG.java", args=[addr], read_only=True)
-
-
-
-class RenameRequest(BaseModel):
-    function: str
-    new_name: str
-    address: Optional[str] = None
-
-@app.post("/binary/{name}/rename")
-def rename_function(name: str, req: RenameRequest):
-    # Depending on whether address is provided or not, we choose the target argument
-    # If address is available, it's safer to use it to resolve ambiguity
-    target = req.address if req.address else req.function
-    return run_headless_script(name, "RenameFunction.java", args=[target, req.new_name], read_only=False)
-
-
-class CommentRequest(BaseModel):
-    address: str
-    comment: str
-    type: str = "plate" # "plate", "pre", "post", "eol"
-
-@app.post("/binary/{name}/comment")
-def set_comment(name: str, req: CommentRequest):
-    return run_headless_script(name, "SetComment.java", args=[req.address, req.comment, req.type], read_only=False)
 
 @app.get("/binary/{name}/xrefs")
 def get_xrefs(name: str, address: str):

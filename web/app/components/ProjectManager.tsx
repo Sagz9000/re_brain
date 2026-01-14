@@ -4,7 +4,11 @@ import { useState, useEffect } from 'react';
 import { FolderTree, Trash2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { API_URL } from '../utils';
 
-export default function ProjectManager() {
+interface ProjectManagerProps {
+    onUploadComplete?: () => void;
+}
+
+export default function ProjectManager({ onUploadComplete }: ProjectManagerProps) {
     const [projects, setProjects] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);

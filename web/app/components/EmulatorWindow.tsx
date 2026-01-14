@@ -4,7 +4,8 @@ import { API_URL } from '../utils';
 
 interface EmulatorProps {
     file: string | null;
-    initialAddress?: string | null;
+    address?: string | null;
+    onStop?: () => void;
 }
 
 interface Step {
@@ -14,7 +15,7 @@ interface Step {
     error?: string;
 }
 
-export default function EmulatorWindow({ file, initialAddress }: EmulatorProps) {
+export default function EmulatorWindow({ file, address: initialAddress, onStop }: EmulatorProps) {
     const [address, setAddress] = useState(initialAddress || '');
     const [steps, setSteps] = useState(5);
     const [trace, setTrace] = useState<Step[]>([]);

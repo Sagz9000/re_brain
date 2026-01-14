@@ -5,7 +5,8 @@ import { Type, Search, RefreshCw, Filter } from 'lucide-react';
 import { API_URL } from '../utils';
 
 interface StringsViewerProps {
-    file: string;
+    file: string | null;
+    onAddressClick?: (addr: string) => void;
 }
 
 interface StringEntry {
@@ -13,7 +14,7 @@ interface StringEntry {
     value: string;
 }
 
-export default function StringsViewer({ file }: StringsViewerProps) {
+export default function StringsViewer({ file, onAddressClick }: StringsViewerProps) {
     const [strings, setStrings] = useState<StringEntry[]>([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState('');

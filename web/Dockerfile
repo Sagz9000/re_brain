@@ -1,13 +1,22 @@
-FROM node:18-alpine
-
+# Stage 1: Build
+FROM node:18-alpine AS builder
 WORKDIR /app
-
-COPY package.json package-lock.json* ./
+COPY package*.json ./
 RUN npm install
-
 COPY . .
+RUN npm run build
 
-# Next.js telemetry disable
+# Stage 2: Runtime
+# Stage 2: Runtime
+FROM node:18-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-CMD ["npm", "run", "dev"]
+# Copy standalone build
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+EXPOSE 3000
+CMD ["node", "server.js"]

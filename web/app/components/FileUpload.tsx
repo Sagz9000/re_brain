@@ -6,6 +6,7 @@ import { API_URL } from '../utils';
 
 interface FileUploadProps {
     onUploadComplete: () => void;
+    onClose?: () => void;
 }
 
 export default function FileUpload({ onUploadComplete }: FileUploadProps) {

@@ -5,9 +5,6 @@ services:
     container_name: re-web2
     ports:
       - "3000:3000"
-    volumes:
-      - ./web:/app
-      - /app/node_modules
     environment:
       # INTERNAL_API_URL allows the Next.js server to proxy requests to the backend container
       - INTERNAL_API_URL=http://re-api2:8000

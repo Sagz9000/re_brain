@@ -13,10 +13,11 @@ interface BookmarkItem {
 
 interface BookmarkManagerProps {
     file: string | null;
+    onNavigate?: (addr: string) => void;
     onSelectAddress?: (addr: string) => void;
 }
 
-export default function BookmarkManager({ file, onSelectAddress }: BookmarkManagerProps) {
+export default function BookmarkManager({ file, onNavigate, onSelectAddress }: BookmarkManagerProps) {
     const [bookmarks, setBookmarks] = useState<BookmarkItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

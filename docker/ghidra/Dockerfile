@@ -3,7 +3,7 @@ FROM blacktop/ghidra:latest
 USER root
 
 # Install X11 / VNC dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb \
     x11vnc \
     xterm \
@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     net-tools \
     novnc \
     websockify \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Fix websockify import error commonly found in ubuntu packages
 # Link novnc to webroot

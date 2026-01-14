@@ -17,6 +17,7 @@ interface CallGraphData {
 
 interface CallTreeProps {
     file: string | null;
+    functionName?: string | null;
     onSelectFunction?: (func: { name: string, address: string }) => void;
 }
 

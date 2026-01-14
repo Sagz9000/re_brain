@@ -3,6 +3,7 @@ import { AlignLeft } from 'lucide-react';
 
 interface DisassemblyViewProps {
     file: string | null;
+    address?: string | null;
 }
 
 export default function DisassemblyView({ file }: DisassemblyViewProps) {
