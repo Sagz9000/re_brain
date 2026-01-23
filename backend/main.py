@@ -406,6 +406,7 @@ def batch_analysis(name: str):
         prompt += "1. Encryption/Encoding logic (XOR, shifts, magic constants)\n"
         prompt += "2. Network activity (socket, connect, send, recv)\n"
         prompt += "3. Complex control flow (nested loops, state machines)\n"
+        prompt += "\nIMPORTANT: Only analyze the functions provided below. Do NOT invent findings, PIDs, or unrelated context.\n"
         prompt += "\nReturn a JSON list of meaningful findings only. Format: [{'function': 'name', 'category': 'Encryption', 'details': '...'}]. If nothing interesting, return [].\n\n"
         
         for f in chunk:
@@ -473,7 +474,8 @@ def memory_analysis(name: str):
     prompt = "Analyze the following memory layout and pointers for a binary. \n"
     prompt += "Identify security risks (e.g. RWX sections, suspicious segments).\n"
     prompt += "Explain the layout (Stack, Heap, Code, Data).\n"
-    prompt += "Infer the purpose of the pointers provided.\n\n"
+    prompt += "Infer the purpose of the pointers provided.\n"
+    prompt += "IMPORTANT: Analyze ONLY the provided memory layout. Do NOT invent statistics.\n\n"
     
     blocks = mem_data.get('blocks', [])
     pointers = mem_data.get('pointers', [])
@@ -532,7 +534,8 @@ def cipher_analysis(name: str):
     prompt = "Analyze the following functions for encryption, encoding, or hashing logic.\n"
     prompt += "Identify the likely algorithm (e.g. RC4, AES, XOR Stream, Base64, CRC32, etc.).\n"
     prompt += "Provide specific instructions on how to decode the data (e.g. 'XOR with key 0x55', 'Shift right by 2').\n"
-    prompt += "If it looks like a standard library function (e.g. memcpy optimized), ignore it.\n\n"
+    prompt += "If it looks like a standard library function (e.g. memcpy optimized), ignore it.\n"
+    prompt += "STRICT: Analyze ONLY the code provided below.\n\n"
     
     try:
         for f in cipher_funcs:
@@ -621,6 +624,7 @@ def malware_analysis(name: str):
     prompt = "Analyze the following binary artifacts for malware, C2 (Cobalt Strike, Metasploit, etc.), or shellcode behavior.\n"
     prompt += "Look for 'Injection' capabilities (VirtualAlloc, CreateRemoteThread), 'Network' Beacons (WinINet, User-Agents), and 'Evasion' (Anti-Debug).\n"
     prompt += "Assess the threat level (Clean, Suspicious, Malicious) and explain why.\n\n"
+    prompt += "STRICT INSTRUCTION: Only use the data provided below. Do NOT hallucinate PIDs, filenames, or external events.\n\n"
     
     prompt += "Suspicious Imports:\n" + json.dumps(malware_data['imports'], indent=2) + "\n\n"
     prompt += "Suspicious Strings:\n" + json.dumps(malware_data['strings'][:50], indent=2) + "\n\n" # Limit
